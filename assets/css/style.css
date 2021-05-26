@@ -1,18 +1,32 @@
 body {
-  background-color: black;
+  background: #121821 url("https://www.roadtovr.com/wp-content/uploads/2020/01/half-life-alyx-concept.jpg") no-repeat bottom center fixed;
+  color: #fff;
+  text-align: left;
+  line-height: 1.25;
+  margin: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  font: 13px/1.231 arial,helvetica,clean,sans-serif;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
 .card-body {
-  background-color: #000000;
+  background: rgba(0,0,0,0.5) !important;
   color: rgb(180,180,180);
 }
 
 .col-md-7.mb-4 {
-  background-color: black !important;
+  background: rgba(0,0,0,0.5) !important;
 }
 
 .card.h-100 {
-  background-color: black;
+  background: rgba(0,0,0,0.5) !important;
 }
 
 .border-white {
