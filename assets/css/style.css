@@ -1,0 +1,21 @@
+body {
+  background-color: black;
+}
+
+.card-body {
+  background-color: #000000;
+  color: rgb(180,180,180);
+}
+
+.col-md-7.mb-4 {
+  background-color: black !important;
+}
+
+.card.h-100 {
+  background-color: black;
+}
+
+.border-white {
+  background-color: black;
+}
+
