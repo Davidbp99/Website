@@ -21,6 +21,17 @@ body {
   color: rgb(180,180,180);
 }
 
+
+.card-body2 {
+  background: rgba(0,0,0,0.5) !important;
+  color: rgb(180,180,180);
+}
+
+.card2.h-1002 {
+  background: rgba(0,0,0,0.5) !important;
+  width: 600px;
+}
+
 .col-md-7.mb-4 {
   background: rgba(0,0,0,0.5) !important;
 }
