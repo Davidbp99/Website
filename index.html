@@ -14,10 +14,42 @@
     <link rel="stylesheet" href="css/unicons.css">
     <link rel="stylesheet" href="css/owl.carousel.min.css">
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
+<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
 
     <!-- MAIN STYLE -->
     <link rel="stylesheet" href="css/tooplate-style.css">
+<script>
     
+// number count for stats, using jQuery animate
+
+$('.counting').each(function() {
+  var $this = $(this),
+      countTo = $this.attr('data-count');
+  
+  $({ countNum: $this.text()}).animate({
+    countNum: countTo
+  },
+
+  {
+
+    duration: 3000,
+    easing:'linear',
+    step: function() {
+      $this.text(Math.floor(this.countNum));
+    },
+    complete: function() {
+      $this.text(this.countNum);
+      //alert('finished');
+    }
+
+  });  
+  
+
+});
+
+
+
+</script>    
 <!--
 
 Tooplate 2115 Marvel
@@ -106,8 +138,52 @@ https://www.tooplate.com/view/2115-marvel
            <p><b>-</b> I set fair prices based on work load given by the client (you) <br>
 <b>-</b> I communicate and take time with the map to be sure the client (you) like the end product. <br>
 <b>-</b> I lower the price for returning clients (<b>Sometimes</b>). I as well can have special holiday % off of prices (you will get a code at the end to use if you want % off the total price)
+</p>
+<h3>Stats</h3>
+<section id="counter-stats" class="wow fadeInRight" data-wow-duration="1.4s">
+    <div class="container">
+        <div class="row">
+ <div class="col-lg-3 stats">
+                <i class="fa fa-steam" aria-hidden="true"></i>
+                <div class="counting" data-count="900000">8</div>
+                <h5>Own Uploaded Maps</h5>
+            </div>
+             <div class="col-lg-3 stats">
+                <i class="fa fa-github" aria-hidden="true"></i>
+                <div class="counting" data-count="900000">9</div>
+                <h5>Public VMF on Github</h5>
+            </div>
+            <div class="col-lg-3 stats">
+                <i class="fa-solid fa-pen-fancy"></i>
+                <div class="counting" data-count="900000">5</div>
+                <h5>From The Ground Up Maps</h5>
+            </div>
 
-           </p>
+            <div class="col-lg-3 stats">
+                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                <div class="counting" data-count="280">10</div>
+                <h5>Map Edits</h5>
+            </div>
+
+            <div class="col-lg-3 stats">
+                <i class="fa fa-wrench" aria-hidden="true"></i>
+                <div class="counting" data-count="75">10+</div>
+                <h5>Map Fixing</h5>
+            </div>
+
+            <div class="col-lg-3 stats">
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <div class="counting" data-count="999">10+</div>
+                <h5>Clients I Worked With</h5>
+            </div>
+
+
+        </div>
+        <!-- end row -->
+    </div>
+    <!-- end container -->
+
+</section>
 
                         <div class="custom-btn-group mt-4">
                           <a href="https://github.com/Davidbp99/mapping" target="_blank" class="btn mr-lg-2 custom-btn"><i class='uil uil-file-alt'></i> Download Public VMF</a>
