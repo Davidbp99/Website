@@ -18,38 +18,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
     <!-- MAIN STYLE -->
     <link rel="stylesheet" href="css/tooplate-style.css">
-<script>
-    
-// number count for stats, using jQuery animate
-
-$('.counting').each(function() {
-  var $this = $(this),
-      countTo = $this.attr('data-count');
-  
-  $({ countNum: $this.text()}).animate({
-    countNum: countTo
-  },
-
-  {
-
-    duration: 3000,
-    easing:'linear',
-    step: function() {
-      $this.text(Math.floor(this.countNum));
-    },
-    complete: function() {
-      $this.text(this.countNum);
-      //alert('finished');
-    }
-
-  });  
-  
-
-});
-
-
-
-</script>    
+ 
 <!--
 
 Tooplate 2115 Marvel
@@ -145,35 +114,35 @@ https://www.tooplate.com/view/2115-marvel
         <div class="row">
  <div class="col-lg-3 stats">
                 <i class="fa fa-steam" aria-hidden="true"></i>
-                <div class="counting" data-count="900000">8</div>
+                <div class="counting" data-count="8">0</div>
                 <h5>Own Uploaded Maps</h5>
             </div>
              <div class="col-lg-3 stats">
                 <i class="fa fa-github" aria-hidden="true"></i>
-                <div class="counting" data-count="900000">9</div>
+                <div class="counting" data-count="9">0</div>
                 <h5>Public VMF on Github</h5>
             </div>
             <div class="col-lg-3 stats">
                 <i class="fa fa-pencil-square"></i>
-                <div class="counting" data-count="900000">5</div>
+                <div class="counting" data-count="5">0</div>
                 <h5>From The Ground Up Maps</h5>
             </div>
 
             <div class="col-lg-3 stats">
                 <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                <div class="counting" data-count="280">10</div>
+                <div class="counting" data-count="10">0</div>
                 <h5>Map Edits</h5>
             </div>
 
             <div class="col-lg-3 stats">
                 <i class="fa fa-wrench" aria-hidden="true"></i>
-                <div class="counting" data-count="75">10+</div>
+                <div class="counting2" data-count="10">0</div>
                 <h5>Map Fixing</h5>
             </div>
 
             <div class="col-lg-3 stats">
                 <i class="fa fa-user" aria-hidden="true"></i>
-                <div class="counting" data-count="999">10+</div>
+                <div class="counting2" data-count="10">0</div><p></p>
                 <h5>Clients I Worked With</h5>
             </div>
 
