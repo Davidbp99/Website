@@ -568,9 +568,8 @@ b, strong {
     vertical-align: top;
   }
 }
-// custom css below
-@import url(https://fonts.googleapis.com/css?family=Lato:400,700|Montserrat:400,700);
-@import url(https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css);
+
+
 /*/ start count stats /*/ 
 
 section#counter-stats {
