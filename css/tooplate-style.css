@@ -600,4 +600,11 @@ section#counter-stats {
 .linkplace, .linkplace:hover, .linkplace:focus, .linkplace:active {
       text-decoration: none;
       color: inherit;
+
+}
+.linkplace {
+  text-align: center;
+  font-size: 35px;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
 }
