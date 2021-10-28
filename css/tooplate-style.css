@@ -590,4 +590,14 @@ section#counter-stats {
   font-size: 60px;
 }
 
+.fab {
+  color: #008080;
+  font-size: 60px;
+}
+
 /*/ end count stats /*/
+
+.linkplace, .linkplace:hover, .linkplace:focus, .linkplace:active {
+      text-decoration: none;
+      color: inherit;
+}
