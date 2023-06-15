@@ -1,0 +1,49 @@
+/* Custom styles for the website */
+body {
+    padding-top: 70px;
+}
+
+.hero {
+    background: url(hero-image.jpg) center/cover no-repeat;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.about {
+    padding: 100px 0;
+}
+
+.about img {
+    max-width: 100%;
+}
+
+footer {
+    color: #fff;
+    background-color: #333;
+    padding: 20px 0;
+}
+
+#portfolio {
+    background-color: #616E7C;
+    padding: 100px 0;
+}
+
+.card {
+    background-color: #857F72;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card-text {
+  color:  white;
+}
+
+body.dark-mode {
+    background-color: #1f1f1f;
+    color: #ffffff;
+}
