@@ -131,10 +131,11 @@ I like working with people and help them reach their goals. This can be from sch
 
 <script>
     const servers = [
-      ['ip' => '37.230.162.62', 'port' => '27015', 'image' => 'server1.png'],
+      { ip: '37.230.162.62', port: '27015', image: 'server1.png', serverId: 'YOUR_SERVER_ID_1', discordUrl: 'YOUR_DISCORD_URL_1', description: 'Short description about Server 1' },
+
       // Add more server entries as needed
     ];
-    function getPlayerCount(server) {
+function getPlayerCount(server) {
       const url = `https://api.battlemetrics.com/servers?filter[game]=gmod&filter[address]=${server.ip}:${server.port}`;
 
       fetch(url)
@@ -147,7 +148,12 @@ I like working with people and help them reach their goals. This can be from sch
             serverRow.classList.add('server-row');
             serverRow.innerHTML = `
               <img class="server-image" src="${server.image}">
-              Server: ${server.ip}:${server.port} | Player Count: ${playerCount}
+              <div class="server-info">
+                <p>Server: ${server.ip}:${server.port} | Player Count: ${playerCount}</p>
+                <p>${server.description}</p>
+              </div>
+              <a class="join-button" href="steam://connect/${server.ip}:${server.port}">Join</a>
+              <a class="join-button" href="${server.discordUrl}">Join Discord</a>
             `;
 
             document.getElementById('serverCounts').appendChild(serverRow);

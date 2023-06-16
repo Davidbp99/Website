@@ -47,3 +47,24 @@ body.dark-mode {
     background-color: #1f1f1f;
     color: #ffffff;
 }
+
+   .server-row {
+     display: flex;
+     align-items: center;
+     margin-bottom: 10px;
+   }
+   .server-image {
+     width: 50px;
+     height: 50px;
+     margin-right: 10px;
+   }
+   .server-info {
+     flex-grow: 1;
+   }
+   .join-button {
+     margin-left: 10px;
+     padding: 5px 10px;
+     background-color: #4287f5;
+     color: #fff;
+     text-decoration: none;
+   }
