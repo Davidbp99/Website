@@ -132,52 +132,43 @@ I like working with people and help them reach their goals. This can be from sch
   <div id="serverList" class="row"></div>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-    // Define an array of server IDs and Discord server IDs
+    // Table of all the servers. Here you can list the battlemetrics.com id
+    // you can also in discordid put in the discord invite id that is at the end. joinlink is the server ip
+    // description is bit limited (unless you want it to look bit crazy) that you can add short info about a server
     const servers = [
-      { battlemetricid: "20397446", discordid: "990584236471902259" },
-      { battlemetricid: "20397446", discordid: "990584236471902259" },
-      { battlemetricid: "20397446", discordid: "990584236471902259" },
-      // Add more server entries as needed
+      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "This server is all about bla bla bla. This server is all about bla bla bla. This server is all about bla bla bla" },
+      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "This server is all about bla bla blaThis server is all about bla bla blaThis server is all about bla bla bla" },
+      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "This server is all about bla bla blaThis server is all about bla bla blaThis server is all about bla bla blaThis server is all about bla bla bla" },
     ];
 
-    // Function to create a server row
+// we need to create the server rows
     function createServerRow(server) {
       const battlemetric = `https://cdn.battlemetrics.com/b/horizontal500x80px/${server.battlemetricid}.png?foreground=%23EEEEEE&background=%23222222&lines=%23333333&linkColor=%231185ec&chartColor=%23FF0700`;
       const discordServerId = server.discordid;
-      const discordMemberCountElement = $('<p>').addClass('member-count');
+      const joinGameButton = $('<button>').text('Join Game Server').addClass('btn btn-primary join-game-button');
+      const joinDiscordButton = $('<button>').text('Join Discord Server').addClass('btn btn-success join-discord-button');
+      const serverDescription = $('<p>').text(server.description).addClass('server-description');
 
-      // Fetch member count using an asynchronous function
-      async function fetchMemberCount() {
-        try {
-          // Make an HTTP request to your server or a proxy server that retrieves the member count
-          const response = await fetch('/get-member-count', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ discordServerId }),
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch member count');
-          }
-
-          const { memberCount } = await response.json();
-          discordMemberCountElement.text(`Discord Members: ${memberCount}`);
-        } catch (error) {
-          console.error('Failed to fetch Discord member count:', error);
-          discordMemberCountElement.text('Discord Members: N/A');
-        }
+      function joinGameServer() {
+        const joinLink = server.joinlink;
+        window.location.href = joinLink;
       }
 
-      // Call the asynchronous function to fetch the member count
-      fetchMemberCount();
+      // Function to handle joining the Discord server
+      function joinDiscordServer() {
+        const discordInviteLink = `https://discord.gg/${discordServerId}`;
+        window.location.href = discordInviteLink;
+      }
+
+      // Attach click event listeners to the buttons
+      joinGameButton.on('click', joinGameServer);
+      joinDiscordButton.on('click', joinDiscordServer);
 
       // Create the server count element
       const serverCountElement = $('<img>').attr('src', battlemetric);
 
       // Create the server row container
-      const serverRow = $('<div>').addClass('server-row').append(serverCountElement, discordMemberCountElement);
+      const serverRow = $('<div>').addClass('server-row col-md-6').append(serverCountElement, serverDescription, joinGameButton, joinDiscordButton);
       return serverRow;
     }
 
@@ -191,12 +182,12 @@ I like working with people and help them reach their goals. This can be from sch
         // Create a row for each server
         const serverRow = createServerRow(server);
 
-        // Append the server row to the server list
+        // Display the information
         $('#serverList').append(serverRow);
 
-        // Add a line break after every 2 server rows
+        // If we get more then 2 rows beside each other. They should be moved down one to not fill the screen
         if ((index + 1) % 2 === 0) {
-          $('#serverList').append('<br>');
+          $('#serverList').append('<div class="w-100"></div>');
         }
       });
     }
@@ -208,6 +199,9 @@ I like working with people and help them reach their goals. This can be from sch
     setInterval(renderServerRows, 30000);
   </script>
 </section>
+
+
+
 
 
 
