@@ -92,70 +92,94 @@ I like working with people and help them reach their goals. This can be from sch
 
     <section id="portfolio" class="py-5">
         <div class="container">
-            <h2 class="text-center">Portfolio</h2>
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <div class="card">
-                        <img src="project1.jpg" class="card-img-top" alt="Project 1">
-                        <div class="card-body">
-                            <h5 class="card-title">Project 1</h5>
-                            <p class="card-text">story about nothing like. wow you are reading this. Lets read everything else</p>
-                            <a href="#" class="btn btn-primary">View Details</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 mb-4">
-                    <div class="card">
-                        <img src="project2.jpg" class="card-img-top" alt="Project 2">
-                        <div class="card-body">
-                            <h5 class="card-title">Project 2</h5>
-                            <p class="card-text">textbodytextbodytextbodytextbody</p>
-                            <a href="#" class="btn btn-primary">View Details</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 mb-4">
-                    <div class="card">
-                        <img src="https://i.imgur.com/JqEMQRb.jpg" class="card-img-top" alt="Project 3">
-                        <div class="card-body">
-                            <h5 class="card-title">Project 3</h5>
-                            <p class="card-text">textbodytextbody. You really read it all</p>
-                            <a href="#" class="btn btn-primary">View Details</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <h2 class="text-center">Portfolio Maps</h2>
+  <script>
+
+    const portfolios = [
+
+      { title: "DarkRP Code" , imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "test", description: "this code is pog" },
+      { title: "DarkRP Map" ,imageid: "JqEMQRb",imageformat: "jpg", type: "map", buttonlink: "test", description: "this is map" },
+      { title: "DarkRP Code" ,imageid: "JqEMQRb", imageformat: "jpg", type: "map", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice" },
+            { title: "DarkRP Code" ,imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice" },
+                  { title: "DarkRP Code" ,imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice" },
+    ];
+
+    function createPortfiloRows(portfolio) {
+      const image = `https://i.imgur.com/${portfolio.imageid}.${portfolio.imageformat}`;
+
+
+      const title = $('<h5>').text(portfolio.title).addClass('card-title');
+      const details = $('<a>').text('View Details').addClass('btn btn-primary').attr('href', portfolio.buttonlink);
+      const description = $('<p>').text(portfolio.description).addClass('card-text');
+
+
+      // Create the server row container
+      const Colums = $('<div>').addClass('col-lg-4 mb-4').append(
+        $('<div>').addClass('card').append(
+            $('<img>').addClass('card-img-top').attr('src',image),
+             $('<div>').addClass('server-info').append(title),
+                $('<div>').addClass('card-text').append(description,details)));
+      return Colums;
+}
+
+
+    // Function to render the server rows
+    function renderPortfolioRows() {
+    
+      // Iterate over the servers array
+      portfolios.forEach(function (portfolio) {
+        // Create a row for each server
+        const Colums = createPortfiloRows(portfolio);
+
+        // Append the server row to the server list
+        if (portfolio.type == "glua") {
+        $('#portfolisrowsglua').append(Colums);
+    } else if (portfolio.type == "map") {
+        $('#portfolisrowsmap').append(Colums);
+    }
+
+
+   
+      });
+    }
+
+    
+
+</script>
+            <div class="row" id="portfolisrowsmap"> </div>
+            <h2 class="text-center">Portfolio gLUA</h2>
+            <div class="row" id="portfolisrowsglua"> </div>
+           
         </div>
+
     </section>
 <section id="partnerlist" class="partners">
   <h1 class="text-center">Garry's Mod Server using my addons or maps</h1>
-  <div id="serverList" class="row"></div>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <div id="serverList" class="row"></div>  
   <script>
-    // Table of all the servers. Here you can list the battlemetrics.com id
-    // you can also in discordid put in the discord invite id that is at the end. joinlink is the server ip. You don't need to put it into steam://blabla as I do that for you later
-    // description is bit limited (unless you want it to look bit crazy) that you can add short info about a server
+    // Define an array of server IDs, Discord server IDs, and descriptions
     const servers = [
-      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "This server is all about bla bla bla. This server is all about bla bla bla. This server is all about bla bla bla" },
-      { battlemetricid: "8633241", discordid: "ezaJDmbxPf", joinlink: "test", description: "This server is all about bla bla blaThis server is all about bla bla blaThis server is all about bla bla bla" },
-      { battlemetricid: "5153368", discordid: "ezaJDmbxPf", joinlink: "test", description: "This server is all about bla bla blaThis server is all about bla bla blaThis server is all about bla bla blaThis server is all about bla bla bla" },
+      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "bla" },
+      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "Server 2 description" },
+      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "Server 3 description" },
+      
+      // Add more server entries as needed
     ];
 
-// we need to create the server rows
+    // Function to create a server row
     function createServerRow(server) {
       const battlemetric = `https://cdn.battlemetrics.com/b/horizontal500x80px/${server.battlemetricid}.png?foreground=%23EEEEEE&background=%23222222&lines=%23333333&linkColor=%231185ec&chartColor=%23FF0700`;
       const discordServerId = server.discordid;
-      const joinGameButton = $('<button>').text('Join Game Server').addClass('btn btn-primary join-game-button');
-      const joinDiscordButton = $('<button>').text('Join Discord Server').addClass('btn btn-success join-discord-button');
-      const serverDescription = $('<p>').text(server.description).addClass('server-description');
+      const joinGameButton = $('<button>').text('Join Game Server').addClass('join-game-button btn btn-primary');
+      const joinDiscordButton = $('<button>').text('Join Discord Server').addClass('join-discord-button btn btn-secondary');
+      const description = $('<p>').text(server.description).addClass('server-description');
 
-function joinGameServer() {
-    const joinIP = server.joinlink;
-    // We put it into the fancy steam connect
-    const steamURL = `steam://connect/${joinIP}`;
-
-    window.location.href = steamURL;
-  }
+      // Function to handle joining the game server
+      function joinGameServer() {
+        const joinLink = server.joinlink;
+        const steamURL = `steam://connect/${joinLink}`;
+        window.location.href = steamURL;
+      }
 
       // Function to handle joining the Discord server
       function joinDiscordServer() {
@@ -171,7 +195,11 @@ function joinGameServer() {
       const serverCountElement = $('<img>').attr('src', battlemetric);
 
       // Create the server row container
-      const serverRow = $('<div>').addClass('server-row col-md-6').append(serverCountElement, serverDescription, joinGameButton, joinDiscordButton);
+      const serverRow = $('<div>').addClass('server-row col-md-6').append(
+        $('<div>').addClass('server-info').append(serverCountElement),
+        $('<div>').addClass('button-container').append(joinGameButton, joinDiscordButton),
+        $('<br>')
+      );
       return serverRow;
     }
 
@@ -185,18 +213,16 @@ function joinGameServer() {
         // Create a row for each server
         const serverRow = createServerRow(server);
 
-        // Display the information
+        // Append the server row to the server list
         $('#serverList').append(serverRow);
 
-        // If we get more then 2 rows beside each other. They should be moved down one to not fill the screen
-        if ((index + 1) % 2 === 0) {
-          $('#serverList').append('<div class="w-100"></div>');
-        }
+
       });
     }
 
     // Call the renderServerRows function initially
     renderServerRows();
+    renderPortfolioRows();
 
     // Update the player counts every 30 seconds
     setInterval(renderServerRows, 30000);
@@ -209,10 +235,16 @@ function joinGameServer() {
 
 
 
+
+
     <footer class="bg-dark text-white text-center py-3">
         <p style="color: white;">&copy; <?php echo date("Y"); ?> Davids Website. All rights reserved.</p>
     </footer>
 
+
+    <script src="js/Headroom.js"></script>
+    <script src="js/jQuery.headroom.js"></script>
+    <script src="js/custom.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

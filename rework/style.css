@@ -59,7 +59,7 @@ body.dark-mode {
      margin-right: 10px;
    }
    .server-info {
-     flex-grow: 1;
+     flex-grow: 0.4;
    }
    .join-button {
      margin-left: 10px;
