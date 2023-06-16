@@ -133,7 +133,7 @@ I like working with people and help them reach their goals. This can be from sch
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     // Table of all the servers. Here you can list the battlemetrics.com id
-    // you can also in discordid put in the discord invite id that is at the end. joinlink is the server ip
+    // you can also in discordid put in the discord invite id that is at the end. joinlink is the server ip. You don't need to put it into steam://blabla as I do that for you later
     // description is bit limited (unless you want it to look bit crazy) that you can add short info about a server
     const servers = [
       { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "This server is all about bla bla bla. This server is all about bla bla bla. This server is all about bla bla bla" },
@@ -149,10 +149,13 @@ I like working with people and help them reach their goals. This can be from sch
       const joinDiscordButton = $('<button>').text('Join Discord Server').addClass('btn btn-success join-discord-button');
       const serverDescription = $('<p>').text(server.description).addClass('server-description');
 
-      function joinGameServer() {
-        const joinLink = server.joinlink;
-        window.location.href = joinLink;
-      }
+function joinGameServer() {
+    const joinIP = server.joinlink;
+    // We put it into the fancy steam connect
+    const steamURL = `steam://connect/${joinIP}`;
+
+    window.location.href = steamURL;
+  }
 
       // Function to handle joining the Discord server
       function joinDiscordServer() {
