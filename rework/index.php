@@ -136,55 +136,36 @@ I like working with people and help them reach their goals. This can be from sch
   <h1>Garry's Mod Server using my addons or maps</h1>
   <div id="serverCounts"></div>
 
-  <script>
-    // Define an array of server IPs and ports
-    const servers = [
-      { ip: '104.247.114.34', port: '27099' },
-
+    <?php
+    // Define an array of servers with IP, port, and image URL
+    $servers = [
+      ['ip' => '104.247.114.34', 'port' => '27099', 'image' => 'server1.png'],
       // Add more server entries as needed
     ];
 
-    // Function to fetch the player count for each server
-    function getPlayerCounts() {
-      // Clear the previous server counts
-      $('#serverCounts').empty();
+    // Loop through the servers
+    foreach ($servers as $server) {
+      // Get server info using Steam API
+      $serverInfo = file_get_contents("https://api.battlemetrics.com/servers?filter[game]=gmod&filter[address]={$server['ip']}:{$server['port']}");
 
-      // Iterate over the servers array
-      servers.forEach(function(server) {
-        // Construct the server query URL
-        const queryURL = `https://api.battlemetrics.com/servers?filter[game]=gmod&filter[address]=${server.ip}:${server.port}`;
+      if ($serverInfo) {
+        $data = json_decode($serverInfo, true);
+        if (isset($data['data'][0]['attributes']['players'])) {
+          $playerCount = $data['data'][0]['attributes']['players'];
 
-        // Make a GET request to the query URL
-        $.get(queryURL, function(response) {
-          // Check if the response was successful and contains data
-          if (response && response.data && response.data.length > 0) {
-            // Extract the player count from the response
-            const playerCount = response.data[0].attributes.players;
-
-            // Create a new element to display the server count
-            const serverCountElement = $('<p>').text(`Server: ${server.ip}:${server.port} | Player Count: ${playerCount}`);
-
-            // Append the server count element to the webpage
-            $('#serverCounts').append(serverCountElement);
-          } else {
-            // Failed to fetch server information
-            const serverCountElement = $('<p>').text(`Server: ${server.ip}:${server.port} | Failed to fetch player count`);
-            $('#serverCounts').append(serverCountElement);
-          }
-        }).fail(function() {
-          // Request failed
-          const serverCountElement = $('<p>').text(`Server: ${server.ip}:${server.port} | Failed to fetch player count`);
-          $('#serverCounts').append(serverCountElement);
-        });
-      });
+          // Output server info
+          echo '<div class="server-row">';
+          echo '<img class="server-image" src="' . $server['image'] . '">';
+          echo 'Server: ' . $server['ip'] . ':' . $server['port'] . ' | Player Count: ' . $playerCount;
+          echo '</div>';
+        } else {
+          echo '<div class="server-row">Failed to fetch player count for ' . $server['ip'] . ':' . $server['port'] . '</div>';
+        }
+      } else {
+        echo '<div class="server-row">Failed to connect to Steam API for ' . $server['ip'] . ':' . $server['port'] . '</div>';
+      }
     }
-
-    // Call the getPlayerCounts function initially
-    getPlayerCounts();
-
-    // Update the player counts every 30 seconds
-    setInterval(getPlayerCounts, 30000);
-  </script>
+    ?>
 
     </section>
 
