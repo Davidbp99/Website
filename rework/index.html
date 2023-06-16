@@ -6,6 +6,7 @@
     <title>Freelancer Website</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <link rel="stylesheet" href="style.css">
         <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/unicons.css">
@@ -125,52 +126,91 @@ I like working with people and help them reach their goals. This can be from sch
                 </div>
             </div>
         </div>
-  <h1>Garry's Mod Server using my addons or maps</h1>
-  <div id="serverCounts"></div>
-
-
-<script>
+    </section>
+<section id="partnerlist" class="partners">
+  <h1 class="text-center">Garry's Mod Server using my addons or maps</h1>
+  <div id="serverList" class="row"></div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Define an array of server IDs and Discord server IDs
     const servers = [
-      { ip: '37.230.162.62', port: '27015', image: 'server1.png', serverId: 'YOUR_SERVER_ID_1', discordUrl: 'YOUR_DISCORD_URL_1', description: 'Short description about Server 1' },
-
+      { battlemetricid: "20397446", discordid: "990584236471902259" },
+      { battlemetricid: "20397446", discordid: "990584236471902259" },
+      { battlemetricid: "20397446", discordid: "990584236471902259" },
       // Add more server entries as needed
     ];
-function getPlayerCount(server) {
-      const url = `https://api.battlemetrics.com/servers?filter[game]=gmod&filter[address]=${server.ip}:${server.port}`;
 
-      fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          if (data.data && data.data.length > 0) {
-            const playerCount = data.data[0].attributes.players;
+    // Function to create a server row
+    function createServerRow(server) {
+      const battlemetric = `https://cdn.battlemetrics.com/b/horizontal500x80px/${server.battlemetricid}.png?foreground=%23EEEEEE&background=%23222222&lines=%23333333&linkColor=%231185ec&chartColor=%23FF0700`;
+      const discordServerId = server.discordid;
+      const discordMemberCountElement = $('<p>').addClass('member-count');
 
-            const serverRow = document.createElement('div');
-            serverRow.classList.add('server-row');
-            serverRow.innerHTML = `
-              <img class="server-image" src="${server.image}">
-              <div class="server-info">
-                <p>Server: ${server.ip}:${server.port} | Player Count: ${playerCount}</p>
-                <p>${server.description}</p>
-              </div>
-              <a class="join-button" href="steam://connect/${server.ip}:${server.port}">Join</a>
-              <a class="join-button" href="${server.discordUrl}">Join Discord</a>
-            `;
+      // Fetch member count using an asynchronous function
+      async function fetchMemberCount() {
+        try {
+          // Make an HTTP request to your server or a proxy server that retrieves the member count
+          const response = await fetch('/get-member-count', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ discordServerId }),
+          });
 
-            document.getElementById('serverCounts').appendChild(serverRow);
-          } else {
-            console.error(`Failed to fetch player count for ${server.ip}:${server.port}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch member count');
           }
-        })
-        .catch(error => {
-          console.error(`Failed to connect to Steam API for ${server.ip}:${server.port}`);
-          console.error(error);
-        });
+
+          const { memberCount } = await response.json();
+          discordMemberCountElement.text(`Discord Members: ${memberCount}`);
+        } catch (error) {
+          console.error('Failed to fetch Discord member count:', error);
+          discordMemberCountElement.text('Discord Members: N/A');
+        }
+      }
+
+      // Call the asynchronous function to fetch the member count
+      fetchMemberCount();
+
+      // Create the server count element
+      const serverCountElement = $('<img>').attr('src', battlemetric);
+
+      // Create the server row container
+      const serverRow = $('<div>').addClass('server-row').append(serverCountElement, discordMemberCountElement);
+      return serverRow;
     }
 
-    servers.forEach(server => getPlayerCount(server));
-  </script>
+    // Function to render the server rows
+    function renderServerRows() {
+      // Clear the previous server list
+      $('#serverList').empty();
 
-    </section>
+      // Iterate over the servers array
+      servers.forEach(function (server, index) {
+        // Create a row for each server
+        const serverRow = createServerRow(server);
+
+        // Append the server row to the server list
+        $('#serverList').append(serverRow);
+
+        // Add a line break after every 2 server rows
+        if ((index + 1) % 2 === 0) {
+          $('#serverList').append('<br>');
+        }
+      });
+    }
+
+    // Call the renderServerRows function initially
+    renderServerRows();
+
+    // Update the player counts every 30 seconds
+    setInterval(renderServerRows, 30000);
+  </script>
+</section>
+
+
+
 
     <footer class="bg-dark text-white text-center py-3">
         <p style="color: white;">&copy; <?php echo date("Y"); ?> Davids Website. All rights reserved.</p>
