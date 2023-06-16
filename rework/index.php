@@ -125,14 +125,6 @@ I like working with people and help them reach their goals. This can be from sch
                 </div>
             </div>
         </div>
-
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Garry's Mod Server Player Count</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body>
   <h1>Garry's Mod Server using my addons or maps</h1>
   <div id="serverCounts"></div>
 
