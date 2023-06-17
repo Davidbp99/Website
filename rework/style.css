@@ -39,6 +39,15 @@ footer {
     transform: scale(1.05);
 }
 
+.card2 {
+    background-color: #333333;
+    transition: transform 0.3s;
+}
+
+.card2:hover {
+    transform: scale(1.05);
+}
+
 .card-text {
   color:  white;
 }

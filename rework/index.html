@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="author" content="">
     <meta property="og:description" content="Source Mapper/Developer for GMod <br><br> My Blog: https://davidswndesign.wordpress.com/ ">
-    <meta property="description" content="Source Mapper/Developer for GMod                   My Blog: https://davidswndesign.wordpress.com/                   https://discord.gg/QG45H3zsbX (DMC- Place for server owners/content creators)">
+    <meta property="description" content="Source Mapper/Developer for GMod           <br><br>  My Blog: https://davidswndesign.wordpress.com/                   https://discord.gg/QG45H3zsbX (DMC- Place for server owners/content creators)">
 <meta property="og:image" content="https://davidswndesign.files.wordpress.com/2021/10/cropped-unnamed.png">
 <meta name="keywords" content="gmod,s&box,sbox,Garry's Mod,Source Mapping,Hammer Editor,Get custom gmod map,custom map,custom source map">
     <title>Freelancer Website</title>
@@ -161,19 +161,21 @@ I like working with people and help them reach their goals. This can be from sch
     // Define an array of server IDs, Discord server IDs, and descriptions
     const servers = [
       { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "bla" },
-      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "Server 2 description" },
-      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "Server 3 description" },
+      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "heysadasf" },
+      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "asgasgasfg" },
+      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "bla" },
+      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "ghfsdgsdgdfg" },
+      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "dhshdfghsdrg" },
 
       // Add more server entries as needed
     ];
-
     // Function to create a server row
     function createServerRow(server) {
       const battlemetric = `https://cdn.battlemetrics.com/b/horizontal500x80px/${server.battlemetricid}.png?foreground=%23EEEEEE&background=%23222222&lines=%23333333&linkColor=%231185ec&chartColor=%23FF0700`;
       const discordServerId = server.discordid;
       const joinGameButton = $('<button>').text('Join Game Server').addClass('join-game-button btn btn-primary');
       const joinDiscordButton = $('<button>').text('Join Discord Server').addClass('join-discord-button btn btn-secondary');
-      const description = $('<p>').text(server.description).addClass('server-description');
+      const description = $('<p>').text(server.description).addClass('card-text');
 
       // Function to handle joining the game server
       function joinGameServer() {
@@ -196,10 +198,9 @@ I like working with people and help them reach their goals. This can be from sch
       const serverCountElement = $('<img>').attr('src', battlemetric);
 
       // Create the server row container
-      const serverRow = $('<div>').addClass('server-row col-md-6').append(
-        $('<div>').addClass('server-info').append(serverCountElement),
-        $('<div>').addClass('button-container').append(joinGameButton, joinDiscordButton),
-        $('<br>')
+      const serverRow = $('<div>').addClass('col-lg-4 mb-4').append(
+        $('<div>').addClass('card2').append($('<div>').addClass('server-info').append(serverCountElement,description),
+        $('<div>').addClass('button-container').append(joinGameButton, joinDiscordButton))
       );
       return serverRow;
     }
@@ -213,6 +214,7 @@ I like working with people and help them reach their goals. This can be from sch
       servers.forEach(function (server, index) {
         // Create a row for each server
         const serverRow = createServerRow(server);
+
 
         // Append the server row to the server list
         $('#serverList').append(serverRow);
@@ -249,3 +251,5 @@ I like working with people and help them reach their goals. This can be from sch
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+
