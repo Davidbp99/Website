@@ -77,3 +77,45 @@ body.dark-mode {
      color: #fff;
      text-decoration: none;
    }
+
+
+
+
+
+
+
+
+
+#discordButtonContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+transition: transform 0.3s;
+}
+
+#discordButton {
+  width: 50px;
+  height: 50px;
+}
+
+#discordButtonTooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #000;
+  color: #fff;
+  padding: 5px;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#discordButtonContainer:hover #discordButtonTooltip {
+  opacity: 1;
+}
+
+#discordButtonContainer:hover {
+transform: scale(1.05);
+}

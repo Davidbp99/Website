@@ -1,9 +1,15 @@
-window.addEventListener("load", function () {
-  // Hide the loading animation
-  var loadingAnimation = document.getElementById("loading-animation");
-  loadingAnimation.style.opacity = 0;
+window.addEventListener('scroll', function() {
+  var discordButtonContainer = document.getElementById('discordButtonContainer');
+  if (discordButtonContainer) {
+    var scrollY = window.scrollY || window.pageYOffset;
+    var windowHeight = window.innerHeight;
+    var documentHeight = document.documentElement.scrollHeight;
+    var bottomOffset = documentHeight - (scrollY + windowHeight);
 
-  // Show the website content
-  var body = document.querySelector("body");
-  body.classList.add("loaded");
+    if (bottomOffset > 100) {
+      discordButtonContainer.style.bottom = '20px';
+    } else {
+      discordButtonContainer.style.bottom = '120px';
+    }
+  }
 });
