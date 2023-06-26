@@ -1,0 +1,16 @@
+on: push
+name: 🚀 Notfication when website is updated
+  jobs:
+    name: Discord ping
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Discord notification 
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        DISCORD_AVATAR: https://cdn.discordapp.com/icons/990584236471902259/cf700a9eb3b13ca5ae34d1284691ad5e.png?size=1024
+        DISCORD_USERNAME: David Website Updater
+
+      uses: Ilshidur/action-discord@master
+      with:
+        args: 'The project {{ EVENT_PAYLOAD.repository.full_name }} (action that happen: ${{ github.event_name }}) has  been updated.'
