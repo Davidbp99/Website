@@ -1,6 +1,7 @@
 on: push
 name: 🚀 Notfication when website is updated
-  jobs:
+jobs:
+  discord-ping:
     name: Discord ping
     needs: deploy
     runs-on: ubuntu-latest
@@ -14,3 +15,6 @@ name: 🚀 Notfication when website is updated
       uses: Ilshidur/action-discord@master
       with:
         args: 'The project {{ EVENT_PAYLOAD.repository.full_name }} (action that happen: ${{ github.event_name }}) has  been updated.'
+        
+        
+       
