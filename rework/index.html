@@ -91,12 +91,13 @@
                     <p>Swedish guy called David (23 years old.for whoever wanted to know). Started mapping back in 2018 but released my first public map at 2019 in the gamemode darkrp. I love thinking outside the box and creating content with games tools thats out there in the world.<br>
 
 I like working with people and help them reach their goals. This can be from school, thier perfect map or life.</p>
+
+<p id="review"></p>
                     
                 </div>
             </div>
         </div>
     </section>
-
     <section id="portfolio" class="py-5">
         <div class="container">
             <h2 class="text-center">Portfolio Maps</h2>
@@ -104,20 +105,27 @@ I like working with people and help them reach their goals. This can be from sch
 
     const portfolios = [
 
-      { title: "DarkRP Code" , imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "test", description: "this code is pog" },
-      { title: "DarkRP Map" ,imageid: "JqEMQRb",imageformat: "jpg", type: "map", buttonlink: "test", description: "this is map" },
-      { title: "DarkRP Code" ,imageid: "JqEMQRb", imageformat: "jpg", type: "map", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice" },
-            { title: "DarkRP Code" ,imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice" },
-                  { title: "DarkRP Code" ,imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice" },
+      { title: "DarkRP Code" , randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" , imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "test", description: "this code is pog" },
+      { title: "DarkRP Map" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" , imageid: "JqEMQRb",imageformat: "jpg", type: "map", buttonlink: "test", description: "this is map" },
+      { title: "DarkRP Code" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" , imageid: "JqEMQRb", imageformat: "jpg", type: "map", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice" },
+            { title: "DarkRP Code" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" , imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice" },
+                  { title: "DarkRP Code" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" , imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice" },
     ];
 
     function createPortfiloRows(portfolio) {
       // my temp way of dealing with custom support for grabing the location
-      const image = `https://i.imgur.com/${portfolio.imageid}.${portfolio.imageformat}`;
+      let image;
+        if (portfolio.imagehost == "imgur") {
+    image = `https://i.imgur.com/${portfolio.imageid}.${portfolio.imageformat}`;
+  } else if (portfolio.imagehost == "gyazo") {
+    image = `https://i.gyazo.com/${portfolio.imageid}.${portfolio.imageformat}`;
+  } else if (portfolio.imagehost == "discord") {
+    image = `https://cdn.discordapp.com/attachments/${portfolio.chatid}/${portfolio.randomid}/${portfolio.randomid}.${portfolio.imageformat}`;
+  }
 
 
       const title = $('<h5>').text(portfolio.title).addClass('card-title');
-      const details = $('<a>').text('View Details').addClass('btn btn-primary').attr('href', portfolio.buttonlink).attr('target', '_blank');;
+      const details = $('<a>').text('View Details').addClass('btn btn-primary').attr('href', portfolio.buttonlink).attr('target', '_blank');
       const description = $('<p>').text(portfolio.description).addClass('card-text');
 
 
@@ -162,75 +170,113 @@ I like working with people and help them reach their goals. This can be from sch
 
     </section>
 <section id="partnerlist" class="partners">
-  <h1 class="text-center">Garry's Mod Server using my addons or maps</h1>
-  <div id="serverList" class="row"></div>  
+  <h1 class="text-center">Partner List</h1>
+  <div id="serverList" class="row"></div> 
+  
+      
+
   <script>
-    // Define an array of server IDs from battlemetric, Discord server invites (the last part), and descriptions if you want to write some stuff
-    const servers = [
-      { battlemetricid: "8633241", discordid: "ezaJDmbxPf", joinlink: "test", description: "bla" },
-      { battlemetricid: "18719492", discordid: "ezaJDmbxPf", joinlink: "test", description: "heysadasf" },
-      { battlemetricid: "5153368", discordid: "ezaJDmbxPf", joinlink: "test", description: "Icefuse server you know" },
-      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "bla" },
-      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "ghfsdgsdgdfg" },
-      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "dhshdfghsdrg" },
-
-    ];
-    // Function to create a server row
-    function createServerRow(server) {
-      const battlemetric = `https://cdn.battlemetrics.com/b/horizontal500x80px/${server.battlemetricid}.png?foreground=%23EEEEEE&background=%23222222&lines=%23333333&linkColor=%231185ec&chartColor=%23FF0700`;
-      const discordServerId = server.discordid;
-      const joinGameButton = $('<button>').text('Join Game Server').addClass('join-game-button btn btn-primary');
-      const joinDiscordButton = $('<button>').text('Join Discord Server').addClass('join-discord-button btn btn-secondary');
-      const description = $('<p>').text(server.description).addClass('card-text');
-
-      // Function to handle joining the game server
-      function joinGameServer() {
-        const joinLink = server.joinlink;
-        const steamURL = `steam://connect/${joinLink}`;
-        window.location.href = steamURL;
-      }
-
-      // Function to handle joining the Discord server
-      function joinDiscordServer() {
-        const discordInviteLink = `https://discord.gg/${discordServerId}`;
-        window.location.href = discordInviteLink;
-      }
-
-      // call for custom functions to deal with the two buttons
-      joinGameButton.on('click', joinGameServer);
-      joinDiscordButton.on('click', joinDiscordServer);
-
-      // Creates the server images
-      const serverCountElement = $('<img>').attr('src', battlemetric);
-
-      // Create the server row container with all the data
-      const serverRow = $('<div>').addClass('col-lg-4 mb-4').append(
-        $('<div>').addClass('card2').append($('<div>').addClass('server-info').append(serverCountElement,description),
-        $('<div>').addClass('button-container').append(joinGameButton, joinDiscordButton))
-      );
-      return serverRow;
-    }
-
-    // Function to render the server rows (main function really)
-    function renderServerRows() {
-      // Clear the previous server list (so it updates)
-      $('#serverList').empty();
-
-      // loop over our table
-      servers.forEach(function (server, index) {
-        // Create a row for each server from our table. But first we send it to our function to deal with all html
-        const serverRow = createServerRow(server);
 
 
-        // here we deploy the everything on the div with id serverList
-        $('#serverList').append(serverRow);
+const servers = [
+  { battlemetricid: "8633241", discordid: "ezaJDmbxPf", grupname: "51512", joinlink: "test", description: "1", partnertype: "gameserver" },
+  { battlemetricid: "18719492", discordid: "gmod", grupname: "51512",joinlink: "test", description: "2" },
+  { battlemetricid: "5153368", discordid: "phoenixnetworks", grupname: "51512", joinlink: "test", description: "3", partnertype: "discord" },
+  { battlemetricid: "20397446", discordid: "D5hd9a7QGt", grupname: "51512", joinlink: "test", description: "4", partnertype: "discord"  },
+  { battlemetricid: "20397446", discordid: "5tGtMxs4sM", grupname: "51512", joinlink: "test", description: "5", partnertype: "discord"  },
+  { battlemetricid: "20397446", discordid: "uGt3g7KhF9", grupname: "51512", joinlink: "test", description: "6", partnertype: "discord"  },
+  { battlemetricid: "20397446", discordid: "D5hd9a7QGt", grupname: "51512", joinlink: "test", description: "7",partnertype: "discord"  },
+  { battlemetricid: "20397446", discordid: "5tGtMxs4sM", grupname: "51512", joinlink: "test", description: "8",partnertype: "discord"  },
+  { battlemetricid: "20397446", discordid: "uGt3g7KhF9", grupname: "51512", joinlink: "test", description: "9",partnertype: "gameserver"  },
+];
+ var count = 0
+// Function to create a server row
+function createServerRow(server) {
+  var count = count + 1
+  if (server.type == "discord") {
+    const serverRow = $('<div>').addClass('col-lg-4 mb-4').append(
+    $('<div>').addClass('card2').append(
+      $('<div>').addClass('server-info').append(
+        $('<img>').addClass('server-image').attr('src',server.discordIcon),
+          $('<p>').addClass('card-text').text('Discord Members:' + server.discordMemberCount ),
+        $('<p>').addClass('card-text').text('Description: ' + server.description),
+          
+      ),
+      $('<div>').addClass('button-container').append(
+          $('<a>').text('Join Discord Server').addClass('join-discord-button btn btn-secondary btn-lg btn-block').attr('href', `https://discord.gg/${server.discordinvite}`).attr('target', '_blank'),
+
+      )
+    )
+  )
+return serverRow;
 
 
-      });
-    }
+
+  }else if (server.type == "gameserver") {
+  const serverRow = $('<div>').addClass('col-lg-4 mb-4').append(
+    $('<div>').addClass('card2').append(
+      $('<div>').addClass('server-info').append(
+        $('<img>').addClass('server-image').attr('src',server.discordIcon),
+        $('<div>').addClass('server-info').append(server.name),
+        $('<p>').addClass('card-text').text('GameServer: IP: ' + server.ip +":"+ server.port+' Players: ' + server.players+"/"+ server.maxPlayers),
+          $('<p>').addClass('card-text').text('Discord Members:' + server.discordMemberCount ),
+        $('<p>').addClass('card-text').text('Description: ' + server.description),
+          
+      ),
+      $('<div>').addClass('button-container').append(
+        $('<a>').text('Join Game Server').addClass('join-game-button btn btn-primary').attr('href', 'steam://connect/' + server.ip+":"+server.port).attr('target', '_blank'),
+          $('<a>').text('Join Discord Server').addClass('join-discord-button btn btn-secondary').attr('href', `https://discord.gg/${server.discordinvite}`).attr('target', '_blank'),
+            $('<a>').text('Join Steam Group').addClass('join-discord-button btn btn-success').attr('href', `https://steamcommunity.com/groups/${server.grupname}`).attr('target', '_blank'),
+
+      )
+    )
+  );return serverRow;}
+
+  return null;
+}
+
+
+// Function to render the server rows
+function renderServerRows() {
+  $('#serverList').empty();
+  // Here we make it fair and make it shuffle
+  const shuffledServers = servers.sort(() => 0.5 - Math.random());
+
+  // select 6 of the table values above
+  const selectedServers = shuffledServers.slice(0, 8);
+  selectedServers.forEach(function(server) {
+    const battleMetricsAPI = 'https://api.battlemetrics.com/servers/' + server.battlemetricid;
+    const discordUrl = `https://discord.com/api/v10/invites/${server.discordid}?with_counts=true&with_expiration=true`;
     
-    // rerun the server part. So it updates even if someone got the site open
-    setInterval(renderServerRows, 30000);
+
+    const battleMetricsPromiseAPI = fetch(battleMetricsAPI).then(response => response.json());
+    const discordPromiseAPI = fetch(discordUrl).then(response => response.json());
+    
+    return Promise.all([battleMetricsPromiseAPI, discordPromiseAPI]).then(([battleMetricsData, discordData]) => {
+        const serverData = battleMetricsData.data.attributes;
+        server.ip = serverData.ip;
+        server.port = serverData.port;
+        server.players = serverData.players;
+        server.maxPlayers = serverData.maxPlayers;
+        server.name = serverData.name;
+        server.type = server.partnertype;
+        server.discordinvite = server.discordid;
+        server.discordMemberCount = discordData.approximate_member_count;
+        server.discordIcon = `https://cdn.discordapp.com/icons/${discordData.guild.id}/${discordData.guild.icon}.png`;
+
+        const serverRow = createServerRow(server);
+  
+        $('#serverList').append(serverRow);
+        
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  });
+}
+
+setInterval(renderServerRows, 300000);
+
   </script>
 </section>
 
@@ -242,15 +288,22 @@ I like working with people and help them reach their goals. This can be from sch
 
       const services = [
       
-      { title: "Low Map Protection" , imageid: "JqEMQRb", imageformat: "jpg", type: "map", buttonlink: "", description: "this code is pog", price: "45 eur" },
-      { title: "Medium Map Protection" ,imageid: "JqEMQRb",imageformat: "jpg", type: "map", buttonlink: "https://gyazo.com/2c3a006886c1ba5a5abaeed148299f1b", description: "this is map", price: "55 eur" },
-      { title: "High Map Protection" ,imageid: "JqEMQRb", imageformat: "jpg", type: "map", buttonlink: "https://www.youtube.com/watch?v=er5ItihECCw", description: "this code is nice",price: "65 eur" },
-            { title: "DarkRP Code" ,imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice", price: "6152 eur" },
-                  { title: "DarkRP Code" ,imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice",price: "65 eur"  },
+      { title: "Low Map Protection" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" , imageid: "JqEMQRb", imageformat: "jpg", type: "map", buttonlink: "", description: "For 45eur you are getting the very basic protection of no_decomp, locked texture, protector brush flag.", price: "Price: 45 eur" },
+      { title: "Medium Map Protection",randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" ,imageid: "JqEMQRb",imageformat: "jpg", type: "map", buttonlink: "https://gyazo.com/2c3a006886c1ba5a5abaeed148299f1b", description: "For 55eur you are getting the map protection #1 + IID Version that works fine with skybox", price: "Price: 55 eur" },
+      { title: "High Map Protection",randomid: "1125436528756277259" , chatid: "1124690128523239434" ,imagehost: "imgur" ,imageid: "JqEMQRb", imageformat: "jpg", type: "map", buttonlink: "https://www.youtube.com/watch?v=er5ItihECCw", description: `For 65eur you are getting the map protection low and medium + You get the map entities in its own file. So you can give the bsp file to your players and keep the map entities server sided. This is normally used by big servers as superior and icefuse + Server map restricted`,price: "Price: 65 eur" },
+            { title: "DarkRP Code",randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" ,imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice", price: "Price: 6152 eur" },
+                  { title: "DarkRP Code",randomid: "1125436528756277259",chatid: "1124690128523239434" , imagehost: "imgur" ,imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice",price: "Price: 65 eur"  },
       ];
       
       function createserviceListing(serviceslist) {
-      const image = `https://i.imgur.com/${serviceslist.imageid}.${serviceslist.imageformat}`;
+        let image;
+        if (serviceslist.imagehost == "imgur") {
+    image = `https://i.imgur.com/${serviceslist.imageid}.${serviceslist.imageformat}`;
+  } else if (serviceslist.imagehost == "gyazo") {
+    image = `https://i.gyazo.com/${serviceslist.imageid}.${serviceslist.imageformat}`;
+  } else if (serviceslist.imagehost == "discord") {
+    image = `https://cdn.discordapp.com/attachments/${serviceslist.chatid}/${serviceslist.randomid}/${serviceslist.randomid}.${serviceslist.imageformat}`;
+  }
       const title = $('<h5>').text(serviceslist.title).addClass('card-title');
   
       const details = $('<a>').text('View Details').addClass('btn btn-primary').attr('href', serviceslist.buttonlink).attr('target', '_blank');
@@ -308,7 +361,7 @@ I like working with people and help them reach their goals. This can be from sch
      
   </div>
 <script>
-      // Call the renderServerRows function initially
+
       // we call it here as calling it above would kill it self
       renderServerRows();
     renderPortfolioRows();
@@ -332,5 +385,3 @@ I like working with people and help them reach their goals. This can be from sch
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-
