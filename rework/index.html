@@ -243,7 +243,7 @@ function renderServerRows() {
   const shuffledServers = servers.sort(() => 0.5 - Math.random());
 
   // select 6 of the table values above
-  const selectedServers = shuffledServers.slice(0, 8);
+  const selectedServers = shuffledServers.slice(0, 6);
   selectedServers.forEach(function(server) {
     const battleMetricsAPI = 'https://api.battlemetrics.com/servers/' + server.battlemetricid;
     const discordUrl = `https://discord.com/api/v10/invites/${server.discordid}?with_counts=true&with_expiration=true`;
