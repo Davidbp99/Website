@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ChatGPT Image API Demo</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <h1>ChatGPT Image API Demo</h1>
+
+    <label for="input-text">Enter your message:</label>
+    <input type="text" id="input-text">
+    <button id="submit-button">Submit</button>
+
+    <div id="response-container"></div>
+
+    <script>
+      // Function to send requests to the ChatGPT Image API
+      function callChatGPTImageAPI(inputText) {
+        const apiKey = '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'; // Replace with your ChatGPT Image API key
+        const apiUrl = 'https://api.openai.com/v1/chat/completions';
+
+        $.ajax({
+          url: apiUrl,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          method: 'POST',
+          data: JSON.stringify({
+            'model': 'gpt-3.5-turbo',
+            'messages': [
+              { 'role': 'system', 'content': 'You are a helpful assistant.' },
+              { 'role': 'user', 'content': inputText }
+            ]
+          }),
+          success: function(data) {
+            const response = data.choices[0].message.content;
+            displayResponse(response);
+          },
+          error: function(xhr, status, error) {
+            console.error('Error:', error);
+          }
+        });
+      }
+
+      // Function to display the response on the webpage
+      function displayResponse(response) {
+        const responseContainer = $('#response-container');
+        responseContainer.text(response);
+      }
+
+      // Submit button click event handler
+      $('#submit-button').click(function() {
+        const inputText = $('#input-text').val();
+        callChatGPTImageAPI(inputText);
+      });
+    </script>
+  </body>
+</html>
