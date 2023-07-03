@@ -30,9 +30,15 @@ footer {
     padding: 100px 0;
 }
 
+#service {
+  background-color: #34373a;
+  padding: 100px 0;
+}
+
 .card {
     background-color: #857F72;
     transition: transform 0.3s;
+    
 }
 
 .card:hover {
@@ -48,8 +54,21 @@ footer {
     transform: scale(1.05);
 }
 
+.cardservice {
+  background-color: #3b3131;
+  transition: transform 0.3s;
+}
+
+.cardservice:hover {
+  transform: scale(1.05);
+}
+
 .card-text {
   color:  white;
+}
+.price-text {
+  color: white;
+  font-weight: bold;
 }
 
 body.dark-mode {
@@ -68,7 +87,8 @@ body.dark-mode {
      margin-right: 10px;
    }
    .server-info {
-     flex-grow: 0.4;
+     flex-grow: 0.3;
+     
    }
    .join-button {
      margin-left: 10px;
@@ -118,4 +138,10 @@ transition: transform 0.3s;
 
 #discordButtonContainer:hover {
 transform: scale(1.05);
+}
+
+#serverList {
+max-width: 100%;
+position: relative;
+
 }

@@ -112,15 +112,16 @@ I like working with people and help them reach their goals. This can be from sch
     ];
 
     function createPortfiloRows(portfolio) {
+      // my temp way of dealing with custom support for grabing the location
       const image = `https://i.imgur.com/${portfolio.imageid}.${portfolio.imageformat}`;
 
 
       const title = $('<h5>').text(portfolio.title).addClass('card-title');
-      const details = $('<a>').text('View Details').addClass('btn btn-primary').attr('href', portfolio.buttonlink);
+      const details = $('<a>').text('View Details').addClass('btn btn-primary').attr('href', portfolio.buttonlink).attr('target', '_blank');;
       const description = $('<p>').text(portfolio.description).addClass('card-text');
 
 
-      // Create the server row container
+      // Here we create our special cards so it look fancy
       const Colums = $('<div>').addClass('col-lg-4 mb-4').append(
         $('<div>').addClass('card').append(
             $('<img>').addClass('card-img-top').attr('src',image),
@@ -138,7 +139,7 @@ I like working with people and help them reach their goals. This can be from sch
         // Create a row for each server
         const Colums = createPortfiloRows(portfolio);
 
-        // Append the server row to the server list
+        // here we do our fancy spliting between service
         if (portfolio.type == "glua") {
         $('#portfolisrowsglua').append(Colums);
     } else if (portfolio.type == "map") {
@@ -164,16 +165,15 @@ I like working with people and help them reach their goals. This can be from sch
   <h1 class="text-center">Garry's Mod Server using my addons or maps</h1>
   <div id="serverList" class="row"></div>  
   <script>
-    // Define an array of server IDs, Discord server IDs, and descriptions
+    // Define an array of server IDs from battlemetric, Discord server invites (the last part), and descriptions if you want to write some stuff
     const servers = [
-      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "bla" },
-      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "heysadasf" },
-      { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "asgasgasfg" },
+      { battlemetricid: "8633241", discordid: "ezaJDmbxPf", joinlink: "test", description: "bla" },
+      { battlemetricid: "18719492", discordid: "ezaJDmbxPf", joinlink: "test", description: "heysadasf" },
+      { battlemetricid: "5153368", discordid: "ezaJDmbxPf", joinlink: "test", description: "Icefuse server you know" },
       { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "bla" },
       { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "ghfsdgsdgdfg" },
       { battlemetricid: "20397446", discordid: "ezaJDmbxPf", joinlink: "test", description: "dhshdfghsdrg" },
 
-      // Add more server entries as needed
     ];
     // Function to create a server row
     function createServerRow(server) {
@@ -196,14 +196,14 @@ I like working with people and help them reach their goals. This can be from sch
         window.location.href = discordInviteLink;
       }
 
-      // Attach click event listeners to the buttons
+      // call for custom functions to deal with the two buttons
       joinGameButton.on('click', joinGameServer);
       joinDiscordButton.on('click', joinDiscordServer);
 
-      // Create the server count element
+      // Creates the server images
       const serverCountElement = $('<img>').attr('src', battlemetric);
 
-      // Create the server row container
+      // Create the server row container with all the data
       const serverRow = $('<div>').addClass('col-lg-4 mb-4').append(
         $('<div>').addClass('card2').append($('<div>').addClass('server-info').append(serverCountElement,description),
         $('<div>').addClass('button-container').append(joinGameButton, joinDiscordButton))
@@ -211,36 +211,110 @@ I like working with people and help them reach their goals. This can be from sch
       return serverRow;
     }
 
-    // Function to render the server rows
+    // Function to render the server rows (main function really)
     function renderServerRows() {
-      // Clear the previous server list
+      // Clear the previous server list (so it updates)
       $('#serverList').empty();
 
-      // Iterate over the servers array
+      // loop over our table
       servers.forEach(function (server, index) {
-        // Create a row for each server
+        // Create a row for each server from our table. But first we send it to our function to deal with all html
         const serverRow = createServerRow(server);
 
 
-        // Append the server row to the server list
+        // here we deploy the everything on the div with id serverList
         $('#serverList').append(serverRow);
 
 
       });
     }
-
-    // Call the renderServerRows function initially
-    renderServerRows();
-    renderPortfolioRows();
-
-    // Update the player counts every 30 seconds
+    
+    // rerun the server part. So it updates even if someone got the site open
     setInterval(renderServerRows, 30000);
   </script>
 </section>
 
 
 
+<section id="service" class="py-5">
+  <div class="container">
+    <script>
 
+      const services = [
+      
+      { title: "Low Map Protection" , imageid: "JqEMQRb", imageformat: "jpg", type: "map", buttonlink: "", description: "this code is pog", price: "45 eur" },
+      { title: "Medium Map Protection" ,imageid: "JqEMQRb",imageformat: "jpg", type: "map", buttonlink: "https://gyazo.com/2c3a006886c1ba5a5abaeed148299f1b", description: "this is map", price: "55 eur" },
+      { title: "High Map Protection" ,imageid: "JqEMQRb", imageformat: "jpg", type: "map", buttonlink: "https://www.youtube.com/watch?v=er5ItihECCw", description: "this code is nice",price: "65 eur" },
+            { title: "DarkRP Code" ,imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice", price: "6152 eur" },
+                  { title: "DarkRP Code" ,imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice",price: "65 eur"  },
+      ];
+      
+      function createserviceListing(serviceslist) {
+      const image = `https://i.imgur.com/${serviceslist.imageid}.${serviceslist.imageformat}`;
+      const title = $('<h5>').text(serviceslist.title).addClass('card-title');
+  
+      const details = $('<a>').text('View Details').addClass('btn btn-primary').attr('href', serviceslist.buttonlink).attr('target', '_blank');
+     
+      const description = $('<p>').text(serviceslist.description).addClass('card-text');
+      const priceofservice = $('<p>').text(serviceslist.price).addClass('price-text');
+    
+     
+      if (serviceslist.buttonlink === "") {
+      const ColumsService = $('<div>').addClass('col-lg-4 mb-4').append(
+        $('<div>').addClass('cardservice').append(
+            $('<img>').addClass('card-img-top').attr('src',image),
+             $('<div>').addClass('server-info').append(title),
+                $('<div>').addClass('card-text').append(description,priceofservice)));
+                  return ColumsService;
+                }
+          const ColumsService = $('<div>').addClass('col-lg-4 mb-4').append(
+        $('<div>').addClass('cardservice').append(
+            $('<img>').addClass('card-img-top').attr('src',image),
+             $('<div>').addClass('server-info').append(title),
+                $('<div>').addClass('card-text').append(description,priceofservice,details)));
+                
+      return ColumsService;
+      }
+      
+      
+
+      function createserviceListingRows() {
+      
+
+      services.forEach(function (service) {
+
+        const ColumsService = createserviceListing(service);
+      
+    // here we do our fancy spliting between service 
+        if (service.type == "map") {
+        $('#Servicemap').append(ColumsService);
+      } else if (service.type == "glua") {
+        $('#Servicelua').append(ColumsService);
+      }
+      
+      
+      
+      });
+      }
+      
+      
+      
+      </script> 
+      <h2 class="text-center">Maps Service</h2>
+
+      <div class="row" id="Servicemap"> </div>
+      <h2 class="text-center">gLUA Service</h2>
+      <div class="row" id="Servicelua"> </div>
+     
+  </div>
+<script>
+      // Call the renderServerRows function initially
+      // we call it here as calling it above would kill it self
+      renderServerRows();
+    renderPortfolioRows();
+  createserviceListingRows();
+</script>
+</section>
 
 
 
