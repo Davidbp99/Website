@@ -85,6 +85,12 @@ body.dark-mode {
      max-width: 30%;
      max-height: 30%;
    }
+   .stats-image {
+    min-width: 50px;
+    min-height: 50px;
+    max-width: 100px;
+    max-height: 100px;
+  }
    .server-info {
      flex-grow: 0.3;
      

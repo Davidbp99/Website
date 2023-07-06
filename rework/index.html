@@ -109,13 +109,144 @@ My Blog: https://davidswndesign.wordpress.com/ " />
                     <p>Swedish guy called David (23 years old.for whoever wanted to know). Started mapping back in 2018 but released my first public map at 2019 in the gamemode darkrp. I love thinking outside the box and creating content with games tools thats out there in the world.<br>
 
 I like working with people and help them reach their goals. This can be from school, thier perfect map or life.</p>
+<h2>My Stats</h2>
 
-<p id="review"></p>
+
                     
                 </div>
+                <div id="stats" class="row"></div> 
             </div>
         </div>
     </section>
+<script>
+
+
+
+const MyStats = [
+  { statstype: "discord", discordid: "ezaJDmbxPf", forcedvalue: "", link: "test", description: `I created a discord community around gaming and as well as content making. Where lot of people with skills or not joins in and speaks,chats and learns stuff.`, imageid: "" , imagehost: "" , imageformat: ""},
+  { statstype: "gmodstore", discordid: "", forcedvalue: "GmodStore Reputation: 2", link: "https://www.gmodstore.com/users/76561198072640553/reputation", description: "The people I did finish work for on gmodstore wrote reviews on it about how they felt about me. Everyone did not as some wrote on trustpilot instead", imageid: "https://avatars.githubusercontent.com/u/8810709?s=200&v=4" , imagehost: "site" , imageformat: "", buttontext: "Check out my reputation yourself"},
+  { statstype: "gmodstore", discordid: "", forcedvalue: "GmodStore Jobs: 5+", link: "#", description: "From my application list I have done over 5 jobs just on gmodstore + some that we finished outside of gmodstore", imageid: "https://avatars.githubusercontent.com/u/8810709?s=200&v=4" , imagehost: "site" , imageformat: "", buttontext: ""},
+  { statstype: "gmodstore", discordid: "", forcedvalue: "Trustpilot Reviews: 4", link: "https://www.trustpilot.com/review/safewaycommunity.hxane.com", description: "As I do work outside of gmodstore as well I have used trust pilot for people to write reviews on", imageid: "https://upload.wikimedia.org/wikipedia/commons/7/78/Trustpilot_Logo_%282022%29.svg" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out my reviews yourself"},
+  { statstype: "gmodstore", discordid: "", forcedvalue: "Itch.io Store Items: 1", link: "https://daveswn.itch.io", description: "Made this store long time ago for maps. But might soon change it over to Tebex", imageid: "https://static.itch.io/images/app-icon.svg" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out the store yourself"},
+  { statstype: "gmodstore", discordid: "", forcedvalue: "Public VMFs And Code: 16 (code) and 9 public vmfs", link: "https://github.com/Davidbp99?tab=repositories", description: "Even tho I done lot of work for communities that cost money. I still like doing free work that people can improve and learn from. I as well started a new project (repositories) with free addons I make david_extras_free", imageid: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out my github yourself"},
+  { statstype: "gmodstore", discordid: "", forcedvalue: "Map Edits 10+ / Maps Fixing 10+ / From The Ground Up 5 / Clients Worked With: 10+", link: "#", description: "Even I done some jobs on gmodstore and outside. I have assisted lot of server owners, mappers, devs etc when I randomly joined their community out of the blue.", imageid: "https://avatars.githubusercontent.com/u/40523727?v=4" ,  imagehost: "site" , imageformat:"" , buttontext: ""},
+  { statstype: "gmodstore", discordid: "", forcedvalue: "Tebex Store: 2 small addons", link: "https://david-addons-maps-discord.tebex.io/category/small-addons", description: "Tebex is my store for my addons I sell. Soon as well might replace one map from Itch.io on it.", imageid: "https://avatars.githubusercontent.com/u/59729610?s=280&v=4" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out my addons store"},
+  { statstype: "gmodstore", discordid: "", forcedvalue: "Steam Workshop Uploads: 8 Maps + some edits of scripts (some are privated maybe)", link: "https://steamcommunity.com/id/davidswn/myworkshopfiles/?p=1", description: "View some of my public work that you can use (maps and code)", imageid: "https://testmatick.com/wp-content/uploads/2020/04/Logotip-Steam.jpg" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out my workshop uploads"},
+];
+// Function to create a server row
+function createStatsRow(stats) {
+  let image;
+        if (stats.imagehost == "imgur") {
+    image = `https://i.imgur.com/${stats.imageid}.${stats.imageformat}`;
+  } else if (stats.imagehost == "gyazo") {
+    image = `https://i.gyazo.com/${stats.imageid}.${stats.imageformat}`;
+  } 
+  else if (stats.imagehost == "site") {
+    image = `${stats.imageid}` ;
+  }
+
+
+
+ if (stats.statstype == "discord") {
+    const statsRow = $('<div>').addClass('col-lg-4 mb-4').append(
+    $('<div>').addClass('card2').append(
+      $('<div>').addClass('server-info').append(
+        $('<img>').addClass('stats-image').attr('src',stats.discordIcon),
+          $('<p>').addClass('card-text').text('Discord Members:' + stats.discordMemberCount ),
+        $('<p>').addClass('card-text').text('Description: ' + stats.description),
+          
+      ),
+      $('<div>').addClass('button-container').append(
+          $('<a>').text('Join Discord Server').addClass('join-discord-button btn btn-primary').attr('href', `https://discord.gg/${stats.discordinvite}`).attr('target', '_blank'),
+
+      )
+    )
+  )
+return statsRow;
+          }else if (stats.statstype == "gmodstore" && stats.buttontext !== "") {
+    const statsRow = $('<div>').addClass('col-lg-4 mb-4').append(
+    $('<div>').addClass('card2').append(
+      $('<div>').addClass('server-info').append(
+        $('<img>').addClass('stats-image').attr('src',image),
+          $('<p>').addClass('card-text').text(stats.forcedvalue ),
+        $('<p>').addClass('card-text').text('Description: ' + stats.description),
+          
+      ),
+      
+      $('<div>').addClass('button-container').append(
+          $('<a>').text(`${stats.buttontext}`).addClass('join-discord-button btn btn-primary').attr('href', `${stats.link}`).attr('target', '_blank'),
+
+      )
+    )
+  )
+return statsRow;
+          } 
+
+        else if (stats.statstype == "gmodstore" && stats.buttontext === "") {
+    const statsRow = $('<div>').addClass('col-lg-4 mb-4').append(
+    $('<div>').addClass('card2').append(
+      $('<div>').addClass('server-info').append(
+        $('<img>').addClass('stats-image').attr('src',image),
+          $('<p>').addClass('card-text').text(stats.forcedvalue ),
+        $('<p>').addClass('card-text').text('Description: ' + stats.description),
+          
+      ),
+
+    )
+  )
+return statsRow;
+          }
+}
+
+
+// Function to render the server rows
+function renderStatsRow() {
+
+  const shuffledStats = MyStats.sort(() => 0.5 - Math.random());
+
+  shuffledStats.forEach(function(stats,index) {
+    if (stats.discordid !== "") {
+    const discordUrlStats = `https://discord.com/api/v10/invites/${stats.discordid}?with_counts=true&with_expiration=true`;
+    
+
+    const discordPromiseAPIStats = fetch(discordUrlStats).then(response => response.json());
+    
+    return Promise.all([discordPromiseAPIStats]).then(([discordDataStats]) => {
+      stats.discordinvite = stats.discordid;
+      stats.discordMemberCount = discordDataStats.approximate_member_count;
+      stats.discordIcon = `https://cdn.discordapp.com/icons/${discordDataStats.guild.id}/${discordDataStats.guild.icon}.png`;
+    
+        const statsRow = createStatsRow(stats);
+
+        $('#stats').append(statsRow);
+        
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }else if (stats.discordid === "") {
+        const statsRow = createStatsRow(stats);
+
+        $('#stats').append(statsRow);
+        
+
+    }
+  });
+}
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
     <section id="portfolio" class="py-5">
         <div class="container">
             <h2 class="text-center">Portfolio Maps</h2>
@@ -132,7 +263,6 @@ I like working with people and help them reach their goals. This can be from sch
     ];
 
     function createPortfiloRows(portfolio) {
-      // my temp way of dealing with custom support for grabing the location
       let image;
         if (portfolio.imagehost == "imgur") {
     image = `https://i.imgur.com/${portfolio.imageid}.${portfolio.imageformat}`;
@@ -196,17 +326,11 @@ I like working with people and help them reach their goals. This can be from sch
 
   <script>
 
-
+// Use discord for freelancer discords or discord community.
+// Use gameserver for game servers. Can be any game that battlemetrics supports
 const servers = [
-  { battlemetricid: "8633241", discordid: "ezaJDmbxPf", grupname: "51512", joinlink: "test", description: "1", partnertype: "gameserver" },
-  { battlemetricid: "18719492", discordid: "gmod", grupname: "51512",joinlink: "test", description: "2" },
-  { battlemetricid: "5153368", discordid: "phoenixnetworks", grupname: "51512", joinlink: "test", description: "3", partnertype: "discord" },
-  { battlemetricid: "20397446", discordid: "D5hd9a7QGt", grupname: "51512", joinlink: "test", description: "4", partnertype: "discord"  },
-  { battlemetricid: "20397446", discordid: "5tGtMxs4sM", grupname: "51512", joinlink: "test", description: "5", partnertype: "discord"  },
-  { battlemetricid: "20397446", discordid: "uGt3g7KhF9", grupname: "51512", joinlink: "test", description: "6", partnertype: "discord"  },
-  { battlemetricid: "20397446", discordid: "D5hd9a7QGt", grupname: "51512", joinlink: "test", description: "7",partnertype: "discord"  },
-  { battlemetricid: "20397446", discordid: "5tGtMxs4sM", grupname: "51512", joinlink: "test", description: "8",partnertype: "discord"  },
-  { battlemetricid: "20397446", discordid: "uGt3g7KhF9", grupname: "51512", joinlink: "test", description: "9",partnertype: "gameserver"  },
+  { battlemetricid: "21812512", discordid: "DUuZNXeANx", grupname: "", joinlink: "test", description: "1", partnertype: "gameserver" },
+ // { battlemetricid: "5153368", discordid: "DUuZNXeANx", grupname: "51512", joinlink: "test", description: "3", partnertype: "discord" },
 ];
  var count = 0
 // Function to create a server row
@@ -231,7 +355,28 @@ return serverRow;
 
 
 
-  }else if (server.type == "gameserver") {
+  }else if (server.type == "gameserver" && server.grupname === "")  {
+  const serverRow = $('<div>').addClass('col-lg-4 mb-4').append(
+    $('<div>').addClass('card2').append(
+      $('<div>').addClass('server-info').append(
+        $('<img>').addClass('server-image').attr('src',server.discordIcon),
+        $('<div>').addClass('server-info').append(server.name),
+        $('<p>').addClass('card-text').text('GameServer: IP: ' + server.ip +":"+ server.port+' Players: ' + server.players+"/"+ server.maxPlayers),
+          $('<p>').addClass('card-text').text('Discord Members:' + server.discordMemberCount ),
+        $('<p>').addClass('card-text').text('Description: ' + server.description),
+          
+      ),
+      $('<div>').addClass('button-container').append(
+        $('<a>').text('Join Game Server').addClass('join-game-button btn btn-primary').attr('href', 'steam://connect/' + server.ip+":"+server.port).attr('target', '_blank'),
+          $('<a>').text('Join Discord Server').addClass('join-discord-button btn btn-secondary').attr('href', `https://discord.gg/${server.discordinvite}`).attr('target', '_blank'),
+
+      )
+    )
+  )
+  
+  return serverRow;
+
+}else if (server.type == "gameserver" && server.grupname !== "")  {
   const serverRow = $('<div>').addClass('col-lg-4 mb-4').append(
     $('<div>').addClass('card2').append(
       $('<div>').addClass('server-info').append(
@@ -249,7 +394,10 @@ return serverRow;
 
       )
     )
-  );return serverRow;}
+  )
+  
+  return serverRow;}
+  
 
   return null;
 }
@@ -388,6 +536,7 @@ setInterval(renderServerRows, 300000);
       renderServerRows();
     renderPortfolioRows();
   createserviceListingRows();
+  renderStatsRow();
 </script>
 </section>
 
