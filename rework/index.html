@@ -282,6 +282,8 @@ function renderStatsRow() {
     image = `https://i.gyazo.com/${portfolio.imageid}.${portfolio.imageformat}`;
   } else if (portfolio.imagehost == "discord") {
     image = `https://cdn.discordapp.com/attachments/${portfolio.chatid}/${portfolio.randomid}/${portfolio.randomid}.${portfolio.imageformat}`;
+  } else if (portfolio.imagehost == "site") {
+    image = `${portfolio.imageid}` ;
   }
 
 
