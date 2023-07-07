@@ -487,6 +487,8 @@ setInterval(renderServerRows, 300000);
     image = `https://i.gyazo.com/${serviceslist.imageid}.${serviceslist.imageformat}`;
   } else if (serviceslist.imagehost == "discord") {
     image = `https://cdn.discordapp.com/attachments/${serviceslist.chatid}/${serviceslist.randomid}/${serviceslist.randomid}.${serviceslist.imageformat}`;
+  } else if (serviceslist.imagehost == "site") {
+    image = `${serviceslist.imageid}` ;
   }
       const title = $('<h5>').text(serviceslist.title).addClass('card-title');
   
