@@ -426,9 +426,10 @@ function renderServerRows() {
   // select 6 of the table values above
   const selectedServers = shuffledServers.slice(0, 8);
   selectedServers.forEach(function(server,index) {
-    const battleMetricsAPI = 'https://api.battlemetrics.com/servers/' + server.battlemetricid;
+    if (server.partnertype == "gameserver") {
     const discordUrl = `https://discord.com/api/v10/invites/${server.discordid}?with_counts=true&with_expiration=true`;
-    
+    const battleMetricsAPI = 'https://api.battlemetrics.com/servers/' + server.battlemetricid;
+
 
     const battleMetricsPromiseAPI = fetch(battleMetricsAPI).then(response => response.json());
     const discordPromiseAPI = fetch(discordUrl).then(response => response.json());
@@ -456,6 +457,30 @@ function renderServerRows() {
       .catch(error => {
         console.error('Error:', error);
       });
+    }else if (server.partnertype == "discord") {
+    const discordUrl = `https://discord.com/api/v10/invites/${server.discordid}?with_counts=true&with_expiration=true`;
+    
+
+    const discordPromiseAPI = fetch(discordUrl).then(response => response.json());
+    
+    return Promise.all([discordPromiseAPI]).then(([discordData]) => {
+        server.type = server.partnertype;
+        server.discordinvite = server.discordid;
+        server.discordMemberCount = discordData.approximate_member_count;
+        server.discordIcon = `https://cdn.discordapp.com/icons/${discordData.guild.id}/${discordData.guild.icon}.png`;
+
+        const serverRow = createServerRow(server);
+        // bit tricky way of forcing it to display 6 without stopping at 5 or less
+        if ((index + 1) === 6) {
+          
+        }else {
+        $('#serverList').append(serverRow);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
   });
 }
 
