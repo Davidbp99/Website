@@ -160,11 +160,12 @@ function createStatsRow(stats) {
 
 
  if (stats.statstype == "discord") {
+  const title = $('<h5>').text('Discord Members:' + stats.discordMemberCount).addClass('card-title');
     const statsRow = $('<div>').addClass('col-lg-4 mb-4').append(
     $('<div>').addClass('card2').append(
       $('<div>').addClass('server-info').append(
         $('<img>').addClass('stats-image').attr('src',stats.discordIcon),
-          $('<p>').addClass('card-text').text('Discord Members:' + stats.discordMemberCount ),
+          $('<p>').append(title),
         $('<p>').addClass('card-text').text('Description: ' + stats.description),
           
       ),
@@ -176,12 +177,13 @@ function createStatsRow(stats) {
   )
 return statsRow;
           }else if (stats.statstype == "gmodstore" && stats.buttontext !== "") {
+            const title = $('<h5>').text(stats.forcedvalue).addClass('card-title');
     const statsRow = $('<div>').addClass('col-lg-4 mb-4').append(
     $('<div>').addClass('card2').append(
       $('<div>').addClass('server-info').append(
         $('<img>').addClass('stats-image').attr('src',image),
-          $('<p>').addClass('card-text').text(stats.forcedvalue ),
-        $('<p>').addClass('card-text').text('Description: ' + stats.description),
+          $('<p>').append(title),
+        $('<p>').addClass('card-text').text(stats.description),
           
       ),
       
@@ -195,12 +197,13 @@ return statsRow;
           } 
 
         else if (stats.statstype == "gmodstore" && stats.buttontext === "") {
+          const title = $('<h5>').text(stats.forcedvalue).addClass('card-title');
     const statsRow = $('<div>').addClass('col-lg-4 mb-4').append(
     $('<div>').addClass('card2').append(
       $('<div>').addClass('server-info').append(
         $('<img>').addClass('stats-image').attr('src',image),
-          $('<p>').addClass('card-text').text(stats.forcedvalue ),
-        $('<p>').addClass('card-text').text('Description: ' + stats.description),
+          $('<p>').addClass('card-text').append(title),
+        $('<p>').addClass('card-text').text(stats.description),
           
       ),
 
@@ -267,11 +270,17 @@ function renderStatsRow() {
 
     const portfolios = [
 
-      { title: "DarkRP Code" , randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" , imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "test", description: "this code is pog" },
-      { title: "DarkRP Map" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" , imageid: "JqEMQRb",imageformat: "jpg", type: "map", buttonlink: "test", description: "this is map" },
-      { title: "DarkRP Code" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" , imageid: "JqEMQRb", imageformat: "jpg", type: "map", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice" },
-            { title: "DarkRP Code" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" , imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice" },
-                  { title: "DarkRP Code" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" , imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice" },
+      { title: "Hogwarts RP Map (wizzardrp)" , randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "JqEMQRb", imageformat: "jpg", type: "map", buttonlink: "https://imgur.com/a/5QrBvWu", description: "Hogwartsrp (or now after copyright fights WizzardRP) map that I edited, optimized and made fully new areas for for a client", extradbutton: "https://discord.gg/ezaJDmbxPf", extrabuttontext: "Is sold on my discord at near 50% off" },
+      { title: "Custom Building" ,randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "SAKBSJq",imageformat: "jpg", type: "map", buttonlink: "https://imgur.com/a/s8HVzzD", description: "Very small work for a client of some small custom buildings (until they just wanted copy and pasted ones that I disliked but still did)", extradbutton: "", extrabuttontext: "" },
+      { title: "DaveTown" ,randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "NaFZlkW", imageformat: "jpg", type: "map", buttonlink: "https://imgur.com/a/xRutpB0", description: "Started this as a side project to create a new darkrp map. Then its been put on and off. First map I started to use glua into as well for custom map entities", extradbutton: "", extrabuttontext: "" },
+      { title: "Evilmelon_v1 Edit" ,randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "dDO7cdV", imageformat: "jpg", type: "map", buttonlink: "https://imgur.com/a/8X9Mp88", description: "I made this map for a client that later on ghosted me (user is banned on gmodstore now for ghosting people)", extradbutton: "https://www.gmodstore.com/users/76561198092852011", extrabuttontext: "View client in question (dont throw hate)" },
+      { title: "rp_downtown_nemesis_v2" ,randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "yGAKXsB",imageformat: "jpg", type: "map", buttonlink: "https://imgur.com/a/pqLO7Nf", description: "I did two kind of versions of this. One snow and one normal for this client. I returned to this client lot of times editing and improving his map.", extradbutton: "", extrabuttontext: "" },
+      { title: "rp_downtown_tits_v2_vn (used to be called LucidRP/Vigilante Networks/Crown Networks/BlobRP/Now Eclipse Network)" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://steamuserimages-a.akamaihd.net/ugc/1753568711089583120/B304DF41C38FA08B088AD11F109A725E159E23FD/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",imageformat: "jpg", type: "map", buttonlink: "https://steamcommunity.com/sharedfiles/filedetails/?id=1950836554", description: "I did this map for a server owner that ran a darkrp community. Where the owner later on self learned mapping and done lot of edits to it. This was the first time I worked with another mapper called Down (Maker of gRust) (click the button to find his steam)", extradbutton: "", extrabuttontext: "" },
+      { title: "rp_downtown_nemesis_v2" ,randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "yGAKXsB",imageformat: "jpg", type: "map", buttonlink: "https://imgur.com/a/pqLO7Nf", description: "I did two kind of versions of this. One snow and one normal for this client. I returned to this client lot of times editing and improving his map.", extradbutton: "", extrabuttontext: "" },
+      { title: "rp_downtown_nemesis_v2" ,randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "yGAKXsB",imageformat: "jpg", type: "map", buttonlink: "https://imgur.com/a/pqLO7Nf", description: "I did two kind of versions of this. One snow and one normal for this client. I returned to this client lot of times editing and improving his map.", extradbutton: "", extrabuttontext: "" },
+      
+      
+      { title: "DarkRP Code" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" , imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice", extradbutton: "", extrabuttontext: "" },
     ];
 
     function createPortfiloRows(portfolio) {
@@ -286,9 +295,10 @@ function renderStatsRow() {
     image = `${portfolio.imageid}` ;
   }
 
-
+if (portfolio.type == "map"){
+  if (portfolio.extradbutton === ""){
       const title = $('<h5>').text(portfolio.title).addClass('card-title');
-      const details = $('<a>').text('View Details').addClass('btn btn-primary').attr('href', portfolio.buttonlink).attr('target', '_blank');
+      const details = $('<a>').text('View More Images').addClass('btn btn-primary').attr('href', portfolio.buttonlink).attr('target', '_blank');
       const description = $('<p>').text(portfolio.description).addClass('card-text');
 
 
@@ -299,6 +309,52 @@ function renderStatsRow() {
              $('<div>').addClass('server-info').append(title),
                 $('<div>').addClass('card-text').append(description,details)));
       return Colums;
+                }else  if (portfolio.extradbutton !== ""){
+      const title = $('<h5>').text(portfolio.title).addClass('card-title');
+      const details = $('<a>').text('View More Images').addClass('btn btn-primary').attr('href', portfolio.buttonlink).attr('target', '_blank');
+        const detailsextra = $('<a>').text(portfolio.extrabuttontext).addClass('btn btn-secondary').attr('href', portfolio.extradbutton).attr('target', '_blank');
+      const description = $('<p>').text(portfolio.description).addClass('card-text');
+
+
+      // Here we create our special cards so it look fancy
+      const Colums = $('<div>').addClass('col-lg-4 mb-4').append(
+        $('<div>').addClass('card').append(
+            $('<img>').addClass('card-img-top').attr('src',image),
+             $('<div>').addClass('server-info').append(title),
+                $('<div>').addClass('card-text').append(description,details,detailsextra)));
+      return Colums;
+                }
+                }else if (portfolio.type == "glua"){
+                  if (portfolio.extradbutton !== ""){
+      const title = $('<h5>').text(portfolio.title).addClass('card-title');
+      const details = $('<a>').text('Join My Discord To View Configs').addClass('btn btn-primary').attr('href', portfolio.buttonlink).attr('target', '_blank');
+      const description = $('<p>').text(portfolio.description).addClass('card-text');
+
+
+      // Here we create our special cards so it look fancy
+      const Colums = $('<div>').addClass('col-lg-4 mb-4').append(
+        $('<div>').addClass('card').append(
+            $('<img>').addClass('card-img-top').attr('src',image),
+             $('<div>').addClass('server-info').append(title),
+                $('<div>').addClass('card-text').append(description,details)));
+      return Colums;
+                }else if (portfolio.extradbutton === ""){
+      const title = $('<h5>').text(portfolio.title).addClass('card-title');
+      const details = $('<a>').text('Join My Discord To View Configs').addClass('btn btn-primary').attr('href', portfolio.buttonlink).attr('target', '_blank');
+        const detailsextra = $('<a>').text(portfolio.extrabuttontext).addClass('btn btn-secondary').attr('href', portfolio.extradbutton).attr('target', '_blank');
+      const description = $('<p>').text(portfolio.description).addClass('card-text');
+
+
+      // Here we create our special cards so it look fancy
+      const Colums = $('<div>').addClass('col-lg-4 mb-4').append(
+        $('<div>').addClass('card').append(
+            $('<img>').addClass('card-img-top').attr('src',image),
+             $('<div>').addClass('server-info').append(title),
+                $('<div>').addClass('card-text').append(description,details,detailsextra)));
+      return Colums;
+                }
+
+                }
 }
 
 
