@@ -280,7 +280,15 @@ function renderStatsRow() {
     //  { title: "rp_downtown_nemesis_v2" ,randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "yGAKXsB",imageformat: "jpg", type: "map", buttontext: 'View More Images', buttonlink: "https://imgur.com/a/pqLO7Nf", description: "I did two kind of versions of this. One snow and one normal for this client. I returned to this client lot of times editing and improving his map.", extradbutton: "", extrabuttontext: "" },
       { title: "Star Wars Venator Map" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "br73oRuCZio",imageformat: "jpg", type: "map", buttontext: "Extra Video 1" , buttonlink: "https://www.youtube.com/watch?v=x-OWUxqHc-o", description: "First ever map I did when I knew nothing about mapping really.", extradbutton: "https://www.youtube.com/watch?v=jRXKoF1OxN0", extrabuttontext: "Extra Video 2" },
       
-      { title: "DarkRP Code" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" , imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View Configs', buttonlink: "", description: "this code is nice", extradbutton: "", extrabuttontext: "" },
+
+
+      { title: "gWosPlugin" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "site" , imageid: "https://cdn.discordapp.com/attachments/1126466586266578975/1127179569607229440/image.png", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "Made a system that rewards people based on NPC and userrank. But not just that permission system for the biggest lightsaber addon on gmodstore. Just want X rank to give items in this system. You can make that happen.", extradbutton: "", extrabuttontext: "" },
+      { title: "gWosPlugin (DLC)" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "site" , imageid: "https://cdn.discordapp.com/attachments/1126466586266578975/1127182498124804167/image.png", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "DLC as well gives you some perks directed to unboxing and big fair parry system for Jedi vs Sith Servers. As I heard some people dislike the parry system but then some likes it (50/50). How can we resolve this in the most fair way. I wanted to resolve this.", extradbutton: "", extrabuttontext: "" },
+      { title: "gStatus" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "site" , imageid: "https://cdn.discordapp.com/attachments/1126466586266578975/1127189166732628038/image.png", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "One of my clients wanted something special made with the lightsaber system with special effect when people duel and fight. Here is where gstatus was born", extradbutton: "", extrabuttontext: "" },
+      { title: "SecondaryUser Group System(+ThirdUserGroup)" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "site" , imageid: "https://cdn.discordapp.com/attachments/1126466586266578975/1127192166746292224/Ofralse.png", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "I notice there was a problem in the swrp section where we could not have people be staff, gamemasters and vip rank at the same time. At the same time also get the permission from admin systems like sam or others to work with them. So I resolved this in two ways.", extradbutton: "", extrabuttontext: "" },
+      { title: "Custom UserRank Checks" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "site" , imageid: "https://cdn.discordapp.com/attachments/1126466586266578975/1127192320392040508/Ofralse2.png", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "I noticed how much we use GetUserGroup() table.hasvalue in code I read. So I wanted to make it clearner and like how the bigger servers does it with IsStaff(), IsGM(), IsManagement() and I made some more custom ones.", extradbutton: "", extrabuttontext: "" },
+    
+      { title: "Star Wars Lego Hud (first UI with many UI in it)" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "site" , imageid: "https://cdn.discordapp.com/attachments/1126466586266578975/1127175950593966130/image.png", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View Configs And More Images', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "As the title says. The first *UI* I made fully. It got extra styles via the config so if style 1 is not liked then you got style 2. Same as a target hud. I added animations to make it feel more alive as well (its why you see read heart are smaller in the image while blue hearts are bigger)", extradbutton: "", extrabuttontext: "" },
     ];
 
     function createPortfiloRows(portfolio) {
@@ -638,30 +646,7 @@ setInterval(renderServerRows, 300000);
   renderStatsRow();
 </script>
 </section>
-<script>
-var webhookURL = secrets.api
 
-  var message = {
-    content: "test api hide "
-  };
-// Function to send a message using the webhook
-function sendMessage() {
-  fetch(webhookURL, {
-   method: 'POST',
-   headers: {
-     'Content-Type': 'application/json'
-   },
-   body: JSON.stringify(message)
-});
-}
-
-// Usage example
-sendMessage();
-
-  
-  
-  
-</script>
 
 
 
