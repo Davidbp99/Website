@@ -105,6 +105,10 @@ body.dark-mode {
      max-width: 30%;
      max-height: 30%;
    }
+   .server-gif {
+    max-width: 100%;
+    max-height: 30%;
+  }
    .stats-image {
     min-width: 50px;
     min-height: 50px;

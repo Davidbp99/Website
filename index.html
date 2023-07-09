@@ -534,18 +534,23 @@ if (portfolio.type == "map" || portfolio.type == "other" ){
 // Use discord for freelancer discords or discord community.
 // Use gameserver for game servers. Can be any game that battlemetrics supports
 const servers = [
-  { battlemetricid: "21812512", discordid: "DUuZNXeANx", grupname: "", description: ``, partnertype: "gameserver" },
+  { battlemetricid: "21812512", discordid: "DUuZNXeANx", grupname: "", description: ``, partnertype: "gameserver", isgif: "yes", imagelink: "https://i.imgur.com/8ffUCnZ.gif", },
  // { battlemetricid: "5153368", discordid: "DUuZNXeANx", grupname: "51512", description: "3", partnertype: "discord" },
 ];
 
 // Function to create a server row
 function createServerRow(server) {
- 
+  let image;
+        if (server.isgif == "yes") {
+    image = $('<img>').addClass('server-gif').attr('src',server.imagelink);
+  } else if (server.isgif == "no") {
+    image = $('<img>').addClass('server-image').attr('src',server.discordIcon);
+  }
   if (server.type == "discord") {
     const serverRow = $('<div>').addClass('col-lg-4 mb-4').append(
     $('<div>').addClass('card2').append(
       $('<div>').addClass('server-info').append(
-        $('<img>').addClass('server-image').attr('src',server.discordIcon),
+        image,
           $('<p>').addClass('card-text').text('Discord Members:' + server.discordMemberCount ),
         $('<p>').addClass('card-text').text('Description: ' + server.description),
           
@@ -564,7 +569,7 @@ return serverRow;
   const serverRow = $('<div>').addClass('col-lg-4 mb-4').append(
     $('<div>').addClass('card2').append(
       $('<div>').addClass('server-info').append(
-        $('<img>').addClass('server-image').attr('src',server.discordIcon),
+        image,
         $('<div>').addClass('server-info').append(server.name),
         $('<p>').addClass('card-text').text('GameServer: IP: ' + server.ip +":"+ server.port+' Players: ' + server.players+"/"+ server.maxPlayers),
           $('<p>').addClass('card-text').text('Discord Members:' + server.discordMemberCount ),
@@ -585,7 +590,7 @@ return serverRow;
   const serverRow = $('<div>').addClass('col-lg-4 mb-4').append(
     $('<div>').addClass('card2').append(
       $('<div>').addClass('server-info').append(
-        $('<img>').addClass('server-image').attr('src',server.discordIcon),
+        image,
         $('<div>').addClass('server-info').append(server.name),
         $('<p>').addClass('card-text').text('GameServer: IP: ' + server.ip +":"+ server.port+' Players: ' + server.players+"/"+ server.maxPlayers),
           $('<p>').addClass('card-text').text('Discord Members:' + server.discordMemberCount ),
