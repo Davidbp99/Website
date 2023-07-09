@@ -548,13 +548,19 @@ function createServerRow(server) {
   } else if (server.isgif == "no") {
     image = $('<img>').addClass('server-image').attr('src',server.discordIcon);
   }
+  let descriptionoffserver;
+  if (server.description !== "") {
+    descriptionoffserver = 'Description: ' + server.description;
+  } else if (server.isgif === "") {
+    descriptionoffserver = "";
+  }
   if (server.type == "discord") {
     const serverRow = $('<div>').addClass('col-lg-4 mb-4').append(
     $('<div>').addClass('card2').append(
       $('<div>').addClass('server-info').append(
         image,
           $('<p>').addClass('card-text').text('Discord Members:' + server.discordMemberCount ),
-        $('<p>').addClass('card-text').text('Description: ' + server.description),
+        $('<p>').addClass('card-text').text(descriptionoffserver),
           
       ),
       $('<div>').addClass('button-container').append(
@@ -575,7 +581,7 @@ return serverRow;
         $('<div>').addClass('server-info').append(server.name),
         $('<p>').addClass('card-text').text('GameServer: IP: ' + server.ip +":"+ server.port+' Players: ' + server.players+"/"+ server.maxPlayers),
           $('<p>').addClass('card-text').text('Discord Members:' + server.discordMemberCount ),
-        $('<p>').addClass('card-text').text('Description: ' + server.description),
+        $('<p>').addClass('card-text').text(descriptionoffserver),
           
       ),
       $('<div>').addClass('button-container').append(
@@ -596,7 +602,7 @@ return serverRow;
         $('<div>').addClass('server-info').append(server.name),
         $('<p>').addClass('card-text').text('GameServer: IP: ' + server.ip +":"+ server.port+' Players: ' + server.players+"/"+ server.maxPlayers),
           $('<p>').addClass('card-text').text('Discord Members:' + server.discordMemberCount ),
-        $('<p>').addClass('card-text').text('Description: ' + server.description),
+        $('<p>').addClass('card-text').text(descriptionoffserver),
           
       ),
       $('<div>').addClass('button-container').append(
