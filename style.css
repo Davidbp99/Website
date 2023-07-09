@@ -1,0 +1,194 @@
+/* Custom styles for the website */
+body {
+    padding-top: 70px;
+}
+
+.hero {
+    background: url(hero-image.jpg) center/cover no-repeat;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.about {
+    padding: 100px 0;
+}
+
+.about img {
+    max-width: 100%;
+}
+
+footer {
+    color: #fff;
+    background-color: #333;
+    padding: 20px 0;
+}
+
+#portfolio {
+    background-color: #34373a;
+    padding: 100px 0;
+}
+
+
+#team {
+  background-color: #484c50;
+  padding: 100px 0;
+
+}
+
+#service {
+  background-color: #34373a;
+  padding: 100px 0;
+}
+
+#referrals {
+  padding: 100px 0;
+  background-color: #1f1f1f;
+}
+
+.card {
+    background-color: #857F72;
+    transition: transform 0.3s;
+    
+}
+
+
+
+.card-video-top {
+
+max-width: 100%;
+max-height: 100%;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card2 {
+    background-color: #333333;
+    transition: transform 0.3s;
+}
+
+.card2:hover {
+    transform: scale(1.05);
+}
+
+.cardservice {
+  background-color: #3b3131;
+  transition: transform 0.3s;
+}
+
+.cardservice:hover {
+  transform: scale(1.05);
+}
+
+.card-text {
+  color:  white;
+}
+.price-text {
+  color: white;
+  font-weight: bold;
+}
+
+body.dark-mode {
+    background-color: #1f1f1f;
+    color: #ffffff;
+}
+
+   .server-row {
+     display: flex;
+     align-items: center;
+     margin-bottom: 10px;
+   }
+   .server-image {
+     max-width: 30%;
+     max-height: 30%;
+   }
+   .stats-image {
+    min-width: 50px;
+    min-height: 50px;
+    max-width: 100px;
+    max-height: 100px;
+  }
+
+.team-image{
+  min-width: 50px;
+  min-height: 50px;
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 50%;
+}
+
+.service-image{
+  min-width: 50px;
+  min-height: 50px;
+  max-width: 100%;
+  max-height: 100%;
+
+
+}
+  
+   .server-info {
+     flex-grow: 0.3;
+     
+   }
+   .join-button {
+     margin-left: 10px;
+     padding: 5px 10px;
+     background-color: #4287f5;
+     color: #fff;
+     text-decoration: none;
+   }
+
+   .textaboutme {
+    color: #b5b4b4;
+
+   }
+
+
+
+
+
+
+
+
+#discordButtonContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+transition: transform 0.3s;
+}
+
+#discordButton {
+  width: 50px;
+  height: 50px;
+}
+
+#discordButtonTooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #000;
+  color: #fff;
+  padding: 5px;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#discordButtonContainer:hover #discordButtonTooltip {
+  opacity: 1;
+}
+
+#discordButtonContainer:hover {
+transform: scale(1.05);
+}
+
+#serverList {
+max-width: 100%;
+position: relative;
+
+}
