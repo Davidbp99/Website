@@ -85,6 +85,16 @@ max-height: 100%;
   transform: scale(1.05);
 }
 
+.row {
+  --bs-gutter-x: 2rem;
+    --bs-gutter-y: 0;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: calc(-1 * var(--bs-gutter-y));
+    margin-right: calc(-.5 * var(--bs-gutter-x));
+    margin-left: calc(-.5 * var(--bs-gutter-x));
+}
+
 .card-text {
   color:  white;
 }
