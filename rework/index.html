@@ -62,16 +62,12 @@ My Blog: https://davidswndesign.wordpress.com/ " />
                     <li class="nav-item">
                         <a href="#portfolio" class="nav-link"><span data-hover="Portfolio">Portfolio</span></a>
                     </li>
-                    <li class="nav-item">
                      <li class="nav-item">
                         <a href="#service" class="nav-link"><span data-hover="Service">Services</span></a>
-                    </li>
-<li class="nav-item">
-                        <a href="#reviews" class="nav-link"><span data-hover="Reviews">Reviews</span></a>
-                    </li>
-                      <li class="nav-item">
-                        <a href="#faq" class="nav-link"><span data-hover="FAQ">FAQ</span></a>
-                    </li>
+                        </li>
+                        <li class="nav-item">
+                          <a href="#referrals" class="nav-link"><span data-hover="Referrals">Referral</span></a>
+                          </li>
                 </ul>
             </div>
         </div>
@@ -112,14 +108,11 @@ I like working with people and help them reach their goals. This can be from sch
 
 <br>
 <h2>How am different as a mapper</h2>
-<p class="textaboutme">
-  
-  - I set fair prices based on work load given by the client (you)<br>
-  - I communicate and take time with the map to be sure the client (you) like the end product.<br>
-  - I lower the price for returning clients (Sometimes). I as well can have special holiday % off of prices (you will get a code at the end to use if you want % off the total price)<br>
-
-
-</p>
+<ul class="textaboutme">
+  <li>- I set fair prices based on work load given by the client (you)</li>
+  <li>- I communicate and take time with the map to be sure the client (you) like the end product.</li>
+  <li>- I lower the price for returning clients (Sometimes). I as well can have special holiday % off of prices (you will get a code at the end to use if you want % off the total price)</li>
+</ul>
 
 <h2>My Stats</h2>
 
@@ -256,8 +249,115 @@ function renderStatsRow() {
 
 </script>
 
+<script>
 
 
+
+  const MyTeam = [
+    { roletype: "Chief Financial Officer", discordtag: "", portfoliotext: "2", portfolio: "", description: `This guy have been in the gmod sector as server owner, staff and advisor for some people. He somehow most of the times always end up with a special rank in a community. This time he landed a role to help me set fair priceses on work and addons/maps I sell.`, imageid: "https://cdn.discordapp.com/avatars/112205209354186752/587c246537bb00b98aead3a29616dc34.png?size=1024" , imagehost: "" , imageformat: ""},
+    { roletype: "Chief Strategy Officer", discordtag: "", portfoliotext: "2", portfolio: "", description: `At each server that I been manager, staff, server owner and even my own. He have followed me and done amazing work as advisor and plan making at each place I seen him at. He now helps me out when I call for some wise words from him on my discord.`, imageid: "https://cdn.discordapp.com/avatars/285100642148810752/b6258a36128c1e6f67e39f0d8b114bbb.png?size=1024" , imagehost: "" , imageformat: ""},
+
+
+
+
+
+
+
+
+  ];
+  // Function to create a server row
+  function createTeamRow(team) {
+    const image = `${team.imageid}` ;
+    
+  if (team.portfolio === "" && team.discordtag !== "" ) {
+              const title = $('<h5>').text(team.roletype).addClass('card-title');
+      const TeamRow = $('<div>').addClass('col-lg-4 mb-4').append(
+      $('<div>').addClass('card2').append(
+        $('<div>').addClass('server-info').append(
+          $('<img>').addClass('team-image').attr('src',image),
+            $('<p>').append(title),
+              $('<p>').addClass('card-text').text("Discord Tag:"+team.discordtag),
+          $('<p>').addClass('card-text').text(team.description),
+            
+        ),
+        
+      )
+    )
+  return TeamRow; 
+} 
+else if (team.portfolio === "" && team.discordtag === "" ) {
+              const title = $('<h5>').text(team.roletype).addClass('card-title');
+      const TeamRow = $('<div>').addClass('col-lg-4 mb-4').append(
+      $('<div>').addClass('card2').append(
+        $('<div>').addClass('server-info').append(
+          $('<img>').addClass('team-image').attr('src',image),
+            $('<p>').append(title),
+          $('<p>').addClass('card-text').text(team.description),
+            
+        ),
+        
+      )
+    )
+  return TeamRow; 
+} 
+
+
+
+
+
+else if (team.portfolio !== "") {
+              const title = $('<h5>').text(team.roletype).addClass('card-title');
+      const TeamRow = $('<div>').addClass('col-lg-4 mb-4').append(
+      $('<div>').addClass('card2').append(
+        $('<div>').addClass('server-info').append(
+          $('<img>').addClass('team-image').attr('src',image),
+            $('<p>').append(title),
+              $('<p>').addClass('card-text').text("Discord Tag:"+team.discordtag),
+          $('<p>').addClass('card-text').text(team.description),
+            
+        ),
+        
+        $('<div>').addClass('button-container').append(
+            $('<a>').text(`${team.portfoliotext}`).addClass('join-discord-button btn btn-primary').attr('href', `${team.portfolio}`).attr('target', '_blank'),
+  
+        )
+      )
+    )
+  return TeamRow; }
+
+
+  }
+  
+  
+  // Function to render the server rows
+  function renderTeamRow() {
+  
+    MyTeam.forEach( function(team) {
+
+      
+          const TeamRow = createTeamRow(team);
+  
+          $('#teamrowdiv').append(TeamRow);
+          
+    });
+  }
+  
+  
+  
+  
+  
+  
+  </script>
+<section id="team" class="py-5">
+
+  <div class="container">
+    <h2 class="text-center">My Team On Discord</h2>
+    <h5 class="text-center">The team that is making my life easier</h5>
+    <div class="row" id="teamrowdiv"> </div>
+    </div>
+
+
+</section>
 
 
 
@@ -588,12 +688,26 @@ setInterval(renderServerRows, 300000);
 
       const services = [
       
-      { title: "Low Map Protection" ,randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" , imageid: "JqEMQRb", imageformat: "jpg", type: "map", buttonlink: "", description: "For 45eur you are getting the very basic protection of no_decomp, locked texture, protector brush flag.", price: "Price: 45 eur" },
-      { title: "Medium Map Protection",randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" ,imageid: "JqEMQRb",imageformat: "jpg", type: "map", buttonlink: "https://gyazo.com/2c3a006886c1ba5a5abaeed148299f1b", description: "For 55eur you are getting the map protection #1 + IID Version that works fine with skybox", price: "Price: 55 eur" },
-      { title: "High Map Protection",randomid: "1125436528756277259" , chatid: "1124690128523239434" ,imagehost: "imgur" ,imageid: "JqEMQRb", imageformat: "jpg", type: "map", buttonlink: "https://www.youtube.com/watch?v=er5ItihECCw", description: `For 65eur you are getting the map protection low and medium + You get the map entities in its own file. So you can give the bsp file to your players and keep the map entities server sided. This is normally used by big servers as superior and icefuse + Server map restricted`,price: "Price: 65 eur" },
-            { title: "DarkRP Code",randomid: "1125436528756277259" , chatid: "1124690128523239434" , imagehost: "imgur" ,imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice", price: "Price: 6152 eur" },
-                  { title: "DarkRP Code",randomid: "1125436528756277259",chatid: "1124690128523239434" , imagehost: "imgur" ,imageid: "JqEMQRb", imageformat: "jpg", type: "glua", buttonlink: "https://codebeautify.org/jsvalidate", description: "this code is nice",price: "Price: 65 eur"  },
-      ];
+      { title: "Low Map Protection" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://cdn.discordapp.com/attachments/1117053994666295306/1127568688128725012/image.png", imageformat: "jpg", type: "map", buttonlink: "", description: "You are getting the very basic protection of no_decomp, locked texture, protector brush flag.", price: "Price: 45 eur" },
+      { title: "Medium Map Protection",randomid: "" , chatid: "" , imagehost: "site" ,imageid: "https://cdn.discordapp.com/attachments/1117053994666295306/1127569049660960768/image.png",imageformat: "jpg", type: "map", buttonlink: "https://gyazo.com/2c3a006886c1ba5a5abaeed148299f1b", description: "You are getting the map protection #1 + IID Version that works fine with skybox", price: "Price: 55 eur (I redo this protection at 30eur for returning clients with the same map)" },
+      { title: "High Map Protection",randomid: "" , chatid: "" ,imagehost: "site" ,imageid: "https://cdn.discordapp.com/attachments/1117053994666295306/1127570140783984732/image.png", imageformat: "jpg", type: "map", buttonlink: "https://www.youtube.com/watch?v=er5ItihECCw", description: `You are getting the map protection low and medium + You get the map entities in its own file. So you can give the bsp file to your players and keep the map entities server sided. This is normally used by big servers as superior and icefuse + Server map restricted`,price: "Price: 65 eur (I redo this protection at 45eur for returning clients with the same map)" },
+      { title: "BSP Content Reduction",randomid: "",chatid: "" , imagehost: "site" ,imageid: "https://cdn.discordapp.com/attachments/1117053994666295306/1127574850177876008/bsp.jpg", imageformat: "jpg", type: "map", buttonlink: "https://i.gyazo.com/65154ce8adcb4e3d82c28297a67e45d0.png", description: "Sometimes when you take materials from maps you might see textures that start normal then looks like this (random example): maps/texturemap/realworldtextures/floor‎ /floor_5_-128_-1976_-384. This can create a bigger BSP than it would need. You might ask how. As sometimes that is not noticed by the mapper (unless the hammer editor complains about a too long name). That would mean you got the same texture 2 times. This can happen to 1,2,3, or 40+ textures in your map. It would mean instead of a file of 200MB it ends up with 220MB or even more.",price: "Price: 50+ eur (depends fully on how much the map might have this issue)"  },      
+
+      { title: "Custom Work",randomid: "",chatid: "" , imagehost: "site" ,imageid: "https://cdn.discordapp.com/attachments/1117053994666295306/1127573357383139328/customwork.png", imageformat: "jpg", type: "map", buttonlink: "", description: "I will make a custom edit to a map you already got made (workshop or edit your custommap) or make a custom one",price: "Price: 50+ eur"  },      
+
+
+
+
+
+      { title: "Server Setup",randomid: "",chatid: "" , imagehost: "site" ,imageid: "https://cdn.discordapp.com/attachments/1117053994666295306/1127571175845920869/image.png", imageformat: "jpg", type: "glua", buttonlink: "", description: "I will help you setup your server, addon (config work or custom work). Price will depend on the work and if its just config or just custom work",price: "Price: 5+ eur"  },
+      { title: "Custom Work",randomid: "",chatid: "" , imagehost: "site" ,imageid: "https://cdn.discordapp.com/attachments/1117053994666295306/1127573357383139328/customwork.png", imageformat: "jpg", type: "glua", buttonlink: "", description: "I will make a custom edit to a addon you already got made or make a custom one",price: "Price: 10+ eur"  }, 
+    
+
+
+      { title: "Custom Work",randomid: "",chatid: "" , imagehost: "site" ,imageid: "https://cdn.discordapp.com/attachments/1117053994666295306/1127573357383139328/customwork.png", imageformat: "jpg", type: "other", buttonlink: "", description: "Do you need something that is not glua or map work done? Then reach out me on discord",price: "Price: 1+ eur"  }, 
+    
+    
+    ];
       
       function createserviceListing(serviceslist) {
         let image;
@@ -617,14 +731,14 @@ setInterval(renderServerRows, 300000);
       if (serviceslist.buttonlink === "") {
       const ColumsService = $('<div>').addClass('col-lg-4 mb-4').append(
         $('<div>').addClass('cardservice').append(
-            $('<img>').addClass('card-img-top').attr('src',image),
+            $('<img>').addClass('service-image').attr('src',image),
              $('<div>').addClass('server-info').append(title),
                 $('<div>').addClass('card-text').append(description,priceofservice)));
                   return ColumsService;
                 }
           const ColumsService = $('<div>').addClass('col-lg-4 mb-4').append(
         $('<div>').addClass('cardservice').append(
-            $('<img>').addClass('card-img-top').attr('src',image),
+            $('<img>').addClass('service-image').attr('src',image),
              $('<div>').addClass('server-info').append(title),
                 $('<div>').addClass('card-text').append(description,priceofservice,details)));
                 
@@ -645,6 +759,8 @@ setInterval(renderServerRows, 300000);
         $('#Servicemap').append(ColumsService);
       } else if (service.type == "glua") {
         $('#Servicelua').append(ColumsService);
+      } else if (service.type == "other") {
+        $('#Serviceother').append(ColumsService);
       }
       
       
@@ -654,33 +770,117 @@ setInterval(renderServerRows, 300000);
       
       
       
-      </script> 
+      </script>
+      <h2 class="text-center">My Services</h2>
+      <h5 class="text-center">Join my discord and open a ticket for these services</h5>
+      <br> <br>
       <h2 class="text-center">Maps Service</h2>
+      
 
       <div class="row" id="Servicemap"> </div>
       <h2 class="text-center">gLUA Service</h2>
       <div class="row" id="Servicelua"> </div>
+      <h2 class="text-center">Other Services</h2>
+      <div class="row" id="Serviceother"> </div>
      
   </div>
+
+</section>
+
+<section id="referrals" class="py-5">
+<h2 class="text-center">Referrals (Free money/Passive Money)</h2>
+<p class="text-center">Below you can find some services that can make you money or gives you money on signup. <br> Bonus can have changed from when I last edited this. Also read the terms each business has when its about rewards for signing up or using the service</p>
+<p class="text-center"><a href="https://linktr.ee/davidfzn" target="_blank"> Here you can see more referrals. Below is my top 3</a></p>
+
+<div class="container">
+<div class="row" id="referralslistdiv"> </div>
+</div>
+</section>
+
 <script>
+
+  const referralslist = [
+  
+  { title: "Curve Card" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://cdn.discordapp.com/attachments/1008363375266386024/1127598087855149158/KqdgD2qdRl2BA2ZfQvF1.png", imageformat: "jpg", type: "map", buttontext: "Get a curve card and get some curve cash" , buttonlink: "https://www.curve.com/en/join/#D6Q5R2LD", description: "One app and one card to live your best financial life. (Curve business slogan). You can have 1 card with you instead of 3,4 or 5 by just using the Curve Card", price: "Bonus: 5 GBP" },
+  { title: "Revolut Card" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://cdn.discordapp.com/attachments/1008363375266386024/1127598116548399144/Revolut-Symbol.png", imageformat: "jpg", type: "map", buttontext: "Get yourself a revolut account" , buttonlink: "https://www.revolut.com/referral/?referral-code=davidu8p3!", description: "Travel without hidden fees and send money abroad with the real exchange rate (Revolut business slogan).", price: "Bonus: 5 eur (says 75kr for me)." },
+  { title: "Plutus Card (crypto card)" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://plutus.it/images/logo-gold-d48ccf9d33.svg", imageformat: "jpg", type: "map", buttontext: "Get yourself a crypto account and card" , buttonlink: "https://dex.plutus.it/auth/referee/signup?refId=QOY7Fu", description: "Don’t Buy Crypto, Earn It! Earn free crypto on your everyday debit card payments. <- Words from Plutus themself. You can earn the plu coin and sell it at some crypto exchange. They as well have something called perks. Where you get back a set amount and after that you get your %. Your % can also raise based on how many plu you got in your wallet or with them", price: "Bonus: 10eur in crypto + 3% on all your *approved* transactions" },
+
+
+];
+  
+  function createReferralsListing(listofrefferal) {
+    let image;
+    if (listofrefferal.imagehost == "imgur") {
+image = `https://i.imgur.com/${listofrefferal.imageid}.${listofrefferal.imageformat}`;
+} else if (listofrefferal.imagehost == "gyazo") {
+image = `https://i.gyazo.com/${listofrefferal.imageid}.${listofrefferal.imageformat}`;
+} else if (listofrefferal.imagehost == "discord") {
+image = `https://cdn.discordapp.com/attachments/${listofrefferal.chatid}/${listofrefferal.randomid}/${listofrefferal.randomid}.${listofrefferal.imageformat}`;
+} else if (listofrefferal.imagehost == "site") {
+image = `${listofrefferal.imageid}` ;
+}
+  const title = $('<h5>').text(listofrefferal.title).addClass('card-title');
+
+  const details = $('<a>').text(listofrefferal.buttontext).addClass('btn btn-primary').attr('href', listofrefferal.buttonlink).attr('target', '_blank');
+ 
+  const description = $('<p>').text(listofrefferal.description).addClass('card-text');
+  const bonus = $('<p>').text(listofrefferal.price).addClass('price-text');
+
+ 
+  if (listofrefferal.buttonlink === "") {
+  const ColumsReferrals = $('<div>').addClass('col-lg-4 mb-4').append(
+    $('<div>').addClass('cardservice').append(
+        $('<img>').addClass('service-image').attr('src',image),
+         $('<div>').addClass('server-info').append(title),
+            $('<div>').addClass('card-text').append(description,bonus)));
+              return ColumsReferrals;
+            }
+      const ColumsReferrals = $('<div>').addClass('col-lg-4 mb-4').append(
+    $('<div>').addClass('cardservice').append(
+        $('<img>').addClass('service-image').attr('src',image),
+         $('<div>').addClass('server-info').append(title),
+            $('<div>').addClass('card-text').append(description,bonus,details)));
+            
+  return ColumsReferrals;
+  }
+  
+  
+
+  function createReferralsgRows() {
+  
+
+    referralslist.forEach(function (listofrefferal) {
+
+    const ColumsReferrals = createReferralsListing(listofrefferal);
+  
+// here we do our fancy spliting between service 
+
+    $('#referralslistdiv').append(ColumsReferrals);
+
+  
+  
+  
+  });
+  }
+  
+  
+  
+  </script>
+
+    <footer class="bg-dark text-white text-center py-3">
+        <p style="color: white;">&copy; <?php echo date("Y"); ?> Davids Website. All rights reserved.</p>
+    </footer>
+
+    <script>
 
       // we call it here as calling it above would kill it self
       renderServerRows();
     renderPortfolioRows();
   createserviceListingRows();
   renderStatsRow();
+  renderTeamRow();
+  createReferralsgRows();
 </script>
-</section>
-
-
-
-
-
-    <footer class="bg-dark text-white text-center py-3">
-        <p style="color: white;">&copy; <?php echo date("Y"); ?> Davids Website. All rights reserved.</p>
-    </footer>
-
-
     <script src="js/Headroom.js"></script>
     <script src="js/jQuery.headroom.js"></script>
     <script src="js/custom.js"></script>
