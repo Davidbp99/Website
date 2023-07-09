@@ -422,7 +422,7 @@ else if (team.portfolio !== "") {
   } else if (portfolio.imagehost == "site") {
     image = $('<img>').addClass('card-img-top').attr('src',`${portfolio.imageid}`) ;
   } else if (portfolio.imagehost == "iframe") {
-    image = $('<iframe>').addClass('card-video-top').attr('src',`https://www.youtube.com/embed/${portfolio.imageid}`).attr(`height`, "300px") ;
+    image = $('<iframe>').addClass('card-video-top').attr('src',`https://www.youtube.com/embed/${portfolio.imageid}`).attr(`height`, "300px").attr("width", "100%") ;
   }
 
 if (portfolio.type == "map" || portfolio.type == "other" ){
