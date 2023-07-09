@@ -52,7 +52,9 @@ footer {
     transition: transform 0.3s;
     
 }
-
+.card3:hover {
+  transform: scale(1.05);
+}
 
 
 .card-video-top {
