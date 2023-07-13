@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DarkRP Job Generator</title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #212529;
+            color: #fff;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+
+        #job-form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            margin-top: 10px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        #job-preview {
+            margin-top: 40px;
+        }
+
+        #preview-container {
+            background-color: #343a40;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        #preview-glua {
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+
+        button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DarkRP Job Generator</h1>
+
+        <div id="job-form">
+            <div class="mb-3">
+                <label for="team-name" class="form-label">Team Name:</label>
+                <input type="text" id="team-name" class="form-control" placeholder="Enter the team name">
+            </div>
+
+            <div class="mb-3">
+                <label for="job-name" class="form-label">Job Name:</label>
+                <input type="text" id="job-name" class="form-control" placeholder="Enter the job name">
+            </div>
+
+            <div class="mb-3">
+                <label for="job-model" class="form-label">Job Model:</label>
+                <input type="text" id="job-model" class="form-control" placeholder="Enter the job model" onkeydown="saveValue(event, 'model')">
+                <div id="model-value"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="job-color" class="form-label">Job Color (RGB):</label>
+                <div class="input-group">
+                    <input type="number" id="color-red" class="form-control" min="0" max="255" placeholder="Red" onkeydown="saveColorValue(event)">
+                    <input type="number" id="color-green" class="form-control" min="0" max="255" placeholder="Green" onkeydown="saveColorValue(event)">
+                    <input type="number" id="color-blue" class="form-control" min="0" max="255" placeholder="Blue" onkeydown="saveColorValue(event)">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="job-description" class="form-label">Job Description:</label>
+                <textarea id="job-description" class="form-control" rows="3" placeholder="Enter the job description"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="job-category" class="form-label">Job Category:</label>
+                <input type="text" id="job-category" class="form-control" placeholder="Enter the job category" onkeydown="saveValue(event, 'category')">
+                <div id="category-value"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="custom-check" class="form-label">Custom Check:</label>
+                <select id="custom-check" class="form-control" multiple>
+                    <option value="team">Team</option>
+                    <option value="steamid">SteamID</option>
+                    <option value="userrank">UserRank</option>
+                </select>
+            </div>
+
+            <div id="custom-check-values" class="mb-3">
+                <label for="custom-check-values" class="form-label">Custom Check Values:</label>
+                <input type="text" id="team-value" class="form-control" placeholder="Enter Team value" onkeydown="saveValue(event, 'team')">
+                <input type="text" id="steamid-value" class="form-control" placeholder="Enter SteamID value" onkeydown="saveValue(event, 'steamid')">
+                <input type="text" id="userrank-value" class="form-control" placeholder="Enter UserRank value" onkeydown="saveValue(event, 'userrank')">
+            </div>
+
+            <button onclick="generateJobPreview()" class="btn btn-primary">Generate Job</button>
+        </div>
+
+        <div id="job-preview">
+            <h2>Job Preview</h2>
+            <div id="preview-container">
+                <p id="preview-glua"></p>
+                <button onclick="copyJobPreview()" class="btn btn-secondary">Copy</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var customValues = {
+            model: [],
+            category: [],
+            team: [],
+            steamid: [],
+            userrank: []
+        };
+
+        function generateJobPreview() {
+            var TeamName = document.getElementById("team-name").value;
+            var jobName = document.getElementById("job-name").value;
+            var jobModel = document.getElementById("job-model").value;
+            var jobDescription = document.getElementById("job-description").value;
+            var jobCategory = document.getElementById("job-category").value;
+            var customCheck = document.getElementById("custom-check").selectedOptions;
+            var customCheckValues = {
+                team: document.getElementById("team-value").value,
+                steamid: document.getElementById("steamid-value").value,
+                userrank: document.getElementById("userrank-value").value
+            };
+
+            var colorRed = document.getElementById("color-red").value;
+            var colorGreen = document.getElementById("color-green").value;
+            var colorBlue = document.getElementById("color-blue").value;
+
+            var colorCode = `Color(${colorRed}, ${colorGreen}, ${colorBlue})`;
+
+            var customCheckCode = "customCheck = function(ply)\n";
+
+            if (customCheck.length > 0) {
+                customCheckCode += "    return ";
+                var customCheckStatements = [];
+
+                for (var i = 0; i < customCheck.length; i++) {
+                    var optionValue = customCheck[i].value;
+                    var customValue = customCheckValues[optionValue];
+
+                    if (customValue.trim() !== "") {
+                        var checkStatement = "";
+
+                        switch (optionValue) {
+                            case "team":
+                                checkStatement = `table.HasValue({${customValue}}, ply:Team())`;
+                                break;
+                            case "steamid":
+                                checkStatement = `table.HasValue({${customValue}}, ply:SteamID())`;
+                                break;
+                            case "userrank":
+                                checkStatement = `table.HasValue({${customValue}}, ply:GetUserGroup())`;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        if (checkStatement !== "") {
+                            customCheckStatements.push(checkStatement);
+                        }
+                    }
+                }
+
+                if (customCheckStatements.length > 0) {
+                    customCheckCode += customCheckStatements.join(" or ") + "\n";
+                } else {
+                    customCheckCode += "true\n";
+                }
+            } else {
+                customCheckCode += "true\n";
+            }
+
+            customCheckCode += "end";
+
+            var gluaCode = `--[[
+${jobName} Job
+Generated using: DarkRP | Job Generator
+David Site bla
+--]]
+
+${TeamName} = DarkRP.createJob("${jobName}", {
+    color = ${colorCode},
+    model = "${jobModel}",
+    description = [[
+        ${jobDescription}
+    ]],
+    weapons = {
+        -- ... list of weapons ...
+    },
+    command = "${jobName.toLowerCase()}",
+    max = 5,
+    salary = 25,
+    admin = 1,
+    vote = true,
+    hasLicense = true,
+    category = "${jobCategory}",
+    canDemote = false,
+    ${customCheckCode},
+    CustomCheckFailMsg = "This job is donator only!",
+    NeedToChangeFrom = ${jobName.toLowerCase()},
+})`;
+
+            var previewParagraph = document.getElementById("preview-glua");
+            previewParagraph.innerText = gluaCode;
+        }
+
+        function copyJobPreview() {
+            var previewParagraph = document.getElementById("preview-glua");
+
+            // Create a range to select the content
+            var range = document.createRange();
+            range.selectNodeContents(previewParagraph);
+
+            // Create a selection and select the range
+            var selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            // Copy the selected content to the clipboard
+            document.execCommand("copy");
+
+            // Update the button text
+            var copyButton = previewParagraph.parentNode.querySelector("button");
+            copyButton.innerText = "Copied!";
+        }
+
+        function saveValue(event, type) {
+            if (event.key === "Enter") {
+                var value = event.target.value.trim();
+                if (value !== "") {
+                    customValues[type].push(value);
+                    event.target.value = "";
+
+                    var valuesContainer = document.getElementById(type + "-value");
+                    var entry = document.createElement("div");
+                    entry.textContent = value;
+                    valuesContainer.appendChild(entry);
+                }
+            }
+        }
+
+        function saveColorValue(event) {
+            if (event.key === "Enter") {
+                var red = document.getElementById("color-red").value;
+                var green = document.getElementById("color-green").value;
+                var blue = document.getElementById("color-blue").value;
+
+                var value = `Color(${red}, ${green}, ${blue})`;
+                customValues["color"].push(value);
+
+                var valuesContainer = document.getElementById("color-value");
+                var entry = document.createElement("div");
+                entry.textContent = value;
+                valuesContainer.appendChild(entry);
+
+                document.getElementById("color-red").value = "";
+                document.getElementById("color-green").value = "";
+                document.getElementById("color-blue").value = "";
+            }
+        }
+
+        String.prototype.capitalize = function() {
+            return this.charAt(0).toUpperCase() + this.slice(1);
+        };
+
+        // Call the generateJobPreview function initially
+        generateJobPreview();
+
+
+        const axios = require('axios');
+const cheerio = require('cheerio');
+
+const steamGroupURL = 'https://steamcommunity.com/groups/Icefuse-Networks/memberslistxml';
+
+async function getSteamGroupMemberCount() {
+  try {
+    const response = await axios.get(steamGroupURL);
+    const $ = cheerio.load(response.data, { xmlMode: true });
+    const memberCount = $('memberCount').text();
+    console.log('Member Count:', memberCount);
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+}
+
+getSteamGroupMemberCount();
+
+    </script>
+</body>
+</html>
