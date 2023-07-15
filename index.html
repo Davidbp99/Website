@@ -255,9 +255,11 @@ function renderStatsRow() {
 
 
   const MyTeam = [
+  //{ roletype: "Me(David)", discordtag: "", portfoliotext: "2", portfolio: "", description: `Don't think I need to write more about my self. I hope`, imageid: "https://cdn.discordapp.com/avatars/98846769315577856/b26cfa9507ead5ec7139c5527766c47d.png?size=1024" , imagehost: "" , imageformat: ""},
     { roletype: "Chief Financial Officer", discordtag: "", portfoliotext: "2", portfolio: "", description: `This guy have been in the gmod sector as server owner, staff and advisor for some people. He somehow most of the times always end up with a special rank in a community. This time he landed a role to help me set fair priceses on work and addons/maps I sell.`, imageid: "https://cdn.discordapp.com/avatars/112205209354186752/587c246537bb00b98aead3a29616dc34.png?size=1024" , imagehost: "" , imageformat: ""},
     { roletype: "Chief Strategy Officer", discordtag: "", portfoliotext: "2", portfolio: "", description: `At each server that I been manager, staff, server owner and even my own. He have followed me and done amazing work as advisor and plan making at each place I seen him at. He now helps me out when I call for some wise words from him on my discord.`, imageid: "https://cdn.discordapp.com/avatars/285100642148810752/b6258a36128c1e6f67e39f0d8b114bbb.png?size=1024" , imagehost: "" , imageformat: ""},
-
+    { roletype: "Support Manager", discordtag: "", portfoliotext: "His Steam", portfolio: "https://steamcommunity.com/id/GodDrinksTheGoodTea/", description: `I meet this guy on a gmod server as a manager years ago. He showed he was more than capable to be a manager as well. He later on learned some programming example discord bots and other sectors. He is now on my server as support manager  trying to make sure the discord rules/tos is followed and enforced.`, imageid: "https://cdn.discordapp.com/avatars/292672632296570880/a_e54a7635c0af7bf88e6c5b4693b7afad.gif?size=1024" , imagehost: "" , imageformat: ""},
+    { roletype: "Partner Manager", discordtag: "", portfoliotext: "His Portfolio", portfolio: "https://jinjav69.wixsite.com/jinmap", description: `I meet Jinjav a long time before he started mapping from a gmodstore job (can find the map I edited for him somewhere). Where I got to teach him some basic stuff about mapping. Now after some years, he worked for some servers in the gmod community. Now he helps out at my place as a partner manager`, imageid: "https://cdn.discordapp.com/avatars/486597339528822798/d86305dc3421858ffa30e0c279d239f1.png?size=1024" , imagehost: "" , imageformat: ""},
 
 
 
@@ -269,24 +271,8 @@ function renderStatsRow() {
   // Function to create a server row
   function createTeamRow(team) {
     const image = `${team.imageid}` ;
-    
-  if (team.portfolio === "" && team.discordtag !== "" ) {
-              const title = $('<h5>').text(team.roletype).addClass('card-title');
-      const TeamRow = $('<div>').addClass('col-lg-4 mb-4').append(
-      $('<div>').addClass('card2').append(
-        $('<div>').addClass('server-info').append(
-          $('<img>').addClass('team-image').attr('src',image),
-            $('<p>').append(title),
-              $('<p>').addClass('card-text').text("Discord Tag:"+team.discordtag),
-          $('<p>').addClass('card-text').text(team.description),
-            
-        ),
-        
-      )
-    )
-  return TeamRow; 
-} 
-else if (team.portfolio === "" && team.discordtag === "" ) {
+
+if (team.portfolio === "" && team.discordtag === "" ) {
               const title = $('<h5>').text(team.roletype).addClass('card-title');
       const TeamRow = $('<div>').addClass('col-lg-4 mb-4').append(
       $('<div>').addClass('card2').append(
@@ -313,7 +299,6 @@ else if (team.portfolio !== "") {
         $('<div>').addClass('server-info').append(
           $('<img>').addClass('team-image').attr('src',image),
             $('<p>').append(title),
-              $('<p>').addClass('card-text').text("Discord Tag:"+team.discordtag),
           $('<p>').addClass('card-text').text(team.description),
             
         ),
