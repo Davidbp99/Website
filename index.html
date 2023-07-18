@@ -127,9 +127,33 @@ I like working with people and help them reach their goals. This can be from sch
 <script>
 
 
-
 const MyStats = [
+  // Clients
+{ statstype: "discordclientcount", discordid: "NtKsawDRup", forcedvalue: "", link: "test", description: `Total clients on my discord server`, imageid: "" , imagehost: "" , imageformat: ""},
+
+// Server Owners
+{ statstype: "discordclientcount", discordid: "SAqtwVsbYb", forcedvalue: "", link: "test", description: `We got lot of server owners from many games and always looking for more`, imageid: "" , imagehost: "" , imageformat: ""},
+
+// World Designers
+{ statstype: "discordclientcount", discordid: "ajmwbSCxBW", forcedvalue: "", link: "test", description: `We always look for people that understand world design assets for games. Like Source, Unreal Engine etc`, imageid: "" , imagehost: "" , imageformat: ""},
+
+// Model worker
+{ statstype: "discordclientcount", discordid: "n8qepZeVa5", forcedvalue: "", link: "test", description: `We like to see what amazing characters models people can make for games. Skins for minecraft to playermodels in some games.`, imageid: "" , imagehost: "" , imageformat: ""},
+
+// Developers
+{ statstype: "discordclientcount", discordid: "JHNqj9gnBS", forcedvalue: "", link: "test", description: `We always like when people can create amazing creations with just lines of code.`, imageid: "" , imagehost: "" , imageformat: ""},
+
+// Other
+{ statstype: "discordclientcount", discordid: "rhpUchg9NE", forcedvalue: "", link: "test", description: `Graphic designer, Visual Effects Maker, Sound mixer, or something else that we did not list before? We still look for. Creating content is something not many can do`, imageid: "" , imagehost: "" , imageformat: ""},
+
+
+// Partners
+{ statstype: "discordclientcount", discordid: "xg3dJgEm", forcedvalue: "", link: "test", description: `We partner with some discords, gameservers and others to get people out there on the discord platform. As well to get people to find us`, imageid: "" , imagehost: "" , imageformat: ""},
+
+
+// My Discord server
   { statstype: "discord", discordid: "ezaJDmbxPf", forcedvalue: "", link: "test", description: `I created a discord community around gaming and as well as content making. Where lot of people with skills or not joins in and speaks,chats and learns stuff.`, imageid: "" , imagehost: "" , imageformat: ""},
+ 
   { statstype: "gmodstore", discordid: "", forcedvalue: "GmodStore Reputation: 2", link: "https://www.gmodstore.com/users/76561198072640553/reputation", description: "The people I did finish work for on gmodstore wrote reviews on it about how they felt about me. Everyone did not as some wrote on trustpilot instead", imageid: "https://avatars.githubusercontent.com/u/8810709?s=200&v=4" , imagehost: "site" , imageformat: "", buttontext: "Check out my reputation yourself"},
   { statstype: "gmodstore", discordid: "", forcedvalue: "GmodStore Jobs: 5+", link: "#", description: "From my application list I have done over 5 jobs just on gmodstore + some that we finished outside of gmodstore", imageid: "https://avatars.githubusercontent.com/u/8810709?s=200&v=4" , imagehost: "site" , imageformat: "", buttontext: ""},
   { statstype: "gmodstore", discordid: "", forcedvalue: "Trustpilot Reviews: 4", link: "https://www.trustpilot.com/review/safewaycommunity.hxane.com", description: "As I do work outside of gmodstore as well I have used trust pilot for people to write reviews on", imageid: "https://upload.wikimedia.org/wikipedia/commons/7/78/Trustpilot_Logo_%282022%29.svg" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out my reviews yourself"},
@@ -153,7 +177,20 @@ function createStatsRow(stats) {
 
 
 
- if (stats.statstype == "discord") {
+ if (stats.statstype == "discordclientcount") {
+  const title = $('<h5>').text(stats.discordRoleCount).addClass('card-title');
+    const statsRow = $('<div>').addClass('col-lg-4 mb-4').append(
+    $('<div>').addClass('card2').append(
+      $('<div>').addClass('server-info').append(
+        $('<img>').addClass('stats-image').attr('src',stats.discordIcon),
+          $('<p>').append(title),
+        $('<p>').addClass('card-text').text(stats.description),
+          
+      )
+    )
+  )
+return statsRow;
+          } else if (stats.statstype == "discord") {
   const title = $('<h5>').text('Discord Members:' + stats.discordMemberCount).addClass('card-title');
     const statsRow = $('<div>').addClass('col-lg-4 mb-4').append(
     $('<div>').addClass('card2').append(
@@ -169,8 +206,11 @@ function createStatsRow(stats) {
       )
     )
   )
-return statsRow;
-          }else if (stats.statstype == "gmodstore" && stats.buttontext !== "") {
+return statsRow;}
+          
+          
+          
+          else if (stats.statstype == "gmodstore" && stats.buttontext !== "") {
             const title = $('<h5>').text(stats.forcedvalue).addClass('card-title');
     const statsRow = $('<div>').addClass('col-lg-4 mb-4').append(
     $('<div>').addClass('card2').append(
@@ -223,11 +263,17 @@ function renderStatsRow() {
     return Promise.all([discordPromiseAPIStats]).then(([discordDataStats]) => {
       stats.discordinvite = stats.discordid;
       stats.discordMemberCount = discordDataStats.approximate_member_count;
+      stats.discordRoleCount = discordDataStats.channel.name
       stats.discordIcon = `https://cdn.discordapp.com/icons/${discordDataStats.guild.id}/${discordDataStats.guild.icon}.png`;
     
         const statsRow = createStatsRow(stats);
+        if (stats.statstype == "discordclientcount") {
+          $('#discordserverstats').append(statsRow);
+         } else  {
 
-        $('#stats').append(statsRow);
+          $('#stats').append(statsRow);
+          }
+        
         
       })
       .catch(error => {
@@ -341,7 +387,11 @@ else if (team.portfolio !== "") {
     <h5 class="text-center">The team that is making my life easier</h5>
     <div class="row" id="teamrowdiv"> </div>
     </div>
+    <div class="container">
+      <h2 class="text-center">Stats from my discord</h2>
 
+      <div class="row" id="discordserverstats"> </div>
+      </div>
 
 </section>
 
@@ -522,7 +572,7 @@ if (portfolio.type == "map" || portfolio.type == "other" ){
 // Use gameserver for game servers. Can be any game that battlemetrics supports
 const servers = [
   { battlemetricid: "21812512", discordid: "DUuZNXeANx", grupname: "", description: ``, partnertype: "gameserver", isgif: "yes", imagelink: "https://i.imgur.com/8ffUCnZ.gif", },
- // { battlemetricid: "5153368", discordid: "DUuZNXeANx", grupname: "51512", description: "3", partnertype: "discord" },
+  { battlemetricid: "", discordid: "8v6Mbv2SZk", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: ""},
 ];
 
 // Function to create a server row
