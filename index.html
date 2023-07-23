@@ -160,7 +160,7 @@ const MyStats = [
   { statstype: "gmodstore", discordid: "", forcedvalue: "Itch.io Store Items: 1", link: "https://daveswn.itch.io", description: "Made this store long time ago for maps. But might soon change it over to Tebex", imageid: "https://static.itch.io/images/app-icon.svg" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out the store yourself"},
   { statstype: "gmodstore", discordid: "", forcedvalue: "Public VMFs And Code: 16 (code) and 9 public vmfs", link: "https://github.com/Davidbp99?tab=repositories", description: "Even tho I done lot of work for communities that cost money. I still like doing free work that people can improve and learn from. I as well started a new project (repositories) with free addons I make david_extras_free", imageid: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out my github yourself"},
   { statstype: "gmodstore", discordid: "", forcedvalue: "Map Edits 10+ / Maps Fixing 10+ / From The Ground Up 5 / Clients Worked With: 10+", link: "#", description: "Even I done some jobs on gmodstore and outside. I have assisted lot of server owners, mappers, devs etc when I randomly joined their community out of the blue.", imageid: "https://avatars.githubusercontent.com/u/40523727?v=4" ,  imagehost: "site" , imageformat:"" , buttontext: ""},
-  { statstype: "gmodstore", discordid: "", forcedvalue: "Tebex Store: 2 small addons", link: "https://david-addons-maps-discord.tebex.io/category/small-addons", description: "Tebex is my store for my addons I sell. Soon as well might replace one map from Itch.io on it.", imageid: "https://avatars.githubusercontent.com/u/59729610?s=280&v=4" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out my addons store"},
+  { statstype: "tebex", discordid: "wYHQyaKVjj", forcedvalue: "Tebex Store: ", link: "https://david-addons-maps-discord.tebex.io/category/small-addons", description: "Tebex is my store for my addons I sell. Soon as well might replace one map from Itch.io on it.", imageid: "https://avatars.githubusercontent.com/u/59729610?s=280&v=4" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out my addons store"},
   { statstype: "gmodstore", discordid: "", forcedvalue: "Steam Workshop Uploads: 8 Maps + some edits of scripts (some are privated maybe)", link: "https://steamcommunity.com/id/davidswn/myworkshopfiles/?p=1", description: "View some of my public work that you can use (maps and code)", imageid: "https://testmatick.com/wp-content/uploads/2020/04/Logotip-Steam.jpg" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out my workshop uploads"},
 ];
 // Function to create a server row 
@@ -175,7 +175,7 @@ function createStatsRow(stats) {
     image = `${stats.imageid}` ;
   }
 
-
+  
 
  if (stats.statstype == "discordclientcount") {
   const title = $('<h5>').text(stats.discordRoleCount).addClass('card-title');
@@ -245,6 +245,25 @@ return statsRow;
   )
 return statsRow;
           }
+          else if (stats.statstype == "tebex" && stats.buttontext !== "") {
+            const title = $('<h5>').text(stats.forcedvalue+stats.discordRoleCount).addClass('card-title');
+    const statsRow = $('<div>').addClass('col-lg-4 mb-4').append(
+    $('<div>').addClass('card2').append(
+      $('<div>').addClass('server-info').append(
+        $('<img>').addClass('stats-image').attr('src',image),
+          $('<p>').append(title),
+        $('<p>').addClass('card-text').text(stats.description),
+          
+      ),
+      
+      $('<div>').addClass('button-container').append(
+          $('<a>').text(`${stats.buttontext}`).addClass('join-discord-button btn btn-primary').attr('href', `${stats.link}`).attr('target', '_blank'),
+
+      )
+    )
+  )
+return statsRow;
+          } 
 }
 
 
