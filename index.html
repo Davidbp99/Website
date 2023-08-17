@@ -610,6 +610,7 @@ function createServerRow(server) {
     $('<div>').addClass('card2').append(
       $('<div>').addClass('server-info').append(
         image,
+        $('<p>').addClass('card-text').text(server.discordName ),
           $('<p>').addClass('card-text').text('Discord Members:' + server.discordMemberCount ),
         $('<p>').addClass('card-text').text(descriptionoffserver),
           
@@ -705,6 +706,7 @@ function renderServerRows() {
         server.discordMemberCount = discordData.approximate_member_count;
         server.discordIcon = `https://cdn.discordapp.com/icons/${discordData.guild.id}/${discordData.guild.icon}.png`;
 
+
         const serverRow = createServerRow(server);
         // bit tricky way of forcing it to display 6 without stopping at 5 or less
   
@@ -725,7 +727,7 @@ function renderServerRows() {
         server.discordinvite = server.discordid;
         server.discordMemberCount = discordData.approximate_member_count;
         server.discordIcon = `https://cdn.discordapp.com/icons/${discordData.guild.id}/${discordData.guild.icon}.png`;
-
+        server.discordName = discordData.guild.name;
         const serverRow = createServerRow(server);
         // bit tricky way of forcing it to display 6 without stopping at 5 or less
 
