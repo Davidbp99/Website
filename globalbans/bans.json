@@ -1,0 +1,30 @@
+{
+    "allowed_ips": [
+      {
+        "ip": "203.0.113.1",
+        "port": "27015"
+      },
+      {
+        "ip": "198.51.100.1",
+        "port": "27016"
+      }
+    ],
+    "bans": [
+      {
+        "steamid": "STEAM_0:1:12345678",
+        "reason": "Cheating",
+        "added": "2023-06-01T12:34:56Z"
+      },
+      {
+        "steamid": "STEAM_0:0:87654321",
+        "reason": "Exploiting",
+        "added": "2023-06-02T15:30:00Z"
+      },
+      {
+        "steamid": "STEAM_0:1:23456789",
+        "reason": "Abusive Language",
+        "added": "2023-06-03T08:45:00Z"
+      }
+    ]
+  }
+  
