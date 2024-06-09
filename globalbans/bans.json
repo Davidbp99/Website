@@ -11,8 +11,8 @@
     ],
     "bans": [
       {
-        "steamid": "STEAM_0:1:12345678",
-        "reason": "Cheating",
+        "steamid": "STEAM_0:1:56187412",
+        "reason": "Bad Boy",
         "added": "2023-06-01T12:34:56Z"
       },
       {
@@ -25,6 +25,7 @@
         "reason": "Abusive Language",
         "added": "2023-06-03T08:45:00Z"
       }
-    ]
+    ],
+    
   }
   
