@@ -1,31 +1,15 @@
 {
-    "allowed_ips": [
-      {
-        "ip": "83.187.161.182",
-        "port": "27015"
-      },
-      {
-        "ip": "198.51.100.1",
-        "port": "27016"
-      }
-    ],
-    "bans": [
-      {
-        "steamid": "STEAM_0:1:56187412",
-        "reason": "Bad Boy",
-        "added": "2023-06-01T12:34:56Z"
-      },
-      {
-        "steamid": "STEAM_0:0:87654321",
-        "reason": "Exploiting",
-        "added": "2023-06-02T15:30:00Z"
-      },
-      {
-        "steamid": "STEAM_0:1:23456789",
-        "reason": "Abusive Language",
-        "added": "2023-06-03T08:45:00Z"
-      }
-    ]
-    
-  }
-  
+  "allowed_ips": [
+      { "ip": "83.187.161.182", "port": "27015", "auth_key": "amazingkeylol", "auth_enabled": true },
+      { "ip": "198.51.100.1", "port": "27016", "auth_key": "your_auth_key_2", "auth_enabled": false }
+  ],
+  "cheating_bans": [
+      { "steamid": "STEAM_0:1:12345678", "reason": "Cheating", "added": "2023-06-01T12:34:56Z" }
+  ],
+  "exploiting_bans": [
+      { "steamid": "STEAM_0:0:87654321", "reason": "Exploiting", "added": "2023-06-02T15:30:00Z" }
+  ],
+  "abusive_bans": [
+      { "steamid": "STEAM_0:1:23456789", "reason": "Abusive Language", "added": "2023-06-03T08:45:00Z" }
+  ]
+}
