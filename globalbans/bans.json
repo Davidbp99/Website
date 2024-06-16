@@ -1,6 +1,6 @@
 {
   "allowed_ips": [
-    { "ip": "83.187.161.182", "port": "27015", "auth_key": "amazingkeylol", "auth_enabled": true },
+    { "ip": "", "port": "", "auth_key": "", "auth_enabled": true },
       { "ip": "", "port": "", "auth_key": "", "auth_enabled": false }
   ],
   "cheating_bans": [
