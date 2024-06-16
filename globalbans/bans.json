@@ -10,6 +10,7 @@
     { "steamid": "STEAM_0:1:158312843", "reason": "Scammer on gmodstore and outside of the platform", "added": "2024-06-16T12:34:56Z", "note": "Seems to have lot of alt accounts" },
     { "steamid": "STEAM_0:0:125978964", "reason": "alt of STEAM_0:1:158312843", "added": "2024-06-16T12:34:56Z" },
     { "steamid": "STEAM_0:0:768993958", "reason": "alt of STEAM_0:1:158312843", "added": "2024-06-16T12:34:56Z" },
+    { "steamid": "STEAM_0:0:114685213", "reason": "Not paying for freelancers work", "added": "2024-06-16T12:34:56Z" },
     { "steamid": "STEAM_0:0:178681485", "reason": "Not doing the work for clients", "added": "2024-06-16T12:34:56Z", "note": "Is taking a long while to do anything or does not do it at all" }
 ],
   "exploiting_bans": [ 
