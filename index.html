@@ -42,7 +42,7 @@ My Blog: https://davidswndesign.wordpress.com/ " />
     <header>
  <nav class="navbar navbar-expand-sm navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="index.html"><i class='uil uil-user'></i> David</a>
+            <a class="navbar-brand" href="index.html"><span class="navbar-brand-name">David</span></a>
 
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -66,6 +66,7 @@ My Blog: https://davidswndesign.wordpress.com/ " />
                         <a href="#service" class="nav-link"><span data-hover="Service">Services</span></a>
                         </li>
                 </ul>
+                <a href="https://discord.gg/ezaJDmbxPf" target="_blank" class="navbar-hire-btn ms-3">Hire Me</a>
             </div>
         </div>
     </nav>
@@ -73,16 +74,30 @@ My Blog: https://davidswndesign.wordpress.com/ " />
 
     <section id="hero" class="hero">
         <div class="container text-center">
-                              <h1 class="animated animated-text">
-                            <span class="display-4">Hey Server Owners, I'm</span>
-                            <br>
-                                <div class="animated-info">
-                                    <span class="animated-item display-4" style = "font-style: italic;">David</span>
-                                    <span class="animated-item display-4" style = "font-style: italic;">a Source Mapper</span>
-                                    <span class="animated-item display-4" style = "font-style: italic;">a Developer</span>
-                                </div>
-                        </h1>
-            <p class="lead">Specializing in Game Design and gLUA</p>
+            <h1 class="animated animated-text">
+                <span class="display-4">Hey Server Owners, I'm</span>
+                <br>
+                <div class="animated-info">
+                    <span class="animated-item display-4" style="font-style: italic;">David</span>
+                    <span class="animated-item display-4" style="font-style: italic;">a Source Mapper</span>
+                    <span class="animated-item display-4" style="font-style: italic;">a Developer</span>
+                </div>
+            </h1>
+            <p class="hero-subtitle">Specializing in Game Design and gLUA</p>
+            <div class="hero-stats">
+                <span>20+ Clients</span>
+                <span class="hero-stats-divider">·</span>
+                <span id="heroProjectCount">38+ Projects</span>
+                <span class="hero-stats-divider">·</span>
+                <span>5+ Years</span>
+            </div>
+            <div class="hero-cta">
+                <a href="#portfolio" class="hero-btn-primary">View My Work</a>
+                <a href="https://discord.gg/ezaJDmbxPf" target="_blank" class="hero-btn-secondary">Get In Touch</a>
+            </div>
+        </div>
+        <div class="hero-scroll-arrow">
+            <a href="#about">&#8964;</a>
         </div>
     </section>
 <div id="discordButtonContainer">
@@ -112,12 +127,13 @@ I like working with people and help them reach their goals. This can be from sch
   <li>- I lower the price for returning clients (Sometimes). I as well can have special holiday % off of prices (you will get a code at the end to use if you want % off the total price)</li>
 </ul>
 
-<h2>My Stats</h2>
-
-
-                    
                 </div>
-                <div id="stats" class="row"></div> 
+                <div id="stats">
+                  <p class="stats-section-title">Track Record</p>
+                  <div class="row" id="statsReputation"></div>
+                  <p class="stats-section-title">Stores &amp; Links</p>
+                  <div class="row" id="statsPresence"></div>
+                </div>
             </div>
         </div>
     </section>
@@ -149,16 +165,18 @@ const MyStats = [
 
 
 // My Discord server
-  { statstype: "discord", discordid: "ezaJDmbxPf", forcedvalue: "", link: "test", description: `I created a discord community around gaming and as well as content making. Where lot of people with skills or not joins in and speaks,chats and learns stuff.`, imageid: "" , imagehost: "" , imageformat: ""},
+  { statstype: "discord", category: "presence", discordid: "ezaJDmbxPf", forcedvalue: "", link: "test", description: `A community around gaming and content creation. People with skills or without join to chat, share work and learn from each other.`, imageid: "" , imagehost: "" , imageformat: ""},
  
-  { statstype: "gmodstore", discordid: "", forcedvalue: "GmodStore Reputation: 2", link: "https://www.gmodstore.com/users/76561198072640553/reputation", description: "The people I did finish work for on gmodstore wrote reviews on it about how they felt about me. Everyone did not as some wrote on trustpilot instead", imageid: "https://avatars.githubusercontent.com/u/8810709?s=200&v=4" , imagehost: "site" , imageformat: "", buttontext: "Check out my reputation yourself"},
-  { statstype: "gmodstore", discordid: "", forcedvalue: "GmodStore Jobs: 5+", link: "#", description: "From my application list I have done over 5 jobs just on gmodstore + some that we finished outside of gmodstore", imageid: "https://avatars.githubusercontent.com/u/8810709?s=200&v=4" , imagehost: "site" , imageformat: "", buttontext: ""},
-  { statstype: "gmodstore", discordid: "", forcedvalue: "Trustpilot Reviews: 7", link: "https://www.trustpilot.com/review/safewaycommunity.hxane.com", description: "As I do work outside of gmodstore as well I have used trust pilot for people to write reviews on", imageid: "https://upload.wikimedia.org/wikipedia/commons/7/78/Trustpilot_Logo_%282022%29.svg" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out my reviews yourself"},
-  { statstype: "gmodstore", discordid: "", forcedvalue: "Itch.io Store Items: 1", link: "https://daveswn.itch.io", description: "Made this store long time ago for maps. But might soon change it over to Tebex", imageid: "https://static.itch.io/images/app-icon.svg" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out the store yourself"},
-  { statstype: "gmodstore", discordid: "", forcedvalue: "Public VMFs And Code: 16 (code) and 9 public vmfs", link: "https://github.com/Davidbp99?tab=repositories", description: "Even tho I done lot of work for communities that cost money. I still like doing free work that people can improve and learn from. I as well started a new project (repositories) with free addons I make david_extras_free", imageid: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out my github yourself"},
-  { statstype: "gmodstore", discordid: "", forcedvalue: "Map Edits 10+ / Maps Fixing 10+ / From The Ground Up 5 / Clients Worked With: 10+", link: "#", description: "Even I done some jobs on gmodstore and outside. I have assisted lot of server owners, mappers, devs etc when I randomly joined their community out of the blue.", imageid: "https://avatars.githubusercontent.com/u/40523727?v=4" ,  imagehost: "site" , imageformat:"" , buttontext: ""},
-  { statstype: "tebex", discordid: "wYHQyaKVjj", forcedvalue: "Tebex Store: ", link: "https://david-addons-maps-discord.tebex.io", description: "Tebex is my store for my addons I sell. Soon as well might replace one map from Itch.io on it.", imageid: "https://avatars.githubusercontent.com/u/59729610?s=280&v=4" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out my addons store"},
-  { statstype: "gmodstore", discordid: "", forcedvalue: "Steam Workshop Uploads: 8 Maps + some edits of scripts (some are privated maybe)", link: "https://steamcommunity.com/id/davidswn/myworkshopfiles/?p=1", description: "View some of my public work that you can use (maps and code)", imageid: "https://testmatick.com/wp-content/uploads/2020/04/Logotip-Steam.jpg" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out my workshop uploads"},
+  { statstype: "gmodstore", category: "reputation", discordid: "", forcedvalue: "GmodStore Reputation: 2", link: "https://www.gmodstore.com/users/76561198072640553/reputation", description: "Reviews left by clients I worked with on GmodStore. Some wrote on Trustpilot instead.", imageid: "https://avatars.githubusercontent.com/u/8810709?s=200&v=4" , imagehost: "site" , imageformat: "", buttontext: "Check out my reputation yourself"},
+  { statstype: "gmodstore", category: "reputation", discordid: "", forcedvalue: "GmodStore Jobs: 5+", link: "#", description: "Jobs completed via GmodStore applications, plus additional work closed outside the platform.", imageid: "https://avatars.githubusercontent.com/u/8810709?s=200&v=4" , imagehost: "site" , imageformat: "", buttontext: ""},
+  { statstype: "gmodstore", category: "reputation", discordid: "", forcedvalue: "Trustpilot Reviews: 7", link: "https://www.trustpilot.com/review/safewaycommunity.hxane.com", description: "Client reviews collected on Trustpilot for work done outside of GmodStore.", imageid: "https://upload.wikimedia.org/wikipedia/commons/7/78/Trustpilot_Logo_%282022%29.svg" , imagehost: "site" , imageformat:"" , buttontext: "Check out my reviews yourself"},
+  { statstype: "gmodstore", category: "reputation", discordid: "", forcedvalue: "Maps: 5 from scratch · 10+ edits · 10+ fixes", link: "#", description: "Includes full ground-up builds, client edits, and community fix jobs. Many done for free outside of paid work.", imageid: "https://avatars.githubusercontent.com/u/40523727?v=4" , imagehost: "site" , imageformat:"" , buttontext: ""},
+  { statstype: "gmodstore", category: "reputation", discordid: "", forcedvalue: "Clients Worked With: 20+", link: "#", description: "Paid and free client work across GmodStore, direct Discord commissions and community assistance.", imageid: "https://avatars.githubusercontent.com/u/40523727?v=4" , imagehost: "site" , imageformat:"" , buttontext: ""},
+  { statstype: "portfoliocount", category: "reputation", discordid: "", forcedvalue: "", link: "#", description: "Total projects listed on this site across maps, gLUA and other work. More projects exist that are not yet added.", imageid: "https://avatars.githubusercontent.com/u/40523727?v=4" , imagehost: "site" , imageformat:"" , buttontext: ""},
+  { statstype: "gmodstore", category: "presence", discordid: "", forcedvalue: "Public Code: 16 repos · 9 public VMFs", link: "https://github.com/Davidbp99?tab=repositories", description: "Free work people can use and learn from. Includes the david_extras_free addon project.", imageid: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" , imagehost: "site" , imageformat:"" , buttontext: "Check out my GitHub"},
+  { statstype: "gmodstore", category: "presence", discordid: "", forcedvalue: "Steam Workshop: 8 Maps", link: "https://steamcommunity.com/id/davidswn/myworkshopfiles/?p=1", description: "Public maps and script uploads on the Steam Workshop. Some entries may be privated.", imageid: "https://testmatick.com/wp-content/uploads/2020/04/Logotip-Steam.jpg" , imagehost: "site" , imageformat:"" , buttontext: "Check out my workshop"},
+  { statstype: "gmodstore", category: "presence", discordid: "", forcedvalue: "Itch.io Store: 1 item", link: "https://daveswn.itch.io", description: "Original store for map sales. May move to Tebex going forward.", imageid: "https://static.itch.io/images/app-icon.svg" , imagehost: "site" , imageformat:"" , buttontext: "Check out the store"},
+  { statstype: "tebex", category: "presence", discordid: "wYHQyaKVjj", forcedvalue: "Tebex Store: ", link: "https://david-addons-maps-discord.tebex.io", description: "Main store for addons and maps. Replacing Itch.io going forward.", imageid: "https://avatars.githubusercontent.com/u/59729610?s=280&v=4" , imagehost: "site" , imageformat:"" , buttontext: "Check out my addons store"},
 ];
 // Function to create a stat card
 function createStatsRow(stats) {
@@ -173,6 +191,7 @@ function createStatsRow(stats) {
   if      (stats.statstype === 'discordclientcount') titleText = stats.discordRoleCount;
   else if (stats.statstype === 'discord')            titleText = 'Discord Members: ' + stats.discordMemberCount;
   else if (stats.statstype === 'tebex')              titleText = stats.forcedvalue + (stats.discordRoleCount || '');
+  else if (stats.statstype === 'portfoliocount')     titleText = 'Portfolio Projects: ' + (typeof portfolios !== 'undefined' ? portfolios.length + '+' : '...');
   else                                               titleText = stats.forcedvalue;
 
   // Resolve button
@@ -190,7 +209,8 @@ function createStatsRow(stats) {
     $('<p>').addClass('stat-value').text(titleText),
     $('<p>').addClass('card-text').text(stats.description)
   );
-  const $card = $('<div>').addClass('card2').append($inner);
+  const catClass = stats.category === 'reputation' ? 'stat-reputation' : stats.category === 'presence' ? 'stat-presence' : '';
+  const $card = $('<div>').addClass('card2 ' + catClass).append($inner);
 
   if (btnHref) {
     $card.append(
@@ -205,43 +225,32 @@ function createStatsRow(stats) {
 }
 
 
-// Function to render the server rows
+// Function to render stat rows
 function renderStatsRow() {
-
-  const shuffledStats = MyStats.sort(() => 0.5 - Math.random());
-
-  shuffledStats.forEach(function(stats,index) {
-    if (stats.discordid !== "") {
-    const discordUrlStats = `https://discord.com/api/v10/invites/${stats.discordid}?with_counts=true&with_expiration=true`;
-    
-
-    const discordPromiseAPIStats = fetch(discordUrlStats).then(response => response.json());
-    
-    return Promise.all([discordPromiseAPIStats]).then(([discordDataStats]) => {
-      stats.discordinvite = stats.discordid;
-      stats.discordMemberCount = discordDataStats.approximate_member_count;
-      stats.discordRoleCount = discordDataStats.channel.name
-      stats.discordIcon = `https://cdn.discordapp.com/icons/${discordDataStats.guild.id}/${discordDataStats.guild.icon}.png`;
-    
+  MyStats.forEach(function(stats) {
+    if (stats.discordid !== '') {
+      const discordUrlStats = 'https://discord.com/api/v10/invites/' + stats.discordid + '?with_counts=true&with_expiration=true';
+      fetch(discordUrlStats).then(function(r) { return r.json(); }).then(function(discordDataStats) {
+        stats.discordinvite = stats.discordid;
+        stats.discordMemberCount = discordDataStats.approximate_member_count;
+        stats.discordRoleCount = discordDataStats.channel.name;
+        stats.discordIcon = 'https://cdn.discordapp.com/icons/' + discordDataStats.guild.id + '/' + discordDataStats.guild.icon + '.png';
         const statsRow = createStatsRow(stats);
-        if (stats.statstype == "discordclientcount") {
+        if (stats.statstype === 'discordclientcount') {
           $('#discordserverstats').append(statsRow);
-         } else  {
-
-          $('#stats').append(statsRow);
-          }
-        
-        
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-    }else if (stats.discordid === "") {
-        const statsRow = createStatsRow(stats);
-
-        $('#stats').append(statsRow);
-        
-
+        } else if (stats.category === 'reputation') {
+          $('#statsReputation').append(statsRow);
+        } else {
+          $('#statsPresence').append(statsRow);
+        }
+      }).catch(function(error) { console.error('Error:', error); });
+    } else {
+      const statsRow = createStatsRow(stats);
+      if (stats.category === 'reputation') {
+        $('#statsReputation').append(statsRow);
+      } else {
+        $('#statsPresence').append(statsRow);
+      }
     }
   });
 }
@@ -748,6 +757,11 @@ setInterval(renderServerRows, 300000);
       renderTeamRow();
       // Footer year
       document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+      // Hero project count — auto from portfolios array
+      if (typeof portfolios !== 'undefined') {
+        document.getElementById('heroProjectCount').textContent = portfolios.length + '+ Projects';
+      }
 
       // Auto-calculate age from birthday
       (function() {
