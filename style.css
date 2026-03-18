@@ -129,12 +129,55 @@ body.dark-mode {
     max-height: 100px;
   }
 
-.team-image{
-  min-width: 50px;
-  min-height: 50px;
-  max-width: 100px;
-  max-height: 100px;
+/* ── Team cards ── */
+.team-card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px 16px 12px;
+}
+
+.team-image {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
   border-radius: 50%;
+  border: 3px solid #555;
+  margin-bottom: 14px;
+}
+
+.role-badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 3px 12px;
+  border-radius: 14px;
+  background: #857F72;
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 10px;
+}
+
+/* ── Service price pill ── */
+.price-pill {
+  display: inline-block;
+  background: #2d6a4f;
+  color: #fff;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 13px;
+  margin: 8px 0 4px;
+}
+
+/* ── Stat value title ── */
+.stat-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e8e8e8;
+  margin-bottom: 4px;
 }
 
 .service-image{
@@ -207,5 +250,74 @@ transform: scale(1.05);
 #serverList {
 max-width: 100%;
 position: relative;
+}
 
+/* ── Card polish ── */
+.card3, .card2, .cardservice {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+/* ── Portfolio filter tabs ── */
+.portfolio-filters {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  background: transparent;
+  color: #ccc;
+  border: 2px solid #555;
+  padding: 7px 22px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.filter-btn:hover {
+  border-color: #aaa;
+  color: #fff;
+}
+
+.filter-btn.active {
+  background: #857F72;
+  border-color: #857F72;
+  color: #fff;
+}
+
+/* ── Type badge on portfolio cards ── */
+.type-badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 9px;
+  border-radius: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+.badge-map   { background: #2c6fad; color: #fff; }
+.badge-glua  { background: #7b3fc4; color: #fff; }
+.badge-other { background: #2a7a4b; color: #fff; }
+
+/* ── Portfolio card hidden for filter ── */
+.portfolio-item.hidden {
+  display: none;
+}
+
+/* ── Scroll fade-in ── */
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.fade-in-section.is-visible {
+  opacity: 1;
+  transform: none;
 }

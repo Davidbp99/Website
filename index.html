@@ -65,9 +65,6 @@ My Blog: https://davidswndesign.wordpress.com/ " />
                      <li class="nav-item">
                         <a href="#service" class="nav-link"><span data-hover="Service">Services</span></a>
                         </li>
-                        <li class="nav-item">
-                          <a href="#referrals" class="nav-link"><span data-hover="Referrals">Referral</span></a>
-                          </li>
                 </ul>
             </div>
         </div>
@@ -103,7 +100,7 @@ My Blog: https://davidswndesign.wordpress.com/ " />
                 </div>
                 <div class="col-lg-6">
                     <h2>About Me</h2>
-                    <p class="textaboutme">Swedish guy called David (24 years old.for whoever wanted to know). Started mapping back in 2018 but released my first public map at 2019 in the gamemode darkrp. I love thinking outside the box and creating content with games tools thats out there in the world.<br>
+                    <p class="textaboutme">Swedish guy called David (<span id="myAge"></span> years old.for whoever wanted to know). Started mapping back in 2018 but released my first public map at 2019 in the gamemode darkrp. I love thinking outside the box and creating content with games tools thats out there in the world.<br>
 
 I like working with people and help them reach their goals. This can be from school, thier perfect map or life.</p>
 
@@ -163,107 +160,48 @@ const MyStats = [
   { statstype: "tebex", discordid: "wYHQyaKVjj", forcedvalue: "Tebex Store: ", link: "https://david-addons-maps-discord.tebex.io", description: "Tebex is my store for my addons I sell. Soon as well might replace one map from Itch.io on it.", imageid: "https://avatars.githubusercontent.com/u/59729610?s=280&v=4" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out my addons store"},
   { statstype: "gmodstore", discordid: "", forcedvalue: "Steam Workshop Uploads: 8 Maps + some edits of scripts (some are privated maybe)", link: "https://steamcommunity.com/id/davidswn/myworkshopfiles/?p=1", description: "View some of my public work that you can use (maps and code)", imageid: "https://testmatick.com/wp-content/uploads/2020/04/Logotip-Steam.jpg" ,  imagehost: "site" , imageformat:"" , buttontext: "Check out my workshop uploads"},
 ];
-// Function to create a server row 
+// Function to create a stat card
 function createStatsRow(stats) {
-  let image;
-        if (stats.imagehost == "imgur") {
-    image = `https://i.imgur.com/${stats.imageid}.${stats.imageformat}`;
-  } else if (stats.imagehost == "gyazo") {
-    image = `https://i.gyazo.com/${stats.imageid}.${stats.imageformat}`;
-  } 
-  else if (stats.imagehost == "site") {
-    image = `${stats.imageid}` ;
+  // Resolve image source
+  let imgSrc = stats.discordIcon || '';
+  if (stats.imagehost === 'site')  imgSrc = stats.imageid;
+  if (stats.imagehost === 'imgur') imgSrc = `https://i.imgur.com/${stats.imageid}.${stats.imageformat}`;
+  if (stats.imagehost === 'gyazo') imgSrc = `https://i.gyazo.com/${stats.imageid}.${stats.imageformat}`;
+
+  // Resolve title text
+  let titleText;
+  if      (stats.statstype === 'discordclientcount') titleText = stats.discordRoleCount;
+  else if (stats.statstype === 'discord')            titleText = 'Discord Members: ' + stats.discordMemberCount;
+  else if (stats.statstype === 'tebex')              titleText = stats.forcedvalue + (stats.discordRoleCount || '');
+  else                                               titleText = stats.forcedvalue;
+
+  // Resolve button
+  let btnHref = null, btnLabel = null;
+  if (stats.statstype === 'discord') {
+    btnHref  = `https://discord.gg/${stats.discordinvite}`;
+    btnLabel = 'Join Discord Server';
+  } else if (stats.buttontext) {
+    btnHref  = stats.link;
+    btnLabel = stats.buttontext;
   }
 
-  
+  const $inner = $('<div>').addClass('server-info').append(
+    $('<img>').addClass('stats-image').attr('src', imgSrc),
+    $('<p>').addClass('stat-value').text(titleText),
+    $('<p>').addClass('card-text').text(stats.description)
+  );
+  const $card = $('<div>').addClass('card2').append($inner);
 
- if (stats.statstype == "discordclientcount") {
-  const title = $('<h5>').text(stats.discordRoleCount).addClass('card-title');
-    const statsRow = $('<div>').addClass('col-lg-4 mb-4').append(
-    $('<div>').addClass('card2').append(
-      $('<div>').addClass('server-info').append(
-        $('<img>').addClass('stats-image').attr('src',stats.discordIcon),
-          $('<p>').append(title),
-        $('<p>').addClass('card-text').text(stats.description),
-          
-      )
-    )
-  )
-return statsRow;
-          } else if (stats.statstype == "discord") {
-  const title = $('<h5>').text('Discord Members:' + stats.discordMemberCount).addClass('card-title');
-    const statsRow = $('<div>').addClass('col-lg-4 mb-4').append(
-    $('<div>').addClass('card2').append(
-      $('<div>').addClass('server-info').append(
-        $('<img>').addClass('stats-image').attr('src',stats.discordIcon),
-          $('<p>').append(title),
-        $('<p>').addClass('card-text').text('Description: ' + stats.description),
-          
-      ),
+  if (btnHref) {
+    $card.append(
       $('<div>').addClass('button-container').append(
-          $('<a>').text('Join Discord Server').addClass('join-discord-button btn btn-primary').attr('href', `https://discord.gg/${stats.discordinvite}`).attr('target', '_blank'),
-
+        $('<a>').text(btnLabel).addClass('join-discord-button btn btn-primary')
+          .attr('href', btnHref).attr('target', '_blank')
       )
-    )
-  )
-return statsRow;}
-          
-          
-          
-          else if (stats.statstype == "gmodstore" && stats.buttontext !== "") {
-            const title = $('<h5>').text(stats.forcedvalue).addClass('card-title');
-    const statsRow = $('<div>').addClass('col-lg-4 mb-4').append(
-    $('<div>').addClass('card2').append(
-      $('<div>').addClass('server-info').append(
-        $('<img>').addClass('stats-image').attr('src',image),
-          $('<p>').append(title),
-        $('<p>').addClass('card-text').text(stats.description),
-          
-      ),
-      
-      $('<div>').addClass('button-container').append(
-          $('<a>').text(`${stats.buttontext}`).addClass('join-discord-button btn btn-primary').attr('href', `${stats.link}`).attr('target', '_blank'),
+    );
+  }
 
-      )
-    )
-  )
-return statsRow;
-          } 
-
-        else if (stats.statstype == "gmodstore" && stats.buttontext === "") {
-          const title = $('<h5>').text(stats.forcedvalue).addClass('card-title');
-    const statsRow = $('<div>').addClass('col-lg-4 mb-4').append(
-    $('<div>').addClass('card2').append(
-      $('<div>').addClass('server-info').append(
-        $('<img>').addClass('stats-image').attr('src',image),
-          $('<p>').addClass('card-text').append(title),
-        $('<p>').addClass('card-text').text(stats.description),
-          
-      ),
-
-    )
-  )
-return statsRow;
-          }
-          else if (stats.statstype == "tebex" && stats.buttontext !== "") {
-            const title = $('<h5>').text(stats.forcedvalue+stats.discordRoleCount).addClass('card-title');
-    const statsRow = $('<div>').addClass('col-lg-4 mb-4').append(
-    $('<div>').addClass('card2').append(
-      $('<div>').addClass('server-info').append(
-        $('<img>').addClass('stats-image').attr('src',image),
-          $('<p>').append(title),
-        $('<p>').addClass('card-text').text(stats.description),
-          
-      ),
-      
-      $('<div>').addClass('button-container').append(
-          $('<a>').text(`${stats.buttontext}`).addClass('join-discord-button btn btn-primary').attr('href', `${stats.link}`).attr('target', '_blank'),
-
-      )
-    )
-  )
-return statsRow;
-          } 
+  return $('<div>').addClass('col-lg-4 mb-4').append($card);
 }
 
 
@@ -328,57 +266,29 @@ function renderStatsRow() {
 
 
   ];
-  // Function to create a server row
+  // Function to create a team member card
   function createTeamRow(team) {
-    let image;
-    if (team.imagehost == "imgur") {
-image = `https://i.imgur.com/${team.imageid}.${team.imageformat}`;
-} else if (team.imagehost == "gyazo") {
-image = `https://i.gyazo.com/${team.imageid}.${team.imageformat}`;
-} else if (team.imagehost == "site") {
-image = `${team.imageid}` ;
-}
+    let imgSrc = team.imageid;
+    if (team.imagehost === 'imgur') imgSrc = 'https://i.imgur.com/' + team.imageid + '.' + team.imageformat;
+    if (team.imagehost === 'gyazo') imgSrc = 'https://i.gyazo.com/' + team.imageid + '.' + team.imageformat;
 
-if (team.portfolio === "" && team.discordtag === "" ) {
-              const title = $('<h5>').text(team.roletype).addClass('card-title');
-      const TeamRow = $('<div>').addClass('col-lg-4 mb-4').append(
-      $('<div>').addClass('card2').append(
-        $('<div>').addClass('server-info').append(
-          $('<img>').addClass('team-image').attr('src',image),
-            $('<p>').append(title),
-          $('<p>').addClass('card-text').text(team.description),
-            
-        ),
-        
-      )
-    )
-  return TeamRow; 
-} 
+    const $inner = $('<div>').addClass('team-card-inner').append(
+      $('<img>').addClass('team-image').attr('src', imgSrc),
+      $('<span>').addClass('role-badge').text(team.roletype),
+      $('<p>').addClass('card-text').text(team.description)
+    );
+    const $card = $('<div>').addClass('card2').append($inner);
 
-
-
-
-
-else if (team.portfolio !== "") {
-              const title = $('<h5>').text(team.roletype).addClass('card-title');
-      const TeamRow = $('<div>').addClass('col-lg-4 mb-4').append(
-      $('<div>').addClass('card2').append(
-        $('<div>').addClass('server-info').append(
-          $('<img>').addClass('team-image').attr('src',image),
-            $('<p>').append(title),
-          $('<p>').addClass('card-text').text(team.description),
-            
-        ),
-        
+    if (team.portfolio !== '') {
+      $card.append(
         $('<div>').addClass('button-container').append(
-            $('<a>').text(`${team.portfoliotext}`).addClass('join-discord-button btn btn-primary').attr('href', `${team.portfolio}`).attr('target', '_blank'),
-  
+          $('<a>').text(team.portfoliotext).addClass('btn btn-primary')
+            .attr('href', team.portfolio).attr('target', '_blank')
         )
-      )
-    )
-  return TeamRow; }
+      );
+    }
 
-
+    return $('<div>').addClass('col-lg-4 mb-4').append($card);
   }
   
   
@@ -459,6 +369,22 @@ else if (team.portfolio !== "") {
       { title: "gBattalionManagement" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "w3gGXxlEgUk", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "This system is a plugin i made of Nicolas RP rank system. Where officers could use some commands, spawn props and npcs. The NPCs would not give people any money or wOS xp for case of abuse", extradbutton: "", extrabuttontext: "" },
       { title: "Star Wars Lego Hud (first UI with many UI in it)" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/hudwork.png", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View Configs And More Images', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "As the title says. The first *UI* I made fully. It got extra styles via the config so if style 1 is not liked then you got style 2. Same as a target hud. I added animations to make it feel more alive as well (its why you see read heart are smaller in the image while blue hearts are bigger)", extradbutton: "", extrabuttontext: "" },
 
+      { title: "gCashback" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "P7qEr1u81cg", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "A cashback reward system for Garry's Mod servers. Players earn a set percentage back on in-game purchases, giving them a reason to keep spending and return to the shop.", extradbutton: "", extrabuttontext: "" },
+
+      { title: "dlogs" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "y63Svv8uA3E", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "A developer logging system for Garry's Mod. Structured and filterable logs make it easy to trace issues, monitor player actions and debug across your server.", extradbutton: "https://www.youtube.com/watch?v=V8As2jTMROg", extrabuttontext: "Extra Video" },
+
+      { title: "Borderlands Chest + Dying Light Entity (WIP)" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "SZ5IQzLOJAo", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "Custom prop entities. The Borderlands 2 style lootable storage chest spawns with randomized loot on open. The Dying Light entity shown alongside was a work in progress recreation/port.", extradbutton: "", extrabuttontext: "" },
+
+      { title: "NPC Optimized Spawner Tool (JvS)" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "XNAFFo_j95o", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "A staff-side NPC spawner tool built for Jedi vs Sith servers. Optimized to manage NPC counts intelligently so mass spawning during events does not tank server performance.", extradbutton: "", extrabuttontext: "" },
+
+      { title: "Learning Book (Early Version)" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "1YCkF3vQzL4", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "An early version of an interactive in-game learning book. Players and new recruits can read through server lore, rules or regiment guides directly in-game without needing an external site or document.", extradbutton: "", extrabuttontext: "" },
+
+      { title: "Polymarket in GMod" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/polymarket.png", imageformat: "png", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "A Polymarket-style prediction market built fully inside Garry's Mod. Players deposit in-game currency, browse real-world market questions, place YES/NO bets with live odds, and claim their winnings.", extradbutton: "", extrabuttontext: "" },
+
+      { title: "AI Event Generator (WIP)" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/aievents.png", imageformat: "png", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "A work-in-progress AI event generator panel for Star Wars RP server staff. Staff can auto-generate fully detailed events (description, objectives, twist, regiment roles, staff notes) using an API key, or use copy/paste mode for free with Claude or ChatGPT.", extradbutton: "", extrabuttontext: "" },
+
+      { title: "Armor + Inventory System" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/armorinventory.png", imageformat: "png", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "A full armor and inventory system with item rarities (Common, Rare, Epic, Legendary), per-item stat bonuses (HP, Speed, Armor), loot box drops, and an armory UI with loadout management and deploy/discard functionality.", extradbutton: "", extrabuttontext: "" },
+
 
 
 // Other
@@ -471,112 +397,75 @@ else if (team.portfolio !== "") {
 
     function createPortfiloRows(portfolio) {
       let image;
-        if (portfolio.imagehost == "imgur") {
-    image = $('<img>').addClass('card-img-top').attr('src',`https://i.imgur.com/${portfolio.imageid}.${portfolio.imageformat}`);
-  } else if (portfolio.imagehost == "gyazo") {
-    image = $('<img>').addClass('card-img-top').attr('src',`https://i.gyazo.com/${portfolio.imageid}.${portfolio.imageformat}`);
-  } else if (portfolio.imagehost == "discord") {
-    image = $('<img>').addClass('card-img-top').attr('src',`https://cdn.discordapp.com/attachments/${portfolio.chatid}/${portfolio.randomid}/${portfolio.randomid}.${portfolio.imageformat}`);
-  } else if (portfolio.imagehost == "site") {
-    image = $('<img>').addClass('card-img-top').attr('src',`${portfolio.imageid}`) ;
-  } else if (portfolio.imagehost == "iframe") {
-    image = $('<iframe>').addClass('card-video-top').attr('src',`https://www.youtube.com/embed/${portfolio.imageid}`).attr(`height`, "300px").attr("width", "100%") ;
-  }
+      if (portfolio.imagehost == "imgur") {
+        image = $('<img>').addClass('card-img-top').attr('src', `https://i.imgur.com/${portfolio.imageid}.${portfolio.imageformat}`);
+      } else if (portfolio.imagehost == "gyazo") {
+        image = $('<img>').addClass('card-img-top').attr('src', `https://i.gyazo.com/${portfolio.imageid}.${portfolio.imageformat}`);
+      } else if (portfolio.imagehost == "discord") {
+        image = $('<img>').addClass('card-img-top').attr('src', `https://cdn.discordapp.com/attachments/${portfolio.chatid}/${portfolio.randomid}/${portfolio.randomid}.${portfolio.imageformat}`);
+      } else if (portfolio.imagehost == "site") {
+        image = $('<img>').addClass('card-img-top').attr('src', `${portfolio.imageid}`);
+      } else if (portfolio.imagehost == "iframe") {
+        image = $('<iframe>').addClass('card-video-top').attr('src', `https://www.youtube.com/embed/${portfolio.imageid}`).attr('height', "300px").attr("width", "100%");
+      }
 
-if (portfolio.type == "map" || portfolio.type == "other" ){
-  if (portfolio.extradbutton === ""){
+      const badgeLabels = { map: 'Map', glua: 'gLUA', other: 'Other' };
+      const badgeClasses = { map: 'badge-map', glua: 'badge-glua', other: 'badge-other' };
+      const badge = $('<span>').text(badgeLabels[portfolio.type] || portfolio.type)
+        .addClass(`type-badge ${badgeClasses[portfolio.type] || ''}`);
+
       const title = $('<h5>').text(portfolio.title).addClass('card-title');
-      const details = $('<a>').text(portfolio.buttontext).addClass('btn btn-primary').attr('href', portfolio.buttonlink).attr('target', '_blank');
       const description = $('<p>').text(portfolio.description).addClass('card-text');
-
-
-      // Here we create our special cards so it look fancy
-      const Colums = $('<div>').addClass('col-lg-4 mb-4').append(
-        $('<div>').addClass('card3').append(
-            image,
-             $('<div>').addClass('server-info').append(title),
-                $('<div>').addClass('card-text').append(description,details)));
-      return Colums;
-                }else  if (portfolio.extradbutton !== ""){
-      const title = $('<h5>').text(portfolio.title).addClass('card-title');
       const details = $('<a>').text(portfolio.buttontext).addClass('btn btn-primary').attr('href', portfolio.buttonlink).attr('target', '_blank');
+
+      const cardText = $('<div>').addClass('card-text').append(description, details);
+      if (portfolio.extradbutton !== "") {
         const detailsextra = $('<a>').text(portfolio.extrabuttontext).addClass('btn btn-secondary').attr('href', portfolio.extradbutton).attr('target', '_blank');
-      const description = $('<p>').text(portfolio.description).addClass('card-text');
+        cardText.append(detailsextra);
+      }
 
-
-      // Here we create our special cards so it look fancy
-      const Colums = $('<div>').addClass('col-lg-4 mb-4').append(
-        $('<div>').addClass('card3').append(
-            image,
-             $('<div>').addClass('server-info').append(title),
-                $('<div>').addClass('card-text').append(description,details,detailsextra)));
-      return Colums;
-                }
-                }else if (portfolio.type == "glua"){
-                  if (portfolio.extradbutton === ""){
-      const title = $('<h5>').text(portfolio.title).addClass('card-title');
-      const details = $('<a>').text(portfolio.buttontext).addClass('btn btn-primary').attr('href', portfolio.buttonlink).attr('target', '_blank');
-      const description = $('<p>').text(portfolio.description).addClass('card-text');
-
-
-      // Here we create our special cards so it look fancy
-      const Colums = $('<div>').addClass('col-lg-4 mb-4').append(
-        $('<div>').addClass('card3').append(
-            image,
-             $('<div>').addClass('server-info').append(title),
-                $('<div>').addClass('card-text').append(description,details)));
-      return Colums;
-                }else if (portfolio.extradbutton !== ""){
-      const title = $('<h5>').text(portfolio.title).addClass('card-title');
-      const details = $('<a>').text(portfolio.buttontext).addClass('btn btn-primary').attr('href', portfolio.buttonlink).attr('target', '_blank');
-        const detailsextra = $('<a>').text(portfolio.extrabuttontext).addClass('btn btn-secondary').attr('href', portfolio.extradbutton).attr('target', '_blank');
-      const description = $('<p>').text(portfolio.description).addClass('card-text');
-
-
-      // Here we create our special cards so it look fancy
-      const Colums = $('<div>').addClass('col-lg-4 mb-4').append(
+      return $('<div>').addClass('col-lg-4 mb-4 portfolio-item').attr('data-type', portfolio.type).append(
         $('<div>').addClass('card3').append(
           image,
-             $('<div>').addClass('server-info').append(title),
-                $('<div>').addClass('card-text').append(description,details,detailsextra)));
-      return Colums;
-                }
-
-                }
+          $('<div>').addClass('server-info').append(badge, title),
+          cardText
+        )
+      );
 }
 
 
-    // Function to render the server rows
+    // Function to render all portfolio cards into the single grid
     function renderPortfolioRows() {
-    
-      // Iterate over the servers array
       portfolios.forEach(function (portfolio) {
-        // Create a row for each server
-        const Colums = createPortfiloRows(portfolio);
-
-        // here we do our fancy spliting between service
-        if (portfolio.type == "glua") {
-        $('#portfolisrowsglua').append(Colums);
-    } else if (portfolio.type == "map") {
-        $('#portfolisrowsmap').append(Colums);
-    }
-    else if (portfolio.type == "other") {
-        $('#portfolisrowother').append(Colums);
-    }
-
-
-   
+        const col = createPortfiloRows(portfolio);
+        $('#portfolioAllRows').append(col);
       });
     }
 
-    
+    // Portfolio filter tab logic
+    $(document).on('click', '.filter-btn', function () {
+      $('.filter-btn').removeClass('active');
+      $(this).addClass('active');
+      const filter = $(this).data('filter');
+      if (filter === 'all') {
+        $('.portfolio-item').removeClass('hidden');
+      } else {
+        $('.portfolio-item').each(function () {
+          $(this).toggleClass('hidden', $(this).data('type') !== filter);
+        });
+      }
+    });
+
+
 
 </script>
-            <div class="row" id="portfolisrowsmap"> </div>
-            <h2 class="text-center">Portfolio gLUA</h2>
-            <div class="row" id="portfolisrowsglua"> </div>
-            <h2 class="text-center">Portfolio Other</h2>
-            <div class="row" id="portfolisrowother"> </div>
+            <div class="portfolio-filters">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="map">Maps</button>
+              <button class="filter-btn" data-filter="glua">gLUA</button>
+              <button class="filter-btn" data-filter="other">Other</button>
+            </div>
+            <div class="row" id="portfolioAllRows"></div>
            
         </div>
 
@@ -811,39 +700,34 @@ setInterval(renderServerRows, 300000);
     ];
       
       function createserviceListing(serviceslist) {
-        let image;
-        if (serviceslist.imagehost == "imgur") {
-    image = `https://i.imgur.com/${serviceslist.imageid}.${serviceslist.imageformat}`;
-  } else if (serviceslist.imagehost == "gyazo") {
-    image = `https://i.gyazo.com/${serviceslist.imageid}.${serviceslist.imageformat}`;
-  } else if (serviceslist.imagehost == "discord") {
-    image = `https://cdn.discordapp.com/attachments/${serviceslist.chatid}/${serviceslist.randomid}/${serviceslist.randomid}.${serviceslist.imageformat}`;
-  } else if (serviceslist.imagehost == "site") {
-    image = `${serviceslist.imageid}` ;
-  }
-      const title = $('<h5>').text(serviceslist.title).addClass('card-title');
-  
-      const details = $('<a>').text('View Details').addClass('btn btn-primary').attr('href', serviceslist.buttonlink).attr('target', '_blank');
-     
-      const description = $('<p>').text(serviceslist.description).addClass('card-text');
-      const priceofservice = $('<p>').text(serviceslist.price).addClass('price-text');
-    
-     
-      if (serviceslist.buttonlink === "") {
-      const ColumsService = $('<div>').addClass('col-lg-4 mb-4').append(
-        $('<div>').addClass('cardservice').append(
-            $('<img>').addClass('service-image').attr('src',image),
-             $('<div>').addClass('server-info').append(title),
-                $('<div>').addClass('card-text').append(description,priceofservice)));
-                  return ColumsService;
-                }
-          const ColumsService = $('<div>').addClass('col-lg-4 mb-4').append(
-        $('<div>').addClass('cardservice').append(
-            $('<img>').addClass('service-image').attr('src',image),
-             $('<div>').addClass('server-info').append(title),
-                $('<div>').addClass('card-text').append(description,priceofservice,details)));
-                
-      return ColumsService;
+        let imgSrc = serviceslist.imageid;
+        if (serviceslist.imagehost === 'imgur') imgSrc = 'https://i.imgur.com/' + serviceslist.imageid + '.' + serviceslist.imageformat;
+        if (serviceslist.imagehost === 'gyazo') imgSrc = 'https://i.gyazo.com/' + serviceslist.imageid + '.' + serviceslist.imageformat;
+
+        const serviceLabels = { map: 'Map Work', glua: 'gLUA', other: 'Other' };
+        const serviceBadgeClass = { map: 'badge-map', glua: 'badge-glua', other: 'badge-other' };
+        const $badge = $('<span>').text(serviceLabels[serviceslist.type] || serviceslist.type)
+          .addClass('type-badge ' + (serviceBadgeClass[serviceslist.type] || ''));
+
+        const $title = $('<h5>').text(serviceslist.title).addClass('card-title');
+        const $desc  = $('<p>').text(serviceslist.description).addClass('card-text');
+        const $price = $('<span>').text(serviceslist.price).addClass('price-pill');
+
+        const $cardBody = $('<div>').addClass('card-text').append($desc, $price);
+        if (serviceslist.buttonlink !== '') {
+          $cardBody.append(
+            $('<a>').text('View Details').addClass('btn btn-primary')
+              .attr('href', serviceslist.buttonlink).attr('target', '_blank')
+          );
+        }
+
+        return $('<div>').addClass('col-lg-4 mb-4').append(
+          $('<div>').addClass('cardservice').append(
+            $('<img>').addClass('service-image').attr('src', imgSrc),
+            $('<div>').addClass('server-info').append($badge, $title),
+            $cardBody
+          )
+        );
       }
       
       
@@ -888,99 +772,44 @@ setInterval(renderServerRows, 300000);
 
 </section>
 
-<section id="referrals" class="py-5">
-<h2 class="text-center">Referrals (Free money/Passive Money)</h2>
-<p class="text-center">Below you can find some services that can make you money or gives you money on signup. <br> Bonus can have changed from when I last edited this. Also read the terms each business has when its about rewards for signing up or using the service</p>
-<p class="text-center"><a href="https://linktr.ee/davidfzn" target="_blank"> Here you can see more referrals. Below is my top 3</a></p>
-
-<div class="container">
-<div class="row" id="referralslistdiv"> </div>
-</div>
-</section>
-
-<script>
-
-  const referralslist = [
-  
-  { title: "Curve Card" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/curveimage.png", imageformat: "jpg", type: "map", buttontext: "Get a curve card and get some curve cash" , buttonlink: "https://www.curve.com/en/join/#D6Q5R2LD", description: "One app and one card to live your best financial life. (Curve business slogan). You can have 1 card with you instead of 3,4 or 5 by just using the Curve Card", price: "Bonus: 5 GBP" },
-  { title: "Revolut Card" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/Revolut-Symbol.png", imageformat: "jpg", type: "map", buttontext: "Get yourself a revolut account" , buttonlink: "https://www.revolut.com/referral/?referral-code=davidu8p3!", description: "Travel without hidden fees and send money abroad with the real exchange rate (Revolut business slogan).", price: "Bonus: 5 eur (says 75kr for me)." },
-  { title: "Plutus Card (crypto card)" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://plutus.it/images/logo-gold-d48ccf9d33.svg", imageformat: "jpg", type: "map", buttontext: "Get yourself a crypto account and card" , buttonlink: "https://dex.plutus.it/auth/referee/signup?refId=QOY7Fu", description: "Don’t Buy Crypto, Earn It! Earn free crypto on your everyday debit card payments. <- Words from Plutus themself. You can earn the plu coin and sell it at some crypto exchange. They as well have something called perks. Where you get back a set amount and after that you get your %. Your % can also raise based on how many plu you got in your wallet or with them", price: "Bonus: 10eur in crypto + 3% on all your *approved* transactions" },
-
-
-];
-  
-  function createReferralsListing(listofrefferal) {
-    let image;
-    if (listofrefferal.imagehost == "imgur") {
-image = `https://i.imgur.com/${listofrefferal.imageid}.${listofrefferal.imageformat}`;
-} else if (listofrefferal.imagehost == "gyazo") {
-image = `https://i.gyazo.com/${listofrefferal.imageid}.${listofrefferal.imageformat}`;
-} else if (listofrefferal.imagehost == "discord") {
-image = `https://cdn.discordapp.com/attachments/${listofrefferal.chatid}/${listofrefferal.randomid}/${listofrefferal.randomid}.${listofrefferal.imageformat}`;
-} else if (listofrefferal.imagehost == "site") {
-image = `${listofrefferal.imageid}` ;
-}
-  const title = $('<h5>').text(listofrefferal.title).addClass('card-title');
-
-  const details = $('<a>').text(listofrefferal.buttontext).addClass('btn btn-primary').attr('href', listofrefferal.buttonlink).attr('target', '_blank');
- 
-  const description = $('<p>').text(listofrefferal.description).addClass('card-text');
-  const bonus = $('<p>').text(listofrefferal.price).addClass('price-text');
-
- 
-  if (listofrefferal.buttonlink === "") {
-  const ColumsReferrals = $('<div>').addClass('col-lg-4 mb-4').append(
-    $('<div>').addClass('cardservice').append(
-        $('<img>').addClass('service-image').attr('src',image),
-         $('<div>').addClass('server-info').append(title),
-            $('<div>').addClass('card-text').append(description,bonus)));
-              return ColumsReferrals;
-            }
-      const ColumsReferrals = $('<div>').addClass('col-lg-4 mb-4').append(
-    $('<div>').addClass('cardservice').append(
-        $('<img>').addClass('service-image').attr('src',image),
-         $('<div>').addClass('server-info').append(title),
-            $('<div>').addClass('card-text').append(description,bonus,details)));
-            
-  return ColumsReferrals;
-  }
-  
-  
-
-  function createReferralsgRows() {
-  
-
-    referralslist.forEach(function (listofrefferal) {
-
-    const ColumsReferrals = createReferralsListing(listofrefferal);
-  
-// here we do our fancy spliting between service 
-
-    $('#referralslistdiv').append(ColumsReferrals);
-
-  
-  
-  
-  });
-  }
-  
-  
-  
-  </script>
 
     <footer class="bg-dark text-white text-center py-3">
-        <p style="color: white;">&copy; <?php echo date("Y"); ?> Davids Website. All rights reserved.</p>
+        <p style="color: white;">&copy; <span id="footerYear"></span> Davids Website. All rights reserved.</p>
     </footer>
 
     <script>
 
       // we call it here as calling it above would kill it self
       renderServerRows();
-    renderPortfolioRows();
-  createserviceListingRows();
-  renderStatsRow();
-  renderTeamRow();
-  createReferralsgRows();
+      renderPortfolioRows();
+      createserviceListingRows();
+      renderStatsRow();
+      renderTeamRow();
+      // Footer year
+      document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+      // Auto-calculate age from birthday
+      (function() {
+        const bday = new Date('1999-08-23');
+        const now = new Date();
+        let age = now.getFullYear() - bday.getFullYear();
+        const monthDiff = now.getMonth() - bday.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < bday.getDate())) age--;
+        document.getElementById('myAge').textContent = age;
+      })();
+
+      // Scroll fade-in for sections
+      const fadeObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      }, { threshold: 0.08 });
+      document.querySelectorAll('section').forEach(function(el) {
+        el.classList.add('fade-in-section');
+        fadeObserver.observe(el);
+      });
 </script>
     <script src="js/Headroom.js"></script>
     <script src="js/jQuery.headroom.js"></script>
