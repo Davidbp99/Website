@@ -487,23 +487,22 @@ const servers = [
  //{ battlemetricid: "24391260", discordid: "QRqskJnpuf", grupname: "", description: ``, partnertype: "gameserver", isgif: "no", imagelink: "", },
 
  // RebornUK
- { battlemetricid: "26228386", discordid: "7G92mkJS3E", grupname: "", description: ``, partnertype: "gameserver", isgif: "no", imagelink: "", },
- //
+ // { battlemetricid: "26228386", discordid: "7G92mkJS3E", grupname: "", description: ``, partnertype: "gameserver", isgif: "no", imagelink: "", tags: ["gmod server"] },
 
- // Gmod Italia 
- { battlemetricid: "", discordid: "wBGnQm4", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: ""},
+ // Gmod Italia
+ { battlemetricid: "", discordid: "wBGnQm4", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: "", tags: ["gmod server"] },
 
 // Meeks
-  { battlemetricid: "", discordid: "8v6Mbv2SZk", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: ""},
+  { battlemetricid: "", discordid: "8v6Mbv2SZk", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: "", tags: ["freelancer"] },
 // Trace place
  // { battlemetricid: "", discordid: "2JnJRGskPu", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: ""},
 // Onyx place
  // { battlemetricid: "", discordid: "YNCyRtTAkG", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: ""},
-// riteunn 
-{ battlemetricid: "", discordid: "H7ansZHDN8", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: ""},
+// riteunn
+{ battlemetricid: "", discordid: "H7ansZHDN8", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: "", tags: ["freelancer"] },
 
-// Thomas 
-{ battlemetricid: "", discordid: "T39TfdPVpk", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: ""},
+// Thomas
+{ battlemetricid: "", discordid: "T39TfdPVpk", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: "", tags: ["hosting company"] },
 
 
 // Crispy -- someone took his custom url
@@ -512,85 +511,47 @@ const servers = [
 ];
 
 
-// Function to create a server row
+// Function to create a partner card
 function createServerRow(server) {
-  let image;
-        if (server.isgif == "yes") {
-    image = $('<img>').addClass('server-gif').attr('src',server.imagelink);
-  } else if (server.isgif == "no") {
-    image = $('<img>').addClass('server-image').attr('src',server.discordIcon);
+  const image = server.isgif === 'yes'
+    ? $('<img>').addClass('server-gif').attr('src', server.imagelink)
+    : $('<img>').addClass('server-image').attr('src', server.discordIcon);
+
+  // Tag badges
+  const tagColors = { 'gmod server': 'badge-gmodserver', 'freelancer': 'badge-freelancer', 'hosting company': 'badge-hosting' };
+  const $tags = $('<div>').addClass('partner-tags');
+  (server.tags || []).forEach(function(tag) {
+    $tags.append($('<span>').text(tag).addClass('type-badge ' + (tagColors[tag] || '')));
+  });
+
+  const $name = $('<p>').addClass('partner-name card-text').text(server.discordName || server.name || '');
+  const $members = $('<p>').addClass('card-text').text('Members: ' + server.discordMemberCount);
+  const $inner = $('<div>').addClass('server-info').append(image, $tags, $name, $members);
+  if (server.description) {
+    $inner.append($('<p>').addClass('card-text').text(server.description));
   }
-  let descriptionoffserver;
-  if (server.description !== "") {
-    descriptionoffserver = 'Description: ' + server.description;
-  } else if (server.isgif === "") {
-    descriptionoffserver = "";
+
+  const $buttons = $('<div>').addClass('button-container');
+  if (server.type === 'gameserver') {
+    $buttons.append(
+      $('<a>').text('Join Game Server').addClass('btn btn-primary')
+        .attr('href', 'steam://connect/' + server.ip + ':' + server.port).attr('target', '_blank')
+    );
   }
-  if (server.type == "discord") {
-    const serverRow = $('<div>').addClass('col-lg-4 mb-4').append(
-    $('<div>').addClass('card2').append(
-      $('<div>').addClass('server-info').append(
-        image,
-        $('<p>').addClass('card-text').text(server.discordName ),
-          $('<p>').addClass('card-text').text('Discord Members:' + server.discordMemberCount ),
-        $('<p>').addClass('card-text').text(descriptionoffserver),
-          
-      ),
-      $('<div>').addClass('button-container').append(
-          $('<a>').text('Join Discord Server').addClass('join-discord-button btn btn-secondary btn-lg btn-block').attr('href', `https://discord.gg/${server.discordinvite}`).attr('target', '_blank'),
+  $buttons.append(
+    $('<a>').text('Join Discord').addClass('join-discord-button btn btn-secondary')
+      .attr('href', 'https://discord.gg/' + server.discordinvite).attr('target', '_blank')
+  );
+  if (server.grupname) {
+    $buttons.append(
+      $('<a>').text('Steam Group').addClass('btn btn-success')
+        .attr('href', 'https://steamcommunity.com/groups/' + server.grupname).attr('target', '_blank')
+    );
+  }
 
-      )
-    )
-  )
-return serverRow;
-
-
-
-  }else if (server.type == "gameserver" && server.grupname === "")  {
-  const serverRow = $('<div>').addClass('col-lg-4 mb-4').append(
-    $('<div>').addClass('card2').append(
-      $('<div>').addClass('server-info').append(
-        image,
-        $('<div>').addClass('server-info').append(server.name),
-        $('<p>').addClass('card-text').text('GameServer: IP: ' + server.ip +":"+ server.port+' Players: ' + server.players+"/"+ server.maxPlayers),
-          $('<p>').addClass('card-text').text('Discord Members:' + server.discordMemberCount ),
-        $('<p>').addClass('card-text').text(descriptionoffserver),
-          
-      ),
-      $('<div>').addClass('button-container').append(
-        $('<a>').text('Join Game Server').addClass('join-game-button btn btn-primary').attr('href', 'steam://connect/' + server.ip+":"+server.port).attr('target', '_blank'),
-          $('<a>').text('Join Discord Server').addClass('join-discord-button btn btn-secondary').attr('href', `https://discord.gg/${server.discordinvite}`).attr('target', '_blank'),
-
-      )
-    )
-  )
-  
-  return serverRow;
-
-}else if (server.type == "gameserver" && server.grupname !== "")  {
-  const serverRow = $('<div>').addClass('col-lg-4 mb-4').append(
-    $('<div>').addClass('card2').append(
-      $('<div>').addClass('server-info').append(
-        image,
-        $('<div>').addClass('server-info').append(server.name),
-        $('<p>').addClass('card-text').text('GameServer: IP: ' + server.ip +":"+ server.port+' Players: ' + server.players+"/"+ server.maxPlayers),
-          $('<p>').addClass('card-text').text('Discord Members:' + server.discordMemberCount ),
-        $('<p>').addClass('card-text').text(descriptionoffserver),
-          
-      ),
-      $('<div>').addClass('button-container').append(
-        $('<a>').text('Join Game Server').addClass('join-game-button btn btn-primary').attr('href', 'steam://connect/' + server.ip+":"+server.port).attr('target', '_blank'),
-          $('<a>').text('Join Discord Server').addClass('join-discord-button btn btn-secondary').attr('href', `https://discord.gg/${server.discordinvite}`).attr('target', '_blank'),
-            $('<a>').text('Join Steam Group').addClass('join-discord-button btn btn-success').attr('href', `https://steamcommunity.com/groups/${server.grupname}`).attr('target', '_blank'),
-
-      )
-    )
-  )
-  
-  return serverRow;}
-  
-
-  return null;
+  return $('<div>').addClass('col-lg-4 mb-4').append(
+    $('<div>').addClass('card2').append($inner, $buttons)
+  );
 }
 
 

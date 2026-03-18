@@ -172,6 +172,23 @@ body.dark-mode {
   margin: 8px 0 4px;
 }
 
+/* ── Partner tag badges ── */
+.partner-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 8px 0 4px;
+}
+.badge-gmodserver  { background: #b05a00; color: #fff; }
+.badge-freelancer  { background: #0e7490; color: #fff; }
+.badge-hosting     { background: #6d28d9; color: #fff; }
+
+.partner-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 4px 0 2px;
+}
+
 /* ── Stat value title ── */
 .stat-value {
   font-size: 1rem;
