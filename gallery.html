@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Host — David</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #0c0c0d;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 32px;
+            background: #111113;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .topbar-brand { color: #ffc200; font-weight: 700; font-size: 1.1rem; letter-spacing: 1px; text-decoration: none; }
+        .topbar-brand:hover { color: #ffd44d; }
+        .topbar-right { display: flex; align-items: center; gap: 16px; }
+        .topbar-count { color: rgba(255,255,255,0.35); font-size: 0.82rem; }
+        .topbar-back { color: rgba(255,255,255,0.5); font-size: 0.85rem; text-decoration: none; }
+        .topbar-back:hover { color: #ffc200; }
+
+        /* ── Search ── */
+        .search-wrap { padding: 24px 32px 8px; }
+        .search-input {
+            width: 100%;
+            max-width: 400px;
+            background: #1a1a1d;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 9px 16px;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus { border-color: rgba(255,194,0,0.5); }
+        .search-input::placeholder { color: rgba(255,255,255,0.25); }
+
+        /* ── Grid ── */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px;
+            padding: 24px 32px 48px;
+        }
+
+        .img-card {
+            background: #16161a;
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+        }
+        .img-card:hover {
+            border-color: rgba(255,194,0,0.45);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        .img-card.hidden { display: none; }
+
+        .img-thumb-wrap {
+            width: 100%;
+            aspect-ratio: 16/10;
+            overflow: hidden;
+            background: #111;
+        }
+        .img-thumb {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+            display: block;
+        }
+        .img-card:hover .img-thumb { transform: scale(1.04); }
+
+        .img-name {
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.45);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ── Lightbox ── */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .lightbox.open { display: flex; }
+
+        .lightbox-img-wrap {
+            max-width: min(90vw, 1100px);
+            max-height: 75vh;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.7);
+        }
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 75vh;
+            object-fit: contain;
+            display: block;
+        }
+
+        .lightbox-bar {
+            margin-top: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: min(90vw, 1100px);
+        }
+        .lightbox-url {
+            flex: 1;
+            background: #1a1a1d;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+            padding: 9px 14px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.82rem;
+            font-family: 'Consolas', monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: text;
+            user-select: all;
+        }
+        .lightbox-copy-btn {
+            background: #ffc200;
+            color: #111;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.15s, transform 0.15s;
+            white-space: nowrap;
+        }
+        .lightbox-copy-btn:hover { background: #e6ae00; transform: translateY(-1px); }
+        .lightbox-copy-btn.copied { background: #2d6a4f; color: #fff; }
+
+        .lightbox-close {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            background: rgba(255,255,255,0.08);
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s;
+        }
+        .lightbox-close:hover { background: rgba(255,255,255,0.18); }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #2d6a4f;
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 24px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+            z-index: 99999;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ── Status messages ── */
+        .status-msg {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 60px 0;
+            font-size: 0.95rem;
+            line-height: 1.9;
+        }
+        .status-msg.loading { color: rgba(255,255,255,0.3); }
+        .status-msg.error   { color: #e07070; }
+        .status-msg.empty   { color: rgba(255,255,255,0.25); }
+        .status-msg code {
+            background: #1a1a1d;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 5px;
+            padding: 2px 8px;
+            font-size: 0.85rem;
+            color: #ffc200;
+        }
+        .spinner {
+            display: inline-block;
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-top-color: #ffc200;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+    <a class="topbar-brand" href="index.html">David</a>
+    <div class="topbar-right">
+        <span class="topbar-count" id="imgCount"></span>
+        <a class="topbar-back" href="index.html">← Portfolio</a>
+    </div>
+</div>
+
+<!-- Search -->
+<div class="search-wrap">
+    <input class="search-input" type="text" id="searchInput" placeholder="Search by filename…" disabled>
+</div>
+
+<!-- Grid -->
+<div class="gallery-grid" id="galleryGrid">
+    <div class="status-msg loading" id="statusMsg">
+        <span class="spinner"></span> Loading images…
+    </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose">✕</button>
+    <div class="lightbox-img-wrap">
+        <img class="lightbox-img" id="lightboxImg" src="" alt="">
+    </div>
+    <div class="lightbox-bar">
+        <div class="lightbox-url" id="lightboxUrl"></div>
+        <button class="lightbox-copy-btn" id="lightboxCopyBtn">Copy URL</button>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">URL Copied!</div>
+
+<script>
+    // ── Config ────────────────────────────────────────────────────
+    const GITHUB_USER = 'davidbp99';
+    const GITHUB_REPO = 'Website';
+    const UPLOAD_FOLDER = 'uploads';
+    // ─────────────────────────────────────────────────────────────
+
+    const IMAGE_EXTS = /\.(png|jpg|jpeg|gif|webp|svg|bmp)$/i;
+    const API_URL = 'https://api.github.com/repos/' + GITHUB_USER + '/' + GITHUB_REPO + '/contents/' + UPLOAD_FOLDER;
+    const PAGES_BASE = 'https://' + GITHUB_USER + '.github.io/' + GITHUB_REPO + '/' + UPLOAD_FOLDER + '/';
+
+    const grid = document.getElementById('galleryGrid');
+    const statusMsg = document.getElementById('statusMsg');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxUrl = document.getElementById('lightboxUrl');
+    const lightboxCopyBtn = document.getElementById('lightboxCopyBtn');
+    const lightboxClose = document.getElementById('lightboxClose');
+    const toast = document.getElementById('toast');
+    const searchInput = document.getElementById('searchInput');
+    let toastTimer;
+
+    // Fetch image list from GitHub API
+    fetch(API_URL)
+        .then(function(r) {
+            if (r.status === 403) throw new Error('rate_limit');
+            if (!r.ok) throw new Error('api_error');
+            return r.json();
+        })
+        .then(function(files) {
+            const images = files.filter(function(f) {
+                return f.type === 'file' && IMAGE_EXTS.test(f.name);
+            });
+
+            statusMsg.remove();
+
+            if (images.length === 0) {
+                const msg = document.createElement('div');
+                msg.className = 'status-msg empty';
+                msg.innerHTML = 'No images yet.<br>Drop files into <code>uploads/</code> and push to GitHub.';
+                grid.appendChild(msg);
+                document.getElementById('imgCount').textContent = '0 images';
+                return;
+            }
+
+            images.forEach(function(file) {
+                const url = PAGES_BASE + encodeURIComponent(file.name);
+                const card = document.createElement('div');
+                card.className = 'img-card';
+                card.dataset.name = file.name.toLowerCase();
+                card.innerHTML =
+                    '<div class="img-thumb-wrap">' +
+                        '<img class="img-thumb" src="' + url + '" alt="' + file.name + '" loading="lazy">' +
+                    '</div>' +
+                    '<div class="img-name">' + file.name + '</div>';
+                card.addEventListener('click', function() { openLightbox(url, file.name); });
+                grid.appendChild(card);
+            });
+
+            document.getElementById('imgCount').textContent = images.length + ' image' + (images.length !== 1 ? 's' : '');
+            searchInput.disabled = false;
+        })
+        .catch(function(err) {
+            statusMsg.className = 'status-msg error';
+            if (err.message === 'rate_limit') {
+                statusMsg.innerHTML = 'GitHub API rate limit hit. Wait a minute and refresh.';
+            } else {
+                statusMsg.innerHTML = 'Could not load images.<br><small>Make sure the <code>uploads/</code> folder exists and the repo is public.</small>';
+            }
+        });
+
+    // Lightbox
+    function openLightbox(url, filename) {
+        lightboxImg.src = url;
+        lightboxImg.alt = filename;
+        lightboxUrl.textContent = url;
+        lightboxCopyBtn.textContent = 'Copy URL';
+        lightboxCopyBtn.classList.remove('copied');
+        lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        copyToClipboard(url, true);
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove('open');
+        lightboxImg.src = '';
+        document.body.style.overflow = '';
+    }
+
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', function(e) { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
+    lightboxCopyBtn.addEventListener('click', function() { copyToClipboard(lightboxUrl.textContent, false); });
+
+    // Copy + toast
+    function copyToClipboard(text, auto) {
+        const label = auto ? 'URL auto-copied!' : 'URL Copied!';
+        navigator.clipboard.writeText(text).then(function() {
+            lightboxCopyBtn.textContent = 'Copied!';
+            lightboxCopyBtn.classList.add('copied');
+            showToast(label);
+        }).catch(function() {
+            const ta = document.createElement('textarea');
+            ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            lightboxCopyBtn.textContent = 'Copied!';
+            lightboxCopyBtn.classList.add('copied');
+            showToast(label);
+        });
+    }
+
+    function showToast(msg) {
+        toast.textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function() { toast.classList.remove('show'); }, 2200);
+    }
+
+    // Search
+    searchInput.addEventListener('input', function() {
+        const q = this.value.toLowerCase().trim();
+        const cards = grid.querySelectorAll('.img-card');
+        let visible = 0;
+        cards.forEach(function(card) {
+            const match = !q || card.dataset.name.includes(q);
+            card.classList.toggle('hidden', !match);
+            if (match) visible++;
+        });
+        let empty = grid.querySelector('.status-msg.empty');
+        if (visible === 0 && q) {
+            if (!empty) {
+                empty = document.createElement('div');
+                empty.className = 'status-msg empty';
+                grid.appendChild(empty);
+            }
+            empty.textContent = 'No images match "' + q + '"';
+        } else if (empty) {
+            empty.remove();
+        }
+    });
+</script>
+</body>
+</html>
