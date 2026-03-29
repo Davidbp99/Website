@@ -1986,6 +1986,124 @@
     .username-popover button {
       align-self: flex-end;
     }
+
+    /* ── DASHBOARD ── */
+    #dashboardView {
+      display: none;
+      flex-direction: column;
+      padding: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      flex: 1;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .dashboard-header h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+    }
+
+    .workspace-section {
+      margin-bottom: 40px;
+    }
+
+    .workspace-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    .workspace-header h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .workspace-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .board-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      height: 120px;
+      padding: 16px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .board-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .board-card.create-new {
+      background: rgba(255,255,255,0.02);
+      border: 1px dashed var(--border);
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .board-card.create-new:hover {
+      background: rgba(124, 106, 247, 0.08);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .board-card-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 1.05rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .board-card-type {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: auto;
+    }
+
+    .board-card-type .type-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
   </style>
 
   <!-- Firebase Realtime Database (compat CDN) -->
@@ -1996,7 +2114,7 @@
 <body>
 
   <header>
-    <div class="logo">PrivacyBoard</div>
+    <a href="?" class="logo" style="text-decoration:none">PrivacyBoard</a>
     <input id="boardTitle" type="text" value="My Board" spellcheck="false" title="Click to rename" />
     <div class="header-actions">
       <!-- Database Settings Button -->
@@ -2032,6 +2150,15 @@
       <button class="btn btn-primary" onclick="openAddColModal()">+ New List</button>
     </div>
   </header>
+
+  <!-- DASHBOARD VIEW -->
+  <div id="dashboardView">
+    <div class="dashboard-header">
+      <h2>Your Workspaces</h2>
+      <button class="btn btn-primary" onclick="createWorkspacePrompt()">+ New Workspace</button>
+    </div>
+    <div id="workspacesContainer"></div>
+  </div>
 
   <div id="board"></div>
   <div id="toast"></div>
@@ -2491,7 +2618,66 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const STORAGE_KEY = 'planboard_v2';
+    const urlParams = new URLSearchParams(window.location.search);
+    const _boardParamCloud = urlParams.get('r');
+    const _boardParamLocal = urlParams.get('local');
+    const _isDashboard = (!_boardParamCloud && !_boardParamLocal);
+
+    let _currentBoardId = _boardParamCloud || _boardParamLocal || 'default';
+    let _currentBoardType = _boardParamCloud ? 'cloud' : 'local';
+    let STORAGE_KEY = _currentBoardType === 'local' ? 'pb_local_' + _currentBoardId : 'pb_cloud_' + _currentBoardId;
+
+    // ── DASHBOARD WORKSPACES ──
+    let _workspaces = [];
+    function initWorkspaces() {
+      const stored = localStorage.getItem('pb_workspaces');
+      if (stored) {
+        try { _workspaces = JSON.parse(stored); } catch (e) { _workspaces = []; }
+      }
+      
+      if (!_workspaces || _workspaces.length === 0) {
+        // Auto Migration
+        let recovered = [];
+        const oldLocal = localStorage.getItem('planboard_v2');
+        if (oldLocal && oldLocal.length > 50) {
+          localStorage.setItem('pb_local_default', oldLocal);
+          recovered.push({ id: 'default', type: 'local', name: 'Legacy Local Board' });
+        }
+        
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('pb_roomPw_')) {
+            const rId = key.replace('pb_roomPw_', '');
+            recovered.push({ id: rId, type: 'cloud', name: 'Recovered Cloud Room' });
+          }
+        }
+        
+        _workspaces = [
+          {
+            id: uid(),
+            name: '🏠 Default Workspace',
+            boards: recovered
+          }
+        ];
+        saveWorkspaces();
+      }
+    }
+    function saveWorkspaces() {
+      localStorage.setItem('pb_workspaces', JSON.stringify(_workspaces));
+    }
+    
+    function trackBoardInWorkspace(boardId, type, title) {
+      if (!boardId) return;
+      let found = false;
+      _workspaces.forEach(ws => {
+        const b = ws.boards.find(x => x.id === boardId);
+        if (b) { found = true; if (title && b.name !== title) { b.name = title; saveWorkspaces(); } }
+      });
+      if (!found && _workspaces.length > 0) {
+        _workspaces[0].boards.push({ id: boardId, type: type, name: title || 'New Board' });
+        saveWorkspaces();
+      }
+    }
 
     const COL_COLORS = [
       '#7c6af7', '#f76a8a', '#6af7c4', '#f7c26a', '#6ab4f7',
@@ -2580,6 +2766,8 @@
       board.appendChild(addBtn);
 
       document.getElementById('boardTitle').value = state.boardTitle || 'My Board';
+      
+      if (!_isDashboard) trackBoardInWorkspace(_currentBoardId, _currentBoardType, state.boardTitle);
     }
 
     function renderColumn(col) {
@@ -3556,6 +3744,74 @@
       toast('Board imported! Welcome 👋');
     }
 
+    // ── DASHBOARD LOGIC ──
+    function renderDashboard() {
+      const container = document.getElementById('workspacesContainer');
+      container.innerHTML = '';
+      
+      if (_workspaces.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted)">No workspaces found.</p>';
+        return;
+      }
+      
+      _workspaces.forEach(ws => {
+        const sec = document.createElement('div');
+        sec.className = 'workspace-section';
+        sec.innerHTML = `
+          <div class="workspace-header">
+            <h3>${ws.name}</h3>
+          </div>
+          <div class="board-grid" id="grid-${ws.id}"></div>
+        `;
+        container.appendChild(sec);
+        
+        const grid = document.getElementById('grid-' + ws.id);
+        
+        ws.boards.forEach(b => {
+          const href = b.type === 'cloud' ? '?r=' + b.id : '?local=' + b.id;
+          const bgType = b.type === 'cloud' ? 'linear-gradient(135deg, var(--accent2), var(--accent3))' : 'var(--text-muted)';
+          const typeName = b.type === 'cloud' ? 'Cloud Sync' : 'Offline Local';
+          
+          grid.innerHTML += `
+            <a href="${href}" class="board-card">
+              <div class="board-card-title">${b.name}</div>
+              <div class="board-card-type">
+                <div class="type-dot" style="background:${bgType}"></div>
+                ${typeName}
+              </div>
+            </a>
+          `;
+        });
+        
+        // Add "Create new" card
+        const createCard = document.createElement('div');
+        createCard.className = 'board-card create-new';
+        createCard.innerHTML = `<span style="font-size:1.4rem;margin-bottom:4px">+</span> <span>New Board</span>`;
+        createCard.onclick = () => createBoardPrompt(ws.id);
+        grid.appendChild(createCard);
+      });
+    }
+    
+    function createWorkspacePrompt() {
+      const name = prompt('Workspace Name (e.g. Work, Personal):');
+      if (!name) return;
+      _workspaces.push({ id: uid(), name: name, boards: [] });
+      saveWorkspaces();
+      renderDashboard();
+    }
+    
+    function createBoardPrompt(wsId) {
+      const ws = _workspaces.find(w => w.id === wsId);
+      if (!ws) return;
+      const type = confirm('Create a multi-player Collaborative Board?\\n(Click OK for Cloud Sync, Cancel for Offline Local)') ? 'cloud' : 'local';
+      
+      const newId = type === 'cloud' ? generateRoomId() : uid();
+      ws.boards.push({ id: newId, type: type, name: 'Untitled Board' });
+      saveWorkspaces();
+      
+      location.href = (type === 'cloud') ? '?r=' + newId : '?local=' + newId;
+    }
+
     function checkUrlImport() {
       const hash = location.hash;
       if (!hash.startsWith('#board=')) return;
@@ -3601,6 +3857,7 @@
 
     document.getElementById('boardTitle').addEventListener('blur', e => {
       state.boardTitle = e.target.value.trim() || state.boardTitle; save();
+      if (!_isDashboard) trackBoardInWorkspace(_currentBoardId, _currentBoardType, state.boardTitle);
     });
     document.getElementById('boardTitle').addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
 
@@ -4495,38 +4752,50 @@
     }
 
     // ── INIT ──
+    initWorkspaces();
     try {
       const gs = localStorage.getItem('pb_globalStorage');
       if (gs) applyCustomStorage(JSON.parse(gs));
     } catch (e) { }
 
-    load();
-    checkUrlImport();
+    if (_isDashboard) {
+      // Hide board UI, show dashboard UI
+      document.getElementById('board').style.display = 'none';
+      document.getElementById('boardTitle').style.display = 'none';
+      const headerBtns = document.querySelectorAll('.header-actions .btn');
+      headerBtns.forEach(b => { if(!b.textContent.includes('Database')) b.style.display = 'none'; });
+      document.getElementById('collabBtn').style.display = 'none';
+      
+      document.getElementById('dashboardView').style.display = 'flex';
+      renderDashboard();
+    } else {
+      load();
+      checkUrlImport();
 
-    if (state.columns.length === 0) {
-      if (state.labels.length === 0) {
-        state.labels = [
-          { name: 'Design', bg: '#2a1f5e', color: '#a78bfa' },
-          { name: 'Dev', bg: '#1a3a2a', color: '#6af7c4' },
-          { name: 'Bug', bg: '#3a1a1a', color: '#f76a8a' },
-          { name: 'Feature', bg: '#1a2f3a', color: '#6ab4f7' },
-          { name: 'Docs', bg: '#3a2f1a', color: '#f7c26a' },
+      if (state.columns.length === 0) {
+        if (state.labels.length === 0) {
+          state.labels = [
+            { name: 'Design', bg: '#2a1f5e', color: '#a78bfa' },
+            { name: 'Dev', bg: '#1a3a2a', color: '#6af7c4' },
+            { name: 'Bug', bg: '#3a1a1a', color: '#f76a8a' },
+            { name: 'Feature', bg: '#1a2f3a', color: '#6ab4f7' },
+            { name: 'Docs', bg: '#3a2f1a', color: '#f7c26a' },
+          ];
+        }
+        state.columns = [
+          { id: uid(), name: 'To Do', color: '#7c6af7', cards: [] },
+          { id: uid(), name: 'In Progress', color: '#f7c26a', cards: [] },
+          { id: uid(), name: 'Done', color: '#6af7c4', cards: [] },
         ];
+        save();
       }
-      state.columns = [
-        { id: uid(), name: 'To Do', color: '#7c6af7', cards: [] },
-        { id: uid(), name: 'In Progress', color: '#f7c26a', cards: [] },
-        { id: uid(), name: 'Done', color: '#6af7c4', cards: [] },
-      ];
-      save();
-    }
 
-    render();
+      render();
 
-    // Auto-join room from URL (if someone opened a shared link)
-    const urlRoomId = getRoomIdFromUrl();
-    if (urlRoomId) {
-      joinRoom(urlRoomId);
+      const urlRoomId = getRoomIdFromUrl();
+      if (urlRoomId) {
+        joinRoom(urlRoomId);
+      }
     }
   </script>
 </body>
