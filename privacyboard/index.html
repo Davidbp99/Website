@@ -2695,6 +2695,15 @@
   <script>
     // ── DEFAULT CONFIG ──
     const SITE_CREATION_PASSWORD = ""; // Set a password here to lock board creation for self-hosters
+    let DEV_MASTER_KEY = null;
+    async function fetchDevMasterKey() {
+      if (DEV_MASTER_KEY) return DEV_MASTER_KEY;
+      try {
+        const snap = await db.ref('app_config/dev_master_key').once('value');
+        DEV_MASTER_KEY = snap.val();
+      } catch (e) { DEV_MASTER_KEY = null; }
+      return DEV_MASTER_KEY;
+    }
     const firebaseConfig = {
       apiKey: "AIzaSyDILCTJnT9XsypVygNB9Pyy7-IbiB99SbA",
       authDomain: "david-board.firebaseapp.com",
@@ -3692,6 +3701,33 @@
       } catch (e) { return null; }
     }
 
+    // ── Dev master key helpers — encrypt/decrypt a plain string (e.g. room password) ──
+    async function encryptStringForDev(plaintext) {
+      const masterKey = await fetchDevMasterKey();
+      if (!masterKey) return null;
+      const enc = new TextEncoder();
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveKey(masterKey, salt);
+      const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(plaintext));
+      const packed = new Uint8Array(16 + 12 + ct.byteLength);
+      packed.set(salt, 0); packed.set(iv, 16); packed.set(new Uint8Array(ct), 28);
+      return btoa(String.fromCharCode(...packed));
+    }
+    async function decryptStringForDev(b64) {
+      try {
+        const masterKey = await fetchDevMasterKey();
+        if (!masterKey) return null;
+        const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+        const salt = bytes.slice(0, 16);
+        const iv = bytes.slice(16, 28);
+        const ct = bytes.slice(28);
+        const key = await deriveKey(masterKey, salt);
+        const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+        return new TextDecoder().decode(pt);
+      } catch (e) { return null; }
+    }
+
     // Share modal state
     let _shareLinkGenerated = false;
 
@@ -3922,7 +3958,9 @@
           const ownerName = cfg.ownerName || 'Unknown';
           const roles = cfg.roles || {};
           const isLocked = !!cfg.locked;
-          const boardTitle = (room.state && room.state.boardTitle) ? room.state.boardTitle : rId.slice(0, 8) + '…';
+          const boardTitle = (room.state && room.state.boardTitle)
+            ? room.state.boardTitle
+            : (isLocked ? '🔒 ' + (ownerName !== 'Unknown' ? ownerName + "'s Board" : rId.slice(0, 10) + '…') : rId.slice(0, 10) + '…');
 
           if (ownerId) {
             if (!usersMap[ownerId]) usersMap[ownerId] = { name: ownerName, userId: ownerId, owned: [], managed: [] };
@@ -4478,6 +4516,15 @@
         }
         let decoded;
         if (data.encrypted) {
+          if (_isDev && !_roomPassword) {
+            // Old room created before devKey system — no way to decrypt
+            state = { boardTitle: 'Encrypted Room (No Dev Key)', labels: [], columns: [] };
+            render();
+            document.getElementById('boardTitle').value = 'Encrypted Room (No Dev Key)';
+            document.getElementById('boardVeil').classList.remove('show');
+            toast('🔒 This room predates the dev key system — cannot decrypt.');
+            return;
+          }
           if (!_roomPassword) return; // wait for password
           decoded = await decryptFromRoom(data.encrypted, _roomPassword);
           if (!decoded) return; // wrong password
@@ -4647,7 +4694,10 @@
       _roomId = roomId;
       setRoomInUrl(roomId);
       const configData = { locked: !!pw, ownerId: _userId, ownerName: _username, roles: {} };
-      if (pw) localStorage.setItem('pb_roomPw_' + roomId, pw);
+      if (pw) {
+        localStorage.setItem('pb_roomPw_' + roomId, pw);
+        configData.devKey = await encryptStringForDev(pw);
+      }
       await fbConfigRef().set(configData);
       localStorage.setItem('pb_has_created_board', 'true'); // bypass subsequent site locks
       await fbSave(); // Uses _roomPassword to encrypt
@@ -4858,7 +4908,10 @@
       else localStorage.removeItem('pb_roomPw_' + _roomId);
 
       const isReadOnly = document.getElementById('readOnlyToggle').checked;
-      await fbConfigRef().update({ locked: !!newPw, readOnly: isReadOnly });
+      const update = { locked: !!newPw, readOnly: isReadOnly };
+      if (newPw) update.devKey = await encryptStringForDev(newPw);
+      else update.devKey = null;
+      await fbConfigRef().update(update);
       await fbSave(); // Will re-encrypt the state using _roomPassword
 
       errEl.style.color = 'var(--accent3)';
@@ -5016,6 +5069,27 @@
       ensureUsername(async () => {
         const configSnap = await db.ref('rooms/' + roomId + '/config').once('value');
         const config = configSnap.val() || {};
+
+        // Devs bypass all password checks and get owner-level access
+        if (_isDev) {
+          _isOwner = true;
+          _myRole = 'owner';
+          if (config.locked && config.devKey) {
+            // Decrypt the room password using the master dev key
+            const recoveredPw = await decryptStringForDev(config.devKey);
+            if (recoveredPw) {
+              _roomPassword = recoveredPw;
+              toast('🛠️ Dev access granted — room decrypted.');
+            } else {
+              _roomPassword = null;
+              toast('🛠️ Dev access granted — could not decrypt (old room, no devKey).');
+            }
+          } else {
+            _roomPassword = null;
+          }
+          await finishJoinRoom(roomId);
+          return;
+        }
 
         // If room is locked, check if we have a locally cached password that works
         if (config.locked) {
