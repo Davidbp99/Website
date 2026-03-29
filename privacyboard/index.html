@@ -4574,6 +4574,7 @@
     }
 
     async function openRoomSettingsWithAuth() {
+      if (_isDev) { openRoomSettings(); return; }
       const cachedPw = localStorage.getItem('pb_roomPw_' + _roomId);
       if (cachedPw) { openRoomSettings(); return; }
       const snap = await fbConfigRef().once('value');
@@ -4799,7 +4800,7 @@
 
     function collabAction() {
       if (_roomId) {
-        if (_isOwner || _myRole === 'manager') {
+        if (_isOwner || _myRole === 'manager' || _isDev) {
           openRoomSettingsWithAuth();
           return;
         }
