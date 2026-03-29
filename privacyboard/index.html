@@ -2098,15 +2098,15 @@
   <div class="room-overlay" id="roomSettingsOverlay">
     <div class="room-box" style="width:440px;max-height:85vh;overflow-y:auto">
       <h2>⚙️ Room Settings</h2>
-      <div style="font-size:0.8rem;color:var(--text-muted)">You are the <span style="color:var(--accent3);font-weight:600">👑 owner</span> of this room.</div>
+      <div style="font-size:0.8rem;color:var(--text-muted)" id="settingsRoleLabel">You are the <span style="color:var(--accent3);font-weight:600">👑 owner</span> of this room.</div>
 
       <div class="form-group">
         <label>👥 Members &amp; Roles</label>
         <div id="membersList" style="display:flex;flex-direction:column;gap:6px"></div>
-        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px">Managers can add/edit/delete cards and lists. Members can only add/edit cards.</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px">Managers can add/edit/delete cards and lists. Members must enter the room password.</div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" id="settingsPwSection">
         <label>🔑 Change Room Password</label>
         <div class="pw-input-inner">
           <input type="password" id="newRoomPwInput" placeholder="New password (blank = remove)" autocomplete="new-password" />
@@ -2125,7 +2125,27 @@
 
       <div class="modal-actions">
         <button class="btn" onclick="closeRoomSettings()">Close</button>
-        <button class="btn btn-primary" onclick="changeRoomPassword()">🔑 Update Password</button>
+        <button class="btn btn-primary" id="settingsPwBtn" onclick="changeRoomPassword()">🔑 Update Password</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS AUTH (password gate for Room Settings) -->
+  <div class="room-overlay" id="settingsAuthOverlay">
+    <div class="room-box">
+      <h2>\ud83d\udd10 Settings Access</h2>
+      <p>Enter the room password to access Room Settings.</p>
+      <div class="form-group">
+        <label>Room Password</label>
+        <div class="pw-input-inner">
+          <input type="password" id="settingsAuthInput" placeholder="Enter room password..." autocomplete="current-password" />
+          <button class="pw-eye" onclick="toggleSettingsAuthEye()" tabindex="-1">\ud83d\udc41</button>
+        </div>
+        <div class="room-error" id="settingsAuthError"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="document.getElementById('settingsAuthOverlay').classList.remove('open')">Cancel</button>
+        <button class="btn btn-primary" id="settingsAuthBtn" onclick="submitSettingsAuth()">\ud83d\udd13 Unlock Settings</button>
       </div>
     </div>
   </div>
@@ -3378,6 +3398,7 @@
     let _myPresenceId = null;
     let _presenceRef = null;
     let _pendingJoinRoomId = null;
+    let _pendingJoinConfig = null;
     let _membersCache = {};
     let _rolesRef = null;
 
@@ -3394,18 +3415,33 @@
       return decryptBoard(b64, password); // already defined above
     }
 
+    // ── Password hashing helpers (PBKDF2) ──
+    async function hashPassword(password, salt) {
+      const enc = new TextEncoder();
+      const keyMat = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
+      const bits = await crypto.subtle.deriveBits(
+        { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' }, keyMat, 256
+      );
+      return btoa(String.fromCharCode(...new Uint8Array(bits)));
+    }
+    async function verifyPassword(input, storedHash, saltB64) {
+      try {
+        const salt = Uint8Array.from(atob(saltB64), c => c.charCodeAt(0));
+        const inputHash = await hashPassword(input, salt);
+        return inputHash === storedHash;
+      } catch (e) { return false; }
+    }
+    async function buildPasswordHash(password) {
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const hash = await hashPassword(password, salt);
+      return { memberPwHash: hash, memberPwSalt: btoa(String.fromCharCode(...salt)) };
+    }
+
     async function fbSave() {
       if (!_roomId) return;
       _fbWriting = true;
       try {
-        let payload;
-        if (_roomPassword) {
-          const enc = await encryptForRoom(_roomPassword);
-          payload = { encrypted: enc };
-        } else {
-          payload = state;
-        }
-        await fbRoomRef().set(payload);
+        await fbRoomRef().set(state); // always plain JSON — access controlled by userId + password hash
       } catch(e) { console.warn('Firebase write error:', e); }
       setTimeout(() => { _fbWriting = false; }, 400);
     }
@@ -3434,20 +3470,11 @@
     }
 
     function fbListen(roomId) {
-      fbRoomRef().on('value', async snap => {
+      fbRoomRef().on('value', snap => {
         if (_fbWriting) return;
         const data = snap.val();
         if (!data) return;
-        let decoded;
-        if (data.encrypted) {
-          // Encrypted room — decrypt with stored password
-          if (!_roomPassword) return; // no key yet, skip
-          decoded = await decryptFromRoom(data.encrypted, _roomPassword);
-          if (!decoded) return; // decryption failed
-        } else {
-          decoded = data;
-        }
-        state = normalizeState(decoded);
+        state = normalizeState(data);
         if (!state.labels)  state.labels  = [];
         if (!state.columns) state.columns = [];
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -3477,17 +3504,27 @@
           return (m && m.isOwner) ? '👑 ' + n : n;
         });
         document.getElementById('collabBtn').title = names.join('\n');
-        document.getElementById('collabBtnText').textContent = _isOwner
-          ? '⚙️ ' + count + ' online'
-          : '👥 ' + count + ' online';
+        _updateCollabBtnLabel();
       });
-      // Watch roles from Firebase
-      _rolesRef = db.ref('rooms/' + _roomId + '/config/roles');
+      // Reactively watch config for role changes + ownership transfers
+      _rolesRef = db.ref('rooms/' + _roomId + '/config');
       _rolesRef.on('value', snap => {
-        _rolesCache = snap.val() || {};
-        // Refresh my own role
+        const cfg = snap.val() || {};
+        _rolesCache = cfg.roles || {};
+        const newIsOwner = (cfg.ownerId === _userId);
+        if (newIsOwner !== _isOwner) {
+          _isOwner = newIsOwner;
+          if (_presenceRef) _presenceRef.update({ isOwner: _isOwner });
+        }
         _myRole = _isOwner ? 'owner' : (_rolesCache[_userId] || 'member');
+        _updateCollabBtnLabel();
       });
+    }
+    function _updateCollabBtnLabel() {
+      const count = Object.keys(_membersCache).length;
+      if (_isOwner)            document.getElementById('collabBtnText').textContent = '⚙️ ' + count + ' online';
+      else if (_myRole === 'manager') document.getElementById('collabBtnText').textContent = '⚡ ' + count + ' online';
+      else                     document.getElementById('collabBtnText').textContent = '👥 ' + count + ' online';
     }
 
     function getRoomIdFromUrl() {
@@ -3512,10 +3549,6 @@
       const i = document.getElementById('roomJoinPwInput');
       i.type = i.type === 'password' ? 'text' : 'password';
     }
-    function toggleRoomCreateEye() {
-      const i = document.getElementById('roomCreatePwInput');
-      i.type = i.type === 'password' ? 'text' : 'password';
-    }
     function cancelRoomJoin() {
       document.getElementById('roomJoinOverlay').classList.remove('open');
       _pendingJoinRoomId = null;
@@ -3527,29 +3560,30 @@
       const errEl = document.getElementById('roomJoinError');
       const btn   = document.getElementById('roomJoinBtn');
       errEl.textContent = '';
-      btn.textContent = '⏳ Joining...'; btn.disabled = true;
-      // Use _pendingJoinRoomId directly — _roomId is not set yet at this point
-      const snap = await db.ref('rooms/' + _pendingJoinRoomId + '/state').once('value');
-      const data = snap.val();
-      if (!data || !data.encrypted) {
-        errEl.textContent = '❌ Room not found or not encrypted.';
+      btn.textContent = '⏳ Verifying...'; btn.disabled = true;
+      const config = _pendingJoinConfig || {};
+      if (!config.memberPwHash || !config.memberPwSalt) {
+        _myRole = 'member';
+        document.getElementById('roomJoinOverlay').classList.remove('open');
         btn.textContent = 'Join Room'; btn.disabled = false;
+        const rid = _pendingJoinRoomId;
+        _pendingJoinRoomId = null; _pendingJoinConfig = null;
+        await finishJoinRoom(rid);
         return;
       }
-      const decoded = await decryptFromRoom(data.encrypted, pw);
-      if (!decoded) {
+      const valid = await verifyPassword(pw, config.memberPwHash, config.memberPwSalt);
+      if (!valid) {
         errEl.textContent = '❌ Wrong password.';
         document.getElementById('roomJoinPwInput').value = '';
         document.getElementById('roomJoinPwInput').focus();
         btn.textContent = 'Join Room'; btn.disabled = false;
         return;
       }
-      // Success
-      _roomPassword = pw;
+      _myRole = 'member';
       document.getElementById('roomJoinOverlay').classList.remove('open');
       btn.textContent = 'Join Room'; btn.disabled = false;
       const rid = _pendingJoinRoomId;
-      _pendingJoinRoomId = null;
+      _pendingJoinRoomId = null; _pendingJoinConfig = null;
       await finishJoinRoom(rid);
     }
     document.getElementById('roomJoinPwInput').addEventListener('keydown', e => {
@@ -3562,17 +3596,23 @@
     }
     async function confirmRoomCreate() {
       const pw = document.getElementById('roomCreatePwInput').value.trim();
-      _roomPassword = pw || null;
       _isOwner = true;
+      _myRole = 'owner';
       document.getElementById('roomCreateOverlay').classList.remove('open');
       const roomId = generateRoomId();
       _roomId = roomId;
       setRoomInUrl(roomId);
-      await fbConfigRef().set({ locked: !!_roomPassword, ownerId: _userId, ownerName: _username });
+      const configData = { locked: !!pw, ownerId: _userId, ownerName: _username, roles: {} };
+      if (pw) {
+        const hashed = await buildPasswordHash(pw);
+        Object.assign(configData, hashed);
+        localStorage.setItem('pb_roomPw_' + roomId, pw);
+      }
+      await fbConfigRef().set(configData);
       await fbSave();
       fbListen(roomId);
       fbSetupPresence();
-      toast('✅ Room created! Link copied to clipboard.');
+      toast('✅ Room created!');
       setTimeout(() => {
         const url = getRoomShareUrl();
         if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('🔗 Link copied — share it!'));
@@ -3585,20 +3625,17 @@
     async function finishJoinRoom(roomId) {
       _roomId = roomId;
       setRoomInUrl(roomId);
-      // Check ownership
-      const cfgSnap = await fbConfigRef().once('value');
-      const cfg = cfgSnap.val() || {};
-      _isOwner = (cfg.ownerId === _userId);
       fbListen(roomId);
       fbSetupPresence();
-      // Seed room if empty
-      const snap = await fbRoomRef().once('value');
-      if (!snap.val()) fbSave();
     }
 
-    // ── Room settings (owner only) ──
+    // ── Room settings (owner + manager) ──
     function toggleNewRoomPwEye() {
       const i = document.getElementById('newRoomPwInput');
+      i.type = i.type === 'password' ? 'text' : 'password';
+    }
+    function toggleSettingsAuthEye() {
+      const i = document.getElementById('settingsAuthInput');
       i.type = i.type === 'password' ? 'text' : 'password';
     }
 
@@ -3607,6 +3644,50 @@
       if (role === 'manager') return '<span class="role-badge manager">⚡ Manager</span>';
       return '<span class="role-badge member">👤 Member</span>';
     }
+
+    async function openRoomSettingsWithAuth() {
+      const cachedPw = localStorage.getItem('pb_roomPw_' + _roomId);
+      if (cachedPw) { openRoomSettings(); return; }
+      const snap = await fbConfigRef().once('value');
+      const cfg = snap.val() || {};
+      if (!cfg.locked) { openRoomSettings(); return; }
+      document.getElementById('settingsAuthInput').value = '';
+      document.getElementById('settingsAuthError').textContent = '';
+      document.getElementById('settingsAuthOverlay').classList.add('open');
+      setTimeout(() => document.getElementById('settingsAuthInput').focus(), 100);
+    }
+    async function submitSettingsAuth() {
+      const pw = document.getElementById('settingsAuthInput').value;
+      if (!pw) { document.getElementById('settingsAuthInput').focus(); return; }
+      const errEl = document.getElementById('settingsAuthError');
+      const btn = document.getElementById('settingsAuthBtn');
+      errEl.textContent = '';
+      btn.textContent = '⏳ Verifying...'; btn.disabled = true;
+      const snap = await fbConfigRef().once('value');
+      const cfg = snap.val() || {};
+      if (!cfg.memberPwHash || !cfg.memberPwSalt) {
+        localStorage.setItem('pb_roomPw_' + _roomId, pw);
+        document.getElementById('settingsAuthOverlay').classList.remove('open');
+        btn.textContent = '🔓 Unlock Settings'; btn.disabled = false;
+        openRoomSettings();
+        return;
+      }
+      const valid = await verifyPassword(pw, cfg.memberPwHash, cfg.memberPwSalt);
+      btn.textContent = '🔓 Unlock Settings'; btn.disabled = false;
+      if (!valid) {
+        errEl.textContent = '❌ Wrong password.';
+        document.getElementById('settingsAuthInput').value = '';
+        document.getElementById('settingsAuthInput').focus();
+        return;
+      }
+      localStorage.setItem('pb_roomPw_' + _roomId, pw);
+      document.getElementById('settingsAuthOverlay').classList.remove('open');
+      openRoomSettings();
+    }
+    document.getElementById('settingsAuthInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') submitSettingsAuth();
+      if (e.key === 'Escape') document.getElementById('settingsAuthOverlay').classList.remove('open');
+    });
 
     function openRoomSettings() {
       const list = document.getElementById('membersList');
@@ -3630,17 +3711,26 @@
         name.textContent = (m.name || 'Anonymous') + (isMe ? ' (you)' : '');
 
         if (m.isOwner) {
-          // Owner can't be changed
           row.append(av, name, document.createRange().createContextualFragment(_roleBadgeHTML('owner')));
-        } else {
-          // Dropdown to change role
+        } else if (_isOwner) {
+          const wrap = document.createElement('div');
+          wrap.style.cssText = 'display:flex;gap:6px;align-items:center;flex-shrink:0';
           const sel = document.createElement('select');
           sel.innerHTML =
             '<option value="member">👤 Member</option>' +
             '<option value="manager">⚡ Manager</option>';
           sel.value = memberRole;
           sel.addEventListener('change', () => setMemberRole(m.userId, sel.value));
-          row.append(av, name, sel);
+          const xferBtn = document.createElement('button');
+          xferBtn.className = 'btn';
+          xferBtn.style.cssText = 'font-size:0.68rem;padding:3px 8px;color:var(--accent3);border-color:rgba(106,247,196,0.3);white-space:nowrap';
+          xferBtn.textContent = '👑 Transfer';
+          xferBtn.title = 'Transfer ownership to ' + (m.name || 'this user');
+          xferBtn.addEventListener('click', () => transferOwnership(m.userId, m.name || 'Unknown'));
+          wrap.append(sel, xferBtn);
+          row.append(av, name, wrap);
+        } else {
+          row.append(av, name, document.createRange().createContextualFragment(_roleBadgeHTML(memberRole)));
         }
         list.appendChild(row);
       });
@@ -3650,10 +3740,29 @@
       document.getElementById('ownerNameInput').value = _username;
       document.getElementById('newRoomPwInput').value = '';
       document.getElementById('roomPwChangeError').textContent = '';
+      const pwSection = document.getElementById('settingsPwSection');
+      if (pwSection) pwSection.style.display = _isOwner ? '' : 'none';
+      const pwBtn = document.getElementById('settingsPwBtn');
+      if (pwBtn) pwBtn.style.display = _isOwner ? '' : 'none';
+      const roleLabel = document.getElementById('settingsRoleLabel');
+      if (roleLabel) roleLabel.innerHTML = _isOwner
+        ? 'You are the <span style="color:var(--accent3);font-weight:600">👑 owner</span> of this room.'
+        : 'You have <span style="color:#f7c26a;font-weight:600">⚡ Manager</span> access to this room.</span>';
       document.getElementById('roomSettingsOverlay').classList.add('open');
     }
     function closeRoomSettings() {
       document.getElementById('roomSettingsOverlay').classList.remove('open');
+    }
+    async function transferOwnership(newOwnerId, newOwnerName) {
+      if (!_isOwner) return;
+      if (!confirm('Transfer ownership to ' + newOwnerName + '? You will become a Manager.')) return;
+      await fbConfigRef().update({
+        ownerId: newOwnerId,
+        ownerName: newOwnerName,
+        ['roles/' + _userId]: 'manager',
+      });
+      toast('👑 Ownership transferred to ' + newOwnerName);
+      closeRoomSettings();
     }
     async function setMemberRole(userId, role) {
       if (!_isOwner) return;
@@ -3666,7 +3775,7 @@
       _username = val;
       localStorage.setItem('pb_username', val);
       updateUsernameChip();
-      if (_presenceRef) _presenceRef.set({ name: val, isOwner: true, userId: _userId });
+      if (_presenceRef) _presenceRef.set({ name: val, isOwner: _isOwner, userId: _userId });
       toast('Name updated');
     }
     async function changeRoomPassword() {
@@ -3674,11 +3783,19 @@
       const newPw = document.getElementById('newRoomPwInput').value.trim();
       const errEl = document.getElementById('roomPwChangeError');
       errEl.textContent = '';
-      _roomPassword = newPw || null;
-      await fbConfigRef().update({ locked: !!_roomPassword });
-      await fbSave();
+      const updates = { locked: !!newPw };
+      if (newPw) {
+        const hashed = await buildPasswordHash(newPw);
+        Object.assign(updates, hashed);
+        localStorage.setItem('pb_roomPw_' + _roomId, newPw);
+      } else {
+        updates.memberPwHash = null;
+        updates.memberPwSalt = null;
+        localStorage.removeItem('pb_roomPw_' + _roomId);
+      }
+      await fbConfigRef().update(updates);
       errEl.style.color = 'var(--accent3)';
-      errEl.textContent = newPw ? '✅ Password updated. Others must re-enter it.' : '✅ Password removed.';
+      errEl.textContent = newPw ? '✅ Password updated.' : '✅ Password removed.';
       setTimeout(() => { errEl.textContent = ''; errEl.style.color = ''; }, 3500);
     }
     document.getElementById('newRoomPwInput').addEventListener('keydown', e => {
@@ -3687,8 +3804,10 @@
 
     function collabAction() {
       if (_roomId) {
-        if (_isOwner) { openRoomSettings(); return; }
-        // Member — copy link
+        if (_isOwner || _myRole === 'manager') {
+          openRoomSettingsWithAuth();
+          return;
+        }
         const url = getRoomShareUrl();
         if (navigator.clipboard) {
           navigator.clipboard.writeText(url).then(() => toast('🔗 Collaboration link copied!'));
@@ -3700,7 +3819,6 @@
         }
         return;
       }
-      // Show create room overlay (ask for username first if not set)
       ensureUsername(() => {
         document.getElementById('roomCreatePwInput').value = '';
         document.getElementById('roomCreateOverlay').classList.add('open');
@@ -3747,18 +3865,35 @@
     }
 
     async function joinRoom(roomId) {
-      // Ask for username first if not set
       ensureUsername(async () => {
         const configSnap = await db.ref('rooms/' + roomId + '/config').once('value');
-        const config = configSnap.val();
-        if (config && config.locked) {
+        const config = configSnap.val() || {};
+
+        // Owner — recognized by saved userId, skip all prompts
+        if (config.ownerId === _userId) {
+          _isOwner = true;
+          _myRole = 'owner';
+          await finishJoinRoom(roomId);
+          return;
+        }
+
+        // Manager — recognized by userId in roles, skip password
+        if (config.roles && config.roles[_userId] === 'manager') {
+          _myRole = 'manager';
+          await finishJoinRoom(roomId);
+          return;
+        }
+
+        // Member — needs password if room is locked
+        if (config.locked) {
           _pendingJoinRoomId = roomId;
+          _pendingJoinConfig = config;
           document.getElementById('roomJoinPwInput').value = '';
           document.getElementById('roomJoinError').textContent = '';
           document.getElementById('roomJoinOverlay').classList.add('open');
           setTimeout(() => document.getElementById('roomJoinPwInput').focus(), 100);
         } else {
-          _roomPassword = null;
+          _myRole = 'member';
           await finishJoinRoom(roomId);
         }
       });
