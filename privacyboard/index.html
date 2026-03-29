@@ -3958,6 +3958,7 @@
       document.getElementById('roomJoinOverlay').classList.remove('open');
       _pendingJoinRoomId = null;
       history.replaceState(null, '', location.pathname);
+      document.getElementById('boardVeil').classList.remove('show');
     }
     async function submitRoomJoin() {
       const pw = document.getElementById('roomJoinPwInput').value;
@@ -4041,6 +4042,7 @@
 
       startDataListener();
       fbSetupPresence();
+      document.getElementById('boardVeil').classList.remove('show');
     }
 
     // ── Room settings (owner + manager) ──
