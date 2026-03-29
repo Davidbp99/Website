@@ -3950,8 +3950,14 @@
       try {
         const snap = await db.ref('rooms').once('value');
         const rooms = snap.val() || {};
-        // Build a map of userId → { name, ownedBoards[], managedBoards[] }
         const usersMap = {};
+
+        // Helper to ensure a user entry exists
+        const ensureUser = (uid, name) => {
+          if (!usersMap[uid]) usersMap[uid] = { name: name || uid.slice(0, 12) + '…', userId: uid, owned: [], managed: [] };
+          else if (name && name !== 'Unknown' && (usersMap[uid].name === 'Unknown' || usersMap[uid].name.endsWith('…'))) usersMap[uid].name = name;
+        };
+
         Object.entries(rooms).forEach(([rId, room]) => {
           const cfg = room.config || {};
           const ownerId = cfg.ownerId;
@@ -3963,14 +3969,35 @@
             : (isLocked ? '🔒 ' + (ownerName !== 'Unknown' ? ownerName + "'s Board" : rId.slice(0, 10) + '…') : rId.slice(0, 10) + '…');
 
           if (ownerId) {
-            if (!usersMap[ownerId]) usersMap[ownerId] = { name: ownerName, userId: ownerId, owned: [], managed: [] };
-            else if (usersMap[ownerId].name === 'Unknown' && ownerName !== 'Unknown') usersMap[ownerId].name = ownerName;
+            ensureUser(ownerId, ownerName);
             usersMap[ownerId].owned.push({ rId, boardTitle, isLocked });
           }
-
           Object.entries(roles).forEach(([uid, role]) => {
-            if (!usersMap[uid]) usersMap[uid] = { name: uid.slice(0, 10) + '…', userId: uid, owned: [], managed: [] };
+            ensureUser(uid, null);
             if (role === 'manager') usersMap[uid].managed.push({ rId, boardTitle, isLocked, ownerName });
+          });
+        });
+
+        // Always ensure the current dev appears with their correct name, even if they own no DB rooms
+        ensureUser(_userId, _username || 'You');
+
+        // Inject current dev's own workspace cloud boards that might not have ownerName set in DB
+        _workspaces.forEach(ws => {
+          ws.boards.forEach(b => {
+            if (b.type !== 'cloud') return;
+            if (!usersMap[_userId].owned.find(o => o.rId === b.id)) {
+              const room = rooms[b.id];
+              if (!room) return; // not in DB yet
+              const cfg = room.config || {};
+              // Only claim boards where we are the owner
+              if (cfg.ownerId === _userId || !cfg.ownerId) {
+                usersMap[_userId].owned.push({
+                  rId: b.id,
+                  boardTitle: b.name || (room.state && room.state.boardTitle) || b.id.slice(0, 10) + '…',
+                  isLocked: !!cfg.locked
+                });
+              }
+            }
           });
         });
 
@@ -5207,11 +5234,19 @@
     async function devAdminRemoveId(id) {
       if (!confirm('Remove dev privileges for:\n' + id + '?')) return;
       try {
-        await db.ref('app_admins/' + id).remove();
+        // Firebase rules may block .remove() — use set(null) instead which is equivalent
+        await db.ref('app_admins/' + id).set(null);
         toast('🗑 Dev removed');
         devAdminRefresh();
       } catch (e) {
-        toast('❌ Failed to remove. Check Firebase rules.');
+        // Fallback: try .remove()
+        try {
+          await db.ref('app_admins/' + id).remove();
+          toast('🗑 Dev removed');
+          devAdminRefresh();
+        } catch (e2) {
+          toast('❌ Failed to remove. Check Firebase rules.');
+        }
       }
     }
 
