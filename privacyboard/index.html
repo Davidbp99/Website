@@ -2028,6 +2028,14 @@
 
   <div id="board"></div>
   <div id="toast"></div>
+  
+  <div id="boardVeil">
+    <div style="text-align:center">
+      <div class="collab-pulse" style="display:inline-block;width:12px;height:12px;background:var(--accent);margin-bottom:16px"></div>
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;margin-bottom:8px">Joining Room...</h3>
+      <p style="font-size:0.85rem;color:var(--text-muted)">Synchronizing secure data</p>
+    </div>
+  </div>
 
   <!-- CARD MODAL -->
   <div class="modal-overlay" id="cardModal">
@@ -2488,7 +2496,7 @@
     let selectedColColor = COL_COLORS[0];
     let newLabelColorIndex = 0;
     let dragState = { card: null, srcColId: null };
-    let _roomConfig = null;
+    let _roomConfig = {};
 
     // Track body-level dropdowns by colId so we can remove them cleanly
     const colDropdowns = {};
@@ -4008,7 +4016,7 @@
       await fbConfigRef().set(configData);
       localStorage.setItem('pb_has_created_board', 'true'); // bypass subsequent site locks
       await fbSave(); // Uses _roomPassword to encrypt
-      fbListen(roomId);
+      startDataListener();
       fbSetupPresence();
       toast('✅ Room created!');
       setTimeout(() => {
