@@ -2066,7 +2066,7 @@
     }
 
     .board-card.create-new {
-      background: rgba(255,255,255,0.02);
+      background: rgba(255, 255, 255, 0.02);
       border: 1px dashed var(--border);
       align-items: center;
       justify-content: center;
@@ -2109,7 +2109,7 @@
       position: absolute;
       top: 8px;
       right: 8px;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.5);
       border: none;
       color: var(--text-muted);
       border-radius: 4px;
@@ -2119,10 +2119,12 @@
       opacity: 0;
       transition: all 0.2s;
     }
+
     .delete-btn-corner:hover {
       background: var(--danger);
       color: white;
     }
+
     .board-card:hover .delete-btn-corner {
       opacity: 1;
     }
@@ -2153,12 +2155,17 @@
           <input type="text" id="usernamePopoverInput" placeholder="e.g. David" maxlength="24" autocomplete="off" />
           <button class="btn btn-primary" style="font-size:0.78rem;padding:6px 14px"
             onclick="saveUsernameFromChip()">Save</button>
-          <div style="margin-top:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;gap:6px">
+          <div
+            style="margin-top:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;gap:6px">
             <label>Device Identity</label>
             <div style="display:flex;gap:6px">
               <button class="btn" style="flex:1;font-size:0.7rem;padding:4px" onclick="exportIdentity()">Export</button>
-              <button class="btn" style="flex:1;font-size:0.7rem;padding:4px" onclick="openImportIdentity()">Import</button>
+              <button class="btn" style="flex:1;font-size:0.7rem;padding:4px"
+                onclick="openImportIdentity()">Import</button>
             </div>
+            <button class="btn"
+              style="margin-top:4px;font-size:0.7rem;padding:4px;border-color:rgba(255,100,100,0.3);color:var(--danger)"
+              onclick="copyRawUserId()">Copy Raw User ID (For Dev Role)</button>
           </div>
         </div>
       </div>
@@ -2184,10 +2191,11 @@
 
   <div id="board"></div>
   <div id="toast"></div>
-  
+
   <div id="boardVeil">
     <div style="text-align:center">
-      <div class="collab-pulse" style="display:inline-block;width:12px;height:12px;background:var(--accent);margin-bottom:16px"></div>
+      <div class="collab-pulse"
+        style="display:inline-block;width:12px;height:12px;background:var(--accent);margin-bottom:16px"></div>
       <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;margin-bottom:8px">Joining Room...</h3>
       <p style="font-size:0.85rem;color:var(--text-muted)">Synchronizing secure data</p>
     </div>
@@ -2464,13 +2472,16 @@
   <div class="room-overlay" id="importIdentityOverlay">
     <div class="room-box">
       <h2>🔄 Import Identity</h2>
-      <p style="color:var(--accent2);font-weight:600;font-size:0.85rem">WARNING: This will overwrite your current device identity. You will lose owner access to any local boards on this device.</p>
+      <p style="color:var(--accent2);font-weight:600;font-size:0.85rem">WARNING: This will overwrite your current device
+        identity. You will lose owner access to any local boards on this device.</p>
       <div class="form-group">
         <label>Paste Exported Identity String</label>
-        <textarea id="importIdentityInput" style="height:80px;font-family:monospace;font-size:0.75rem;padding:8px" placeholder="eyJwYl91c2VySWQi..."></textarea>
+        <textarea id="importIdentityInput" style="height:80px;font-family:monospace;font-size:0.75rem;padding:8px"
+          placeholder="eyJwYl91c2VySWQi..."></textarea>
       </div>
       <div class="modal-actions">
-        <button class="btn" onclick="document.getElementById('importIdentityOverlay').classList.remove('open')">Cancel</button>
+        <button class="btn"
+          onclick="document.getElementById('importIdentityOverlay').classList.remove('open')">Cancel</button>
         <button class="btn btn-danger" onclick="submitImportIdentity()">Overwrite & Import</button>
       </div>
     </div>
@@ -2577,6 +2588,62 @@
     </div>
   </div>
 
+  <!-- DEV ADMIN PANEL -->
+  <div class="room-overlay" id="devAdminOverlay">
+    <div class="room-box" style="width:520px;max-width:96vw;gap:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <h2 style="color:var(--danger,#f76a8a)">🛠️ Dev Admin Panel</h2>
+        <button class="col-menu-btn" onclick="closeDevAdmin()" style="font-size:1rem">✕</button>
+      </div>
+      <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.5">
+        Manage <code
+          style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:0.75rem">app_admins</code> in
+        the global Firebase database.
+        Users listed here receive dev (🛠️) privileges across all rooms.
+      </p>
+
+      <!-- Your own ID quick-add -->
+      <div
+        style="background:rgba(247,106,138,0.07);border:1px dashed rgba(247,106,138,0.3);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <div>
+          <div
+            style="font-size:0.68rem;font-weight:600;color:var(--danger,#f76a8a);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px">
+            Your User ID</div>
+          <div id="devAdminMyId" style="font-family:monospace;font-size:0.78rem;color:var(--text);word-break:break-all">
+          </div>
+        </div>
+        <button class="btn btn-danger" onclick="devAdminAddSelf()" style="flex-shrink:0;white-space:nowrap">+ Add
+          Me</button>
+      </div>
+
+      <!-- Add arbitrary ID -->
+      <div class="form-group">
+        <label>Add Dev by User ID</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="devAdminAddInput" placeholder="Paste a pb_userId here..."
+            style="flex:1;font-family:monospace;font-size:0.82rem" />
+          <button class="btn btn-primary" onclick="devAdminAddId()" style="white-space:nowrap">+ Add</button>
+        </div>
+        <div id="devAdminAddError" style="font-size:0.75rem;color:var(--accent2);min-height:16px;margin-top:4px"></div>
+      </div>
+
+      <!-- Current dev list -->
+      <div>
+        <div
+          style="font-size:0.68rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">
+          Current Devs in DB</div>
+        <div id="devAdminList" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto">
+        </div>
+      </div>
+
+      <div class="modal-actions" style="padding-top:4px">
+        <button class="btn" onclick="closeDevAdmin()">Close</button>
+        <button class="btn" onclick="devAdminRefresh()"
+          style="color:var(--accent3);border-color:rgba(106,247,196,0.3)">↻ Refresh</button>
+      </div>
+    </div>
+  </div>
+
   <!-- STORAGE SETTINGS -->
   <div class="room-overlay" id="storageSettingsOverlay">
     <div class="room-box">
@@ -2656,7 +2723,7 @@
       if (stored) {
         try { _workspaces = JSON.parse(stored); } catch (e) { _workspaces = []; }
       }
-      
+
       if (!_workspaces || _workspaces.length === 0) {
         // Auto Migration
         let recovered = [];
@@ -2665,7 +2732,7 @@
           localStorage.setItem('pb_local_default', oldLocal);
           recovered.push({ id: 'default', type: 'local', name: 'Legacy Local Board' });
         }
-        
+
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
           if (key && key.startsWith('pb_roomPw_')) {
@@ -2673,7 +2740,7 @@
             recovered.push({ id: rId, type: 'cloud', name: 'Recovered Cloud Room' });
           }
         }
-        
+
         _workspaces = [
           {
             id: uid(),
@@ -2687,7 +2754,7 @@
     function saveWorkspaces() {
       localStorage.setItem('pb_workspaces', JSON.stringify(_workspaces));
     }
-    
+
     function trackBoardInWorkspace(boardId, type, title) {
       if (!boardId) return;
       let found = false;
@@ -2788,7 +2855,7 @@
       board.appendChild(addBtn);
 
       document.getElementById('boardTitle').value = state.boardTitle || 'My Board';
-      
+
       if (!_isDashboard) trackBoardInWorkspace(_currentBoardId, _currentBoardType, state.boardTitle);
     }
 
@@ -3770,16 +3837,16 @@
     function renderDashboard() {
       const container = document.getElementById('workspacesContainer');
       container.innerHTML = '';
-      
+
       if (_workspaces.length === 0) {
         container.innerHTML = '<p style="color:var(--text-muted)">No workspaces found.</p>';
         return;
       }
-      
+
       _workspaces.forEach(ws => {
         const sec = document.createElement('div');
         sec.className = 'workspace-section';
-        
+
         let headerActions = '';
         if (ws.id !== _workspaces[0].id) {
           headerActions = `<button class="btn btn-danger" style="font-size:0.65rem;padding:4px 8px" onclick="deleteWorkspace('${ws.id}')">Delete Workspace</button>`;
@@ -3793,14 +3860,14 @@
           <div class="board-grid" id="grid-${ws.id}"></div>
         `;
         container.appendChild(sec);
-        
+
         const grid = document.getElementById('grid-' + ws.id);
-        
+
         ws.boards.forEach(b => {
           const href = b.type === 'cloud' ? '?r=' + b.id : '?local=' + b.id;
           const bgType = b.type === 'cloud' ? 'linear-gradient(135deg, var(--accent2), var(--accent3))' : 'var(--text-muted)';
           const typeName = b.type === 'cloud' ? 'Cloud Sync' : 'Offline Local';
-          
+
           grid.innerHTML += `
             <div class="board-card" onclick="location.href='${href}'">
               <div class="board-card-title">${b.name}</div>
@@ -3812,7 +3879,7 @@
             </div>
           `;
         });
-        
+
         // Add "Create new" card
         const createCard = document.createElement('div');
         createCard.className = 'board-card create-new';
@@ -3820,8 +3887,55 @@
         createCard.onclick = () => createBoardPrompt(ws.id);
         grid.appendChild(createCard);
       });
+
+      if (_isDev) {
+        const devSec = document.createElement('div');
+        devSec.className = 'workspace-section';
+        devSec.innerHTML = `
+          <div class="workspace-header" style="border-bottom:1px dashed var(--danger)">
+            <h3 style="color:var(--danger)">🛠️ Privacy Board Dev (Global View)</h3>
+            <div style="display:flex;gap:6px;align-items:center">
+              <button class="btn" style="font-size:0.65rem;padding:4px 10px;color:var(--danger);border-color:rgba(247,106,138,0.35)" onclick="openDevAdmin()">🛠️ Dev DB</button>
+              <button class="btn btn-danger" style="font-size:0.65rem;padding:4px 8px" onclick="loadAllGlobalBoards()">Load Global Array</button>
+            </div>
+          </div>
+          <div class="board-grid" id="dev-grid"></div>
+        `;
+        container.appendChild(devSec);
+      }
     }
-    
+
+    async function loadAllGlobalBoards() {
+      const grid = document.getElementById('dev-grid');
+      grid.innerHTML = '<p style="color:var(--text-muted)">Querying database...</p>';
+      try {
+        const snap = await db.ref('rooms').once('value');
+        grid.innerHTML = '';
+        const rooms = snap.val() || {};
+        const roomIds = Object.keys(rooms);
+        if (roomIds.length === 0) {
+          grid.innerHTML = '<p style="color:var(--text-muted)">Database is empty.</p>';
+          return;
+        }
+        roomIds.forEach(rId => {
+          const cfg = rooms[rId].config || {};
+          const isProtected = cfg.locked ? '🔒 Locked' : '🔓 Public';
+          const ownerName = cfg.ownerName || 'Unknown';
+          grid.innerHTML += `
+            <div class="board-card" style="border-color:var(--danger); background:rgba(255,100,100,0.05)" onclick="location.href='?r=${rId}'">
+              <div class="board-card-title" style="color:var(--danger); font-family:var(--font-mono)">${rId}</div>
+              <div class="board-card-type">
+                <div class="type-dot" style="background:var(--danger)"></div>
+                ${isProtected} (Owner: ${ownerName})
+              </div>
+            </div>
+          `;
+        });
+      } catch (e) {
+        grid.innerHTML = '<p style="color:var(--danger)">Failed to load. Ensure Firebase rules allow read.</p>';
+      }
+    }
+
     function createWorkspacePrompt() {
       const name = prompt('Workspace Name (e.g. Work, Personal):');
       if (!name) return;
@@ -3829,16 +3943,16 @@
       saveWorkspaces();
       renderDashboard();
     }
-    
+
     function createBoardPrompt(wsId) {
       const ws = _workspaces.find(w => w.id === wsId);
       if (!ws) return;
       const type = confirm('Create a multi-player Collaborative Board?\\n(Click OK for Cloud Sync, Cancel for Offline Local)') ? 'cloud' : 'local';
-      
+
       const newId = type === 'cloud' ? generateRoomId() : uid();
       ws.boards.push({ id: newId, type: type, name: 'Untitled Board' });
       saveWorkspaces();
-      
+
       location.href = (type === 'cloud') ? '?r=' + newId : '?local=' + newId;
     }
 
@@ -3958,6 +4072,7 @@
     if (!_userId) { _userId = uid(); localStorage.setItem('pb_userId', _userId); }
     let _username = localStorage.getItem('pb_username') || '';
     let _myRole = 'member'; // 'owner' | 'manager' | 'member'
+    let _isDev = false;
     let _rolesCache = {}; // { userId: role }
     let _selectedAssignees = []; // working copy while modal open [{userId, name}]
 
@@ -4031,7 +4146,21 @@
       setTimeout(() => document.getElementById('usernameInput').focus(), 100);
     }
 
-    // ── IDENTITY EXPORT / IMPORT ──
+    function copyRawUserId() {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(_userId).then(() => {
+          toast('✅ User ID (' + _userId + ') copied!');
+          document.getElementById('usernamePopover').classList.remove('open');
+        });
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = _userId; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+        toast('✅ User ID (' + _userId + ') copied!');
+        document.getElementById('usernamePopover').classList.remove('open');
+      }
+    }
+
     function exportIdentity() {
       const exportData = {};
       for (let i = 0; i < localStorage.length; i++) {
@@ -4042,7 +4171,7 @@
       }
       const jsonStr = JSON.stringify(exportData);
       const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
-      
+
       if (navigator.clipboard) {
         navigator.clipboard.writeText(b64).then(() => {
           toast('✅ Identity copied to clipboard!');
@@ -4071,13 +4200,13 @@
         const jsonStr = decodeURIComponent(escape(atob(b64)));
         const data = JSON.parse(jsonStr);
         if (!data || !data.pb_userId) throw new Error('Invalid format');
-        
+
         for (const [key, value] of Object.entries(data)) {
           if (key.startsWith('pb_')) {
             localStorage.setItem(key, value);
           }
         }
-        
+
         document.getElementById('importIdentityOverlay').classList.remove('open');
         toast('⚡ Identity Imported! Reloading...');
         setTimeout(() => location.reload(), 1200);
@@ -4268,7 +4397,7 @@
       if (!_roomId) return;
       _myPresenceId = uid();
       _presenceRef = fbPresenceRef().child(_myPresenceId);
-      _presenceRef.set({ name: _username || 'Anonymous', isOwner: _isOwner, userId: _userId });
+      _presenceRef.set({ name: _username || 'Anonymous', isOwner: _isOwner, isDev: _isDev, userId: _userId });
       _presenceRef.onDisconnect().remove();
       fbPresenceRef().on('value', snap => {
         _membersCache = {};
@@ -4293,10 +4422,10 @@
         const cfg = snap.val() || {};
         _roomConfig = cfg;
         _rolesCache = cfg.roles || {};
-        const newIsOwner = (cfg.ownerId === _userId);
+        const newIsOwner = (cfg.ownerId === _userId || _isDev);
         if (newIsOwner !== _isOwner) {
           _isOwner = newIsOwner;
-          if (_presenceRef) _presenceRef.update({ isOwner: _isOwner });
+          if (_presenceRef) _presenceRef.update({ isOwner: _isOwner, isDev: _isDev });
         }
         _myRole = _isOwner ? 'owner' : (_rolesCache[_userId] || 'member');
         const newStorage = cfg.customStorage || { type: 'default' };
@@ -4437,7 +4566,8 @@
       i.type = i.type === 'password' ? 'text' : 'password';
     }
 
-    function _roleBadgeHTML(role) {
+    function _roleBadgeHTML(role, isDev) {
+      if (isDev) return '<span class="role-badge owner" style="background:var(--danger)">🛠️ Dev</span>';
       if (role === 'owner') return '<span class="role-badge owner">👑 Owner</span>';
       if (role === 'manager') return '<span class="role-badge manager">⚡ Manager</span>';
       return '<span class="role-badge member">👤 Member</span>';
@@ -4507,7 +4637,7 @@
         name.textContent = (m.name || 'Anonymous') + (isMe ? ' (you)' : '');
 
         if (m.isOwner) {
-          row.append(av, name, document.createRange().createContextualFragment(_roleBadgeHTML('owner')));
+          row.append(av, name, document.createRange().createContextualFragment(_roleBadgeHTML('owner', m.isDev)));
         } else if (_isOwner) {
           const wrap = document.createElement('div');
           wrap.style.cssText = 'display:flex;gap:6px;align-items:center;flex-shrink:0';
@@ -4526,7 +4656,7 @@
           wrap.append(sel, xferBtn);
           row.append(av, name, wrap);
         } else {
-          row.append(av, name, document.createRange().createContextualFragment(_roleBadgeHTML(memberRole)));
+          row.append(av, name, document.createRange().createContextualFragment(_roleBadgeHTML(memberRole, m.isDev)));
         }
         list.appendChild(row);
       });
@@ -4736,10 +4866,10 @@
         const av = document.createElement('span');
         av.className = 'av';
         const role = m.isOwner ? 'owner' : (_rolesCache[m.userId] || 'member');
-        if (role === 'owner') av.style.background = 'linear-gradient(135deg,#6af7c4,#3abf90)';
+        if (role === 'owner' || m.isDev) av.style.background = 'linear-gradient(135deg,#6af7c4,#3abf90)';
         if (role === 'manager') av.style.background = 'linear-gradient(135deg,#f7c26a,#d4933a)';
         av.textContent = (m.name || '?').charAt(0).toUpperCase();
-        const badge = role === 'owner' ? '<span class="role-badge owner" style="font-size:0.55rem;padding:1px 5px">👑</span>'
+        const badge = m.isDev ? '<span class="role-badge owner" style="background:var(--danger);font-size:0.55rem;padding:1px 5px">🛠️</span>' : role === 'owner' ? '<span class="role-badge owner" style="font-size:0.55rem;padding:1px 5px">👑</span>'
           : role === 'manager' ? '<span class="role-badge manager" style="font-size:0.55rem;padding:1px 5px">⚡</span>' : '';
         chip.innerHTML = '';
         chip.appendChild(av);
@@ -4804,14 +4934,97 @@
       if (gs) applyCustomStorage(JSON.parse(gs));
     } catch (e) { }
 
+    let _adminCheckDone = false;
+    async function checkDevStatus() {
+      if (!_userId || _adminCheckDone) return;
+      try {
+        const snap = await db.ref('app_admins/' + _userId).once('value');
+        if (snap.val()) {
+          _isDev = true;
+          if (_isDashboard) renderDashboard();
+          else if (_roomId) fbSetupPresence();
+        }
+        _adminCheckDone = true;
+      } catch (e) { }
+    }
+    checkDevStatus();
+
+    // ── DEV ADMIN PANEL ──
+    function openDevAdmin() {
+      document.getElementById('devAdminMyId').textContent = _userId;
+      document.getElementById('devAdminAddInput').value = '';
+      document.getElementById('devAdminAddError').textContent = '';
+      document.getElementById('devAdminOverlay').classList.add('open');
+      devAdminRefresh();
+    }
+    function closeDevAdmin() {
+      document.getElementById('devAdminOverlay').classList.remove('open');
+    }
+    async function devAdminRefresh() {
+      const list = document.getElementById('devAdminList');
+      list.innerHTML = '<p style="color:var(--text-muted);font-size:0.82rem">Loading...</p>';
+      try {
+        const snap = await db.ref('app_admins').once('value');
+        const admins = snap.val() || {};
+        const ids = Object.keys(admins);
+        list.innerHTML = '';
+        if (ids.length === 0) {
+          list.innerHTML = '<p style="color:var(--text-muted);font-size:0.82rem;font-style:italic">No devs registered yet.</p>';
+          return;
+        }
+        ids.forEach(id => {
+          const row = document.createElement('div');
+          row.style.cssText = 'display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px';
+          const isSelf = (id === _userId);
+          row.innerHTML = `
+            <div style="font-family:monospace;font-size:0.77rem;color:${isSelf ? 'var(--accent3)' : 'var(--text)'};flex:1;word-break:break-all;min-width:0">${id}${isSelf ? ' <span style="font-family:\'DM Sans\',sans-serif;font-size:0.65rem;background:rgba(106,247,196,0.15);color:var(--accent3);border-radius:100px;padding:1px 7px;font-weight:600">you</span>' : ''}</div>
+            <button onclick="devAdminRemoveId('${id}')" style="background:rgba(247,106,138,0.08);border:1px solid rgba(247,106,138,0.25);color:var(--accent2);border-radius:6px;padding:3px 8px;font-size:0.7rem;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;flex-shrink:0" title="Remove dev">✕ Remove</button>
+          `;
+          list.appendChild(row);
+        });
+      } catch (e) {
+        list.innerHTML = '<p style="color:var(--danger)">Failed to load. Check Firebase rules.</p>';
+      }
+    }
+    async function devAdminAddSelf() {
+      await devAdminWriteId(_userId);
+    }
+    async function devAdminAddId() {
+      const val = document.getElementById('devAdminAddInput').value.trim();
+      const err = document.getElementById('devAdminAddError');
+      if (!val) { err.textContent = 'Please enter a User ID.'; return; }
+      err.textContent = '';
+      await devAdminWriteId(val);
+      document.getElementById('devAdminAddInput').value = '';
+    }
+    async function devAdminWriteId(id) {
+      try {
+        await db.ref('app_admins/' + id).set(true);
+        toast('✅ Dev added: ' + id.slice(0, 12) + '…');
+        devAdminRefresh();
+      } catch (e) {
+        toast('❌ Failed to write. Check Firebase rules.');
+      }
+    }
+    async function devAdminRemoveId(id) {
+      if (!confirm('Remove dev privileges for:\n' + id + '?')) return;
+      try {
+        await db.ref('app_admins/' + id).remove();
+        toast('🗑 Dev removed');
+        devAdminRefresh();
+      } catch (e) {
+        toast('❌ Failed to remove. Check Firebase rules.');
+      }
+    }
+
     if (_isDashboard) {
       // Hide board UI, show dashboard UI
       document.getElementById('board').style.display = 'none';
       document.getElementById('boardTitle').style.display = 'none';
       const headerBtns = document.querySelectorAll('.header-actions .btn');
-      headerBtns.forEach(b => { if(!b.textContent.includes('Database')) b.style.display = 'none'; });
+      headerBtns.forEach(b => { if (!b.textContent.includes('Database')) b.style.display = 'none'; });
       document.getElementById('collabBtn').style.display = 'none';
-      
+
       document.getElementById('dashboardView').style.display = 'flex';
       renderDashboard();
     } else {
