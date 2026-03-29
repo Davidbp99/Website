@@ -1,0 +1,3139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrivacyBoard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #18181f;
+      --surface2: #1f1f29;
+      --border: rgba(255, 255, 255, 0.07);
+      --text: #e8e8f0;
+      --text-muted: #6b6b82;
+      --accent: #7c6af7;
+      --accent2: #f76a8a;
+      --accent3: #6af7c4;
+      --card-bg: #1c1c26;
+      --col-w: 300px;
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 0 28px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(15, 15, 19, 0.92);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      flex-shrink: 0;
+      gap: 12px;
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      flex-shrink: 0;
+    }
+
+    #boardTitle {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      outline: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+      padding: 2px 4px;
+      min-width: 80px;
+      max-width: 220px;
+      text-align: center;
+    }
+
+    #boardTitle:hover,
+    #boardTitle:focus {
+      border-bottom-color: var(--accent);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 7px 14px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: var(--surface);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #6857e0;
+      border-color: #6857e0;
+      color: #fff;
+    }
+
+    .btn-danger {
+      color: var(--accent2);
+    }
+
+    .btn-danger:hover {
+      border-color: var(--accent2);
+      background: rgba(247, 106, 138, 0.1);
+      color: var(--accent2);
+    }
+
+    .btn-share {
+      color: var(--accent3);
+      border-color: rgba(106, 247, 196, 0.2);
+    }
+
+    .btn-share:hover {
+      border-color: var(--accent3);
+      background: rgba(106, 247, 196, 0.08);
+      color: var(--accent3);
+    }
+
+    #board {
+      display: flex;
+      gap: 16px;
+      padding: 24px 28px 60px;
+      align-items: flex-start;
+      flex: 1;
+      overflow-x: auto;
+      overflow-y: visible;
+    }
+
+    .column {
+      width: var(--col-w);
+      flex-shrink: 0;
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.2s;
+    }
+
+    .column.drag-over {
+      box-shadow: 0 0 0 2px var(--accent);
+      background: var(--surface2);
+    }
+
+    .col-header {
+      padding: 14px 14px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .col-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .col-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      outline: none;
+      flex: 1;
+      min-width: 0;
+      cursor: pointer;
+    }
+
+    .col-title:focus {
+      color: var(--accent);
+    }
+
+    .col-count {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      background: var(--surface2);
+      border-radius: 100px;
+      padding: 2px 8px;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .col-menu-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 6px;
+      font-size: 1rem;
+      line-height: 1;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .col-menu-btn:hover {
+      color: var(--text);
+      background: var(--surface2);
+    }
+
+    .cards-wrap {
+      padding: 4px 10px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+      flex: 1;
+      max-height: calc(100vh - 220px);
+      min-height: 8px;
+    }
+
+    .cards-wrap::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .cards-wrap::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .cards-wrap::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-left: 3px solid transparent;
+      border-radius: var(--radius-sm);
+      padding: 11px 13px 11px 11px;
+      cursor: pointer;
+      transition: all 0.18s;
+      animation: cardIn 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+    }
+
+    .card.prio-low {
+      border-left-color: #6af7c4;
+    }
+
+    .card.prio-medium {
+      border-left-color: #f7c26a;
+    }
+
+    .card.prio-high {
+      border-left-color: #f76a8a;
+    }
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .card.dragging {
+      opacity: 0.35;
+      cursor: grabbing;
+    }
+
+    .card-label {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .label-tag {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 100px;
+    }
+
+    .card-text {
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .card-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      font-style: italic;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 2px;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-due {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .card-due.overdue {
+      color: var(--accent2);
+    }
+
+    .card-due.soon {
+      color: #f7c26a;
+    }
+
+    .priority-badge {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    /* Open hint icon */
+    .card-open-hint {
+      position: absolute;
+      top: 9px;
+      right: 10px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      opacity: 0;
+      transition: opacity 0.15s;
+      pointer-events: none;
+      letter-spacing: 0.02em;
+    }
+
+    .card:hover .card-open-hint {
+      opacity: 1;
+    }
+
+    /* Due date pill */
+    .card-due-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.68rem;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 100px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .card-due-pill.overdue {
+      background: rgba(247, 106, 138, 0.12);
+      border-color: rgba(247, 106, 138, 0.4);
+      color: var(--accent2);
+    }
+
+    .card-due-pill.soon {
+      background: rgba(247, 194, 106, 0.12);
+      border-color: rgba(247, 194, 106, 0.4);
+      color: #f7c26a;
+    }
+
+    .card-due-pill.done-due {
+      background: rgba(106, 247, 196, 0.1);
+      border-color: rgba(106, 247, 196, 0.3);
+      color: var(--accent3);
+    }
+
+    /* Inline checklist on card face */
+    .card-cl-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .card-cl-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+
+    .card-cl-count {
+      font-size: 0.67rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .card-cl-count.all-done {
+      color: var(--accent3);
+    }
+
+    .card-cl-track {
+      flex: 1;
+      height: 3px;
+      background: var(--surface2);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .card-cl-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent3));
+      border-radius: 100px;
+      transition: width 0.3s;
+    }
+
+    .card-cl-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      padding: 1px 0;
+    }
+
+    .card-cl-cb {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      border: 1.5px solid var(--text-muted);
+      background: none;
+      flex-shrink: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.58rem;
+      color: transparent;
+      transition: all 0.15s;
+      margin-top: 1px;
+    }
+
+    .card-cl-cb.checked {
+      background: var(--accent3);
+      border-color: var(--accent3);
+      color: #0f0f13;
+    }
+
+    .card-cl-item-text {
+      font-size: 0.79rem;
+      color: var(--text);
+      line-height: 1.35;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .card-cl-item.done .card-cl-item-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 3px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .card:hover .card-actions {
+      opacity: 1;
+    }
+
+    .card-action-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      transition: all 0.15s;
+    }
+
+    .card-action-btn:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .card-action-btn.del:hover {
+      color: var(--accent2);
+      border-color: var(--accent2);
+    }
+
+    .card-action-btn.copy:hover {
+      color: var(--accent3);
+      border-color: var(--accent3);
+    }
+
+    .add-card-area {
+      padding: 0 10px 12px;
+      flex-shrink: 0;
+    }
+
+    .add-card-trigger {
+      width: 100%;
+      padding: 8px 12px;
+      background: transparent;
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+    }
+
+    .add-card-trigger:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(124, 106, 247, 0.05);
+    }
+
+    .add-col-btn {
+      width: var(--col-w);
+      flex-shrink: 0;
+      height: 52px;
+      background: transparent;
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.18s;
+      align-self: flex-start;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .add-col-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(124, 106, 247, 0.05);
+    }
+
+    /* Dropdown — fixed to viewport, lives in body */
+    .col-dropdown {
+      position: fixed;
+      background: var(--surface2);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-sm);
+      z-index: 9999;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65);
+      min-width: 175px;
+      display: none;
+      overflow: hidden;
+    }
+
+    .col-dropdown.open {
+      display: block;
+      animation: ddIn 0.12s ease;
+    }
+
+    @keyframes ddIn {
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .col-drop-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      padding: 10px 16px;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.83rem;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+
+    .col-drop-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .col-drop-item.danger {
+      color: var(--accent2);
+    }
+
+    .drop-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius);
+      padding: 28px;
+      width: 490px;
+      max-width: 95vw;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(0.95) translateY(10px);
+      transition: transform 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .modal-overlay.open .modal {
+      transform: scale(1) translateY(0);
+    }
+
+    /* Auto-grow textarea */
+    textarea.auto-grow {
+      resize: none;
+      overflow: hidden;
+      min-height: 72px;
+    }
+
+    .modal h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    textarea,
+    select {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--accent);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    select option {
+      background: var(--surface2);
+    }
+
+    .existing-labels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 24px;
+    }
+
+    .label-option {
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.15s;
+      opacity: 0.5;
+      text-transform: uppercase;
+    }
+
+    .label-option.selected {
+      opacity: 1;
+      border-color: rgba(255, 255, 255, 0.65);
+    }
+
+    .label-create-section {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .label-create-section .section-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .add-label-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .add-label-row input {
+      flex: 1;
+    }
+
+    .add-label-row .btn {
+      border-radius: var(--radius-sm);
+      padding: 7px 14px;
+    }
+
+    .color-swatch-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .color-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .color-swatch.selected {
+      border-color: #fff;
+      transform: scale(1.15);
+    }
+
+    .col-color-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .col-swatch {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .col-swatch.selected {
+      border-color: #fff;
+      transform: scale(1.1);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      padding-top: 4px;
+    }
+
+    /* Checklist */
+    .checklist-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .checklist-progress-bar {
+      height: 4px;
+      background: var(--surface2);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .checklist-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent3));
+      border-radius: 100px;
+      transition: width 0.3s ease;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: border-color 0.15s;
+    }
+
+    .checklist-item:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .checklist-item.done-item {
+      opacity: 0.55;
+    }
+
+    .checklist-cb {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 2px solid var(--text-muted);
+      background: none;
+      flex-shrink: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      font-size: 0.65rem;
+      color: transparent;
+    }
+
+    .checklist-cb.checked {
+      background: var(--accent3);
+      border-color: var(--accent3);
+      color: #0f0f13;
+    }
+
+    .checklist-item-text {
+      flex: 1;
+      font-size: 0.85rem;
+      color: var(--text);
+      min-width: 0;
+      word-break: break-word;
+    }
+
+    .checklist-item.done-item .checklist-item-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .checklist-del {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 2px 4px;
+      border-radius: 4px;
+      line-height: 1;
+      opacity: 0;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .checklist-item:hover .checklist-del {
+      opacity: 1;
+    }
+
+    .checklist-del:hover {
+      color: var(--accent2);
+    }
+
+    .checklist-add-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .checklist-add-row input {
+      flex: 1;
+    }
+
+    .checklist-add-row .btn {
+      border-radius: var(--radius-sm);
+      padding: 7px 14px;
+    }
+
+    /* Card checklist pill */
+    .card-checklist-pill {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .card-cl-bar {
+      height: 3px;
+      background: var(--surface2);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .card-cl-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent3));
+      border-radius: 100px;
+      transition: width 0.3s;
+    }
+
+    .card-cl-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    .share-url-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      word-break: break-all;
+      font-family: monospace;
+      line-height: 1.6;
+      max-height: 130px;
+      overflow-y: auto;
+      user-select: all;
+    }
+
+    .share-notice {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .share-notice strong {
+      color: var(--text);
+    }
+
+    /* Password toggle row */
+    .pw-toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: border-color 0.18s;
+      user-select: none;
+    }
+
+    .pw-toggle-row:hover {
+      border-color: var(--accent);
+    }
+
+    .pw-toggle-row input[type="checkbox"] {
+      display: none;
+    }
+
+    .pw-toggle-knob {
+      width: 34px;
+      height: 18px;
+      background: var(--border);
+      border-radius: 100px;
+      position: relative;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .pw-toggle-knob::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform 0.2s;
+    }
+
+    .pw-toggle-row.active .pw-toggle-knob {
+      background: var(--accent);
+    }
+
+    .pw-toggle-row.active .pw-toggle-knob::after {
+      transform: translateX(16px);
+    }
+
+    .pw-toggle-label {
+      flex: 1;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .pw-toggle-label small {
+      display: block;
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .pw-input-wrap {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.25s ease, opacity 0.2s ease, margin-top 0.2s;
+    }
+
+    .pw-input-wrap.visible {
+      max-height: 80px;
+      opacity: 1;
+      margin-top: 2px;
+    }
+
+    .pw-input-inner {
+      position: relative;
+    }
+
+    .pw-input-inner input {
+      padding-right: 40px;
+    }
+
+    .pw-eye {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 2px 4px;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+
+    .pw-eye:hover {
+      color: var(--text);
+    }
+
+    /* Password unlock overlay */
+    .pw-unlock-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .pw-unlock-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .pw-unlock-box {
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius);
+      padding: 32px 28px 24px;
+      width: 380px;
+      max-width: 95vw;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      transform: scale(0.95) translateY(10px);
+      transition: transform 0.2s;
+    }
+
+    .pw-unlock-overlay.open .pw-unlock-box {
+      transform: scale(1) translateY(0);
+    }
+
+    .pw-unlock-box h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .pw-unlock-box p {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .pw-unlock-error {
+      font-size: 0.78rem;
+      color: var(--accent2);
+      min-height: 18px;
+      font-weight: 500;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--surface2);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 100px;
+      padding: 9px 22px;
+      font-size: 0.82rem;
+      color: var(--text);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.22s;
+      z-index: 99999;
+      white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .empty-board {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      gap: 10px;
+      color: var(--text-muted);
+      text-align: center;
+      pointer-events: none;
+      padding: 60px 0;
+    }
+
+    .empty-emoji {
+      font-size: 2.5rem;
+    }
+
+    .empty-board p {
+      font-size: 0.9rem;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+
+    /* ── Card Modal Redesign ── */
+    #cardModal .modal {
+      width: 760px;
+      padding: 22px 24px 20px;
+      gap: 14px;
+    }
+
+    .card-modal-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .card-modal-title-wrap {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .card-modal-title-input {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.12rem;
+      font-weight: 700;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid var(--border);
+      border-radius: 0;
+      padding: 4px 0 7px;
+      color: var(--text);
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s;
+    }
+
+    .card-modal-title-input:focus {
+      border-bottom-color: var(--accent);
+    }
+
+    .card-modal-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+
+    .autosave-status {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.7rem;
+      color: var(--accent3);
+      opacity: 0;
+      transition: opacity 0.35s;
+      white-space: nowrap;
+    }
+
+    .autosave-status.visible {
+      opacity: 1;
+    }
+
+    .autosave-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent3);
+      flex-shrink: 0;
+    }
+
+    .modal-close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1rem;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .modal-close-btn:hover {
+      color: var(--text);
+      background: var(--surface2);
+    }
+
+    .card-modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 210px;
+      gap: 0 24px;
+    }
+
+    .card-modal-main {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .card-modal-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding-left: 20px;
+      border-left: 1px solid var(--border);
+    }
+
+    /* Card info bar (column + mode) */
+    .card-info-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      padding-bottom: 2px;
+    }
+    .card-info-bar .info-col-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .card-info-bar .info-sep {
+      opacity: 0.35;
+    }
+
+    /* Due date row */
+    .due-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .due-row input[type="date"] {
+      flex: 1;
+    }
+    .due-clear-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 6px 9px;
+      transition: all 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .due-clear-btn:hover {
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+    .due-preview {
+      font-size: 0.7rem;
+      margin-top: 3px;
+      font-weight: 500;
+      min-height: 14px;
+    }
+    .due-preview.overdue { color: var(--accent2); }
+    .due-preview.soon    { color: #f7c26a; }
+    .due-preview.ok      { color: var(--accent3); }
+
+    /* Move-to selector */
+    .move-select {
+      font-size: 0.8rem;
+      padding: 7px 10px;
+    }
+
+    /* Keyboard hint */
+    .modal-kbd-hint {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .kbd {
+      background: var(--surface2);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 0.65rem;
+      font-family: monospace;
+    }
+
+    .sidebar-section {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .sidebar-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .priority-pills {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+    }
+
+    .priority-pill {
+      padding: 6px 4px;
+      border-radius: 6px;
+      border: 1.5px solid var(--border);
+      background: var(--surface2);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .priority-pill:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+      color: var(--text);
+      transform: translateY(-1px);
+    }
+
+    .priority-pill.psel-none {
+      border-color: rgba(255, 255, 255, 0.25);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .priority-pill.psel-low {
+      border-color: #6af7c4;
+      color: #6af7c4;
+      background: rgba(106, 247, 196, 0.1);
+      box-shadow: 0 0 8px rgba(106, 247, 196, 0.15);
+    }
+
+    .priority-pill.psel-medium {
+      border-color: #f7c26a;
+      color: #f7c26a;
+      background: rgba(247, 194, 106, 0.1);
+      box-shadow: 0 0 8px rgba(247, 194, 106, 0.15);
+    }
+
+    .priority-pill.psel-high {
+      border-color: #f76a8a;
+      color: #f76a8a;
+      background: rgba(247, 106, 138, 0.1);
+      box-shadow: 0 0 8px rgba(247, 106, 138, 0.15);
+    }
+
+    .btn-add-label-toggle {
+      background: none;
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      border-radius: 100px;
+      color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      align-self: flex-start;
+    }
+
+    .btn-add-label-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .sidebar-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 2px 0;
+    }
+
+    .sidebar-danger-btn {
+      width: 100%;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      text-align: center;
+      padding: 7px 0;
+    }
+
+    @media (max-width: 640px) {
+      #cardModal .modal {
+        width: 95vw;
+      }
+
+      .card-modal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card-modal-sidebar {
+        padding-left: 0;
+        border-left: none;
+        border-top: 1px solid var(--border);
+        padding-top: 14px;
+      }
+    }
+    /* ── Collaboration UI ── */
+    .collab-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 7px 14px;
+      border-radius: 100px;
+      border: 1px solid rgba(106,247,196,0.25);
+      background: rgba(106,247,196,0.07);
+      color: var(--accent3);
+      cursor: pointer;
+      transition: all 0.18s;
+      font-family: 'DM Sans', sans-serif;
+      white-space: nowrap;
+    }
+    .collab-btn:hover {
+      border-color: var(--accent3);
+      background: rgba(106,247,196,0.14);
+    }
+    .collab-btn.active {
+      background: rgba(106,247,196,0.15);
+      border-color: var(--accent3);
+    }
+    .collab-pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent3);
+      flex-shrink: 0;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(106,247,196,0.5); }
+      50%      { box-shadow: 0 0 0 5px rgba(106,247,196,0); }
+    }
+    .collab-count {
+      background: var(--accent3);
+      color: #0f0f13;
+      border-radius: 100px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      min-width: 18px;
+      text-align: center;
+    }
+  </style>
+
+  <!-- Firebase Realtime Database (compat CDN) -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">PrivacyBoard</div>
+    <input id="boardTitle" type="text" value="My Board" spellcheck="false" title="Click to rename" />
+    <div class="header-actions">
+      <button class="collab-btn" id="collabBtn" onclick="collabAction()" title="Start or copy collaboration link">
+        <span class="collab-pulse" id="collabPulse" style="display:none"></span>
+        <span id="collabBtnText">👥 Collaborate</span>
+        <span class="collab-count" id="collabCount" style="display:none">1</span>
+      </button>
+      <button class="btn btn-share" onclick="openShareModal()">🔗 Share</button>
+      <button class="btn btn-danger" onclick="clearAll()">Clear All</button>
+      <button class="btn btn-primary" onclick="openAddColModal()">+ New List</button>
+    </div>
+  </header>
+
+  <div id="board"></div>
+  <div id="toast"></div>
+
+  <!-- CARD MODAL -->
+  <div class="modal-overlay" id="cardModal">
+    <div class="modal">
+
+      <!-- Info bar: column name + mode -->
+      <div class="card-info-bar" id="cardInfoBar">
+        <div class="info-col-dot" id="cardInfoDot"></div>
+        <span id="cardInfoColName">Column</span>
+        <span class="info-sep">›</span>
+        <span id="cardInfoMode">New Card</span>
+      </div>
+
+      <!-- Header: big title + autosave + close -->
+      <div class="card-modal-header">
+        <div class="card-modal-title-wrap">
+          <input class="card-modal-title-input" id="cardTitleInput" type="text" placeholder="Card title..."
+            spellcheck="false" />
+        </div>
+        <div class="card-modal-header-right">
+          <div class="autosave-status" id="autosaveStatus">
+            <div class="autosave-dot"></div><span>Saved</span>
+          </div>
+          <button class="modal-close-btn" onclick="closeCardModal()" title="Close (Esc)">✕</button>
+        </div>
+      </div>
+
+      <!-- Two-column grid -->
+      <div class="card-modal-grid">
+
+        <!-- Left: description + checklist -->
+        <div class="card-modal-main">
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="cardDescInput" class="auto-grow" placeholder="Add notes, links, or context..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>☑ Checklist</label>
+            <div class="checklist-section">
+              <div class="checklist-progress-bar" id="clProgressBar" style="display:none">
+                <div class="checklist-progress-fill" id="clProgressFill"></div>
+              </div>
+              <div id="clItems"></div>
+              <div class="checklist-add-row">
+                <input type="text" id="clNewItemInput" placeholder="Add an item and press Enter..." />
+                <button class="btn btn-primary" onclick="addChecklistItem()">Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: properties sidebar -->
+        <div class="card-modal-sidebar">
+
+          <!-- Priority pills -->
+          <div class="sidebar-section">
+            <div class="sidebar-label">⚡ Priority</div>
+            <div class="priority-pills">
+              <button class="priority-pill" data-pv="" onclick="setPriority('')">— None</button>
+              <button class="priority-pill" data-pv="low" onclick="setPriority('low')">🟢 Low</button>
+              <button class="priority-pill" data-pv="medium" onclick="setPriority('medium')">🟡 Med</button>
+              <button class="priority-pill" data-pv="high" onclick="setPriority('high')">🔴 High</button>
+            </div>
+            <select id="cardPriorityInput" style="display:none">
+              <option value="">None</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+
+          <!-- Due date -->
+          <div class="sidebar-section">
+            <div class="sidebar-label">📅 Due Date</div>
+            <div class="due-row">
+              <input type="date" id="cardDueInput" />
+              <button class="due-clear-btn" onclick="clearDueDate()" title="Clear due date">✕</button>
+            </div>
+            <div class="due-preview" id="duePreview"></div>
+          </div>
+
+          <!-- Move to list -->
+          <div class="sidebar-section" id="moveToSection" style="display:none">
+            <div class="sidebar-label">📂 Move To List</div>
+            <select id="moveToSelect" class="move-select" onchange="moveCardToList(this.value)"></select>
+          </div>
+
+          <!-- Labels -->
+          <div class="sidebar-section">
+            <div class="sidebar-label">🏷 Labels</div>
+            <div class="existing-labels" id="existingLabels"></div>
+            <button class="btn-add-label-toggle" onclick="toggleLabelCreator()">+ New label</button>
+            <div id="labelCreatorSection" style="display:none">
+              <div class="add-label-row" style="margin-top:6px">
+                <input type="text" id="newLabelName" placeholder="Label name..." />
+                <button class="btn btn-primary" onclick="addCustomLabel()">Add</button>
+              </div>
+              <div class="color-swatch-row" id="newLabelColorRow" style="margin-top:6px"></div>
+              <div id="newLabelPreview" style="margin-top:6px;min-height:22px"></div>
+            </div>
+          </div>
+
+          <!-- Delete (edit mode only) -->
+          <div class="sidebar-section" id="cardDeleteSection" style="display:none">
+            <div class="sidebar-divider"></div>
+            <button class="btn btn-danger sidebar-danger-btn" onclick="deleteCardFromModal()">🗑 Delete card</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-actions" id="cardModalFooter">
+        <span class="modal-kbd-hint" id="cardKbdHint">
+          <span class="kbd">Esc</span> close &nbsp;·&nbsp; <span class="kbd">Ctrl+Enter</span> save
+        </span>
+        <button class="btn" onclick="closeCardModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveCard()">✓ Create Card</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- COLUMN MODAL -->
+  <div class="modal-overlay" id="colModal">
+    <div class="modal">
+      <h2 id="colModalTitle">New List</h2>
+      <div class="form-group">
+        <label>List Name *</label>
+        <input type="text" id="colNameInput" placeholder="e.g. To Do, In Progress..." />
+      </div>
+      <div class="form-group">
+        <label>Color</label>
+        <div class="col-color-row" id="colColorPicker"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeColModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveColumn()">Save List</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHARE MODAL -->
+  <div class="modal-overlay" id="shareModal">
+    <div class="modal">
+      <h2>🔗 Share Board</h2>
+      <p class="share-notice">Your board is encoded into a URL. Anyone with the link can <strong>import your
+          board</strong> — no account needed.</p>
+
+      <!-- Password toggle -->
+      <div class="pw-toggle-row" id="pwToggleRow" onclick="togglePwProtect()">
+        <input type="checkbox" id="pwEnabled" />
+        <div class="pw-toggle-knob"></div>
+        <div class="pw-toggle-label">
+          🔒 Password protect
+          <small>Recipients must enter the password to import.</small>
+        </div>
+      </div>
+
+      <!-- Password input (hidden until toggled on) -->
+      <div class="pw-input-wrap" id="pwInputWrap">
+        <div class="form-group">
+          <label>Password</label>
+          <div class="pw-input-inner">
+            <input type="password" id="sharePasswordInput" placeholder="Set a password..."
+              autocomplete="new-password" />
+            <button class="pw-eye" onclick="toggleSharePwEye()" tabindex="-1">👁</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Your Share Link</label>
+        <div class="share-url-box" id="shareUrlBox"><span
+            style="color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:0.8rem">Click "Generate Link"
+            below.</span></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeShareModal()">Close</button>
+        <button class="btn btn-share" onclick="generateShareLink()" id="genLinkBtn">⚡ Generate Link</button>
+        <button class="btn btn-primary" onclick="copyShareUrl()" id="copyLinkBtn" style="display:none">📋 Copy
+          Link</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASSWORD UNLOCK OVERLAY (for importing password-protected boards) -->
+  <div class="pw-unlock-overlay" id="pwUnlockOverlay">
+    <div class="pw-unlock-box">
+      <h2>🔐 Password Required</h2>
+      <p>This board is password protected. Enter the password to import it.</p>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="pw-input-inner">
+          <input type="password" id="unlockPasswordInput" placeholder="Enter password..."
+            autocomplete="current-password" />
+          <button class="pw-eye" onclick="toggleUnlockPwEye()" tabindex="-1">👁</button>
+        </div>
+      </div>
+      <div class="pw-unlock-error" id="pwUnlockError"></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="cancelUnlock()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitUnlock()">Unlock & Import</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── FIREBASE ──
+    const firebaseConfig = {
+      apiKey: "AIzaSyDILCTJnT9XsypVygNB9Pyy7-IbiB99SbA",
+      authDomain: "david-board.firebaseapp.com",
+      projectId: "david-board",
+      databaseURL: "https://david-board-default-rtdb.firebaseio.com",
+      storageBucket: "david-board.firebasestorage.app",
+      messagingSenderId: "848299713720",
+      appId: "1:848299713720:web:43915cdbe1fd596040004d",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const STORAGE_KEY = 'planboard_v2';
+
+    const COL_COLORS = [
+      '#7c6af7', '#f76a8a', '#6af7c4', '#f7c26a', '#6ab4f7',
+      '#e06af7', '#f79d6a', '#6af7a0', '#a0f76a', '#f76af0',
+    ];
+
+    const LABEL_COLOR_PAIRS = [
+      { bg: '#2a1f5e', color: '#a78bfa' },
+      { bg: '#1a3a2a', color: '#6af7c4' },
+      { bg: '#3a1a1a', color: '#f76a8a' },
+      { bg: '#1a2f3a', color: '#6ab4f7' },
+      { bg: '#3a2f1a', color: '#f7c26a' },
+      { bg: '#2f1a3a', color: '#e06af7' },
+      { bg: '#1a3a1a', color: '#6af76a' },
+      { bg: '#3a1a2f', color: '#f76ab4' },
+    ];
+
+    const PRIORITY_COLORS = { low: '#6af7c4', medium: '#f7c26a', high: '#f76a8a' };
+
+    let state = { boardTitle: 'My Board', labels: [], columns: [] };
+    let editingCardId = null;
+    let editingColId = null;
+    let editingColIdForCard = null;
+    let selectedLabels = [];
+    let selectedColColor = COL_COLORS[0];
+    let newLabelColorIndex = 0;
+    let dragState = { card: null, srcColId: null };
+
+    // Track body-level dropdowns by colId so we can remove them cleanly
+    const colDropdowns = {};
+
+    // ── STORAGE ──
+    function load() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) state = JSON.parse(raw);
+        if (!state.labels) state.labels = [];
+      } catch (e) { }
+    }
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      fbSaveDebounced();
+    }
+    function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+    // ── TOAST ──
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(el._t);
+      el._t = setTimeout(() => el.classList.remove('show'), 2600);
+    }
+
+    // ── RENDER ──
+    function render() {
+      // Remove dropdowns for deleted columns
+      Object.keys(colDropdowns).forEach(id => {
+        if (!state.columns.find(c => c.id === id)) {
+          colDropdowns[id].remove();
+          delete colDropdowns[id];
+        }
+      });
+
+      const board = document.getElementById('board');
+      board.innerHTML = '';
+
+      if (state.columns.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'empty-board';
+        empty.innerHTML = '<div class="empty-emoji">📋</div><p>No lists yet — hit <strong>+ New List</strong> to get started.</p>';;
+        board.appendChild(empty);
+      }
+
+      state.columns.forEach(col => board.appendChild(renderColumn(col)));
+
+      const addBtn = document.createElement('button');
+      addBtn.className = 'add-col-btn';
+      addBtn.innerHTML = '<span style="font-size:1.1rem">+</span> Add List';
+      addBtn.addEventListener('click', () => openAddColModal());
+      board.appendChild(addBtn);
+
+      document.getElementById('boardTitle').value = state.boardTitle || 'My Board';
+    }
+
+    function renderColumn(col) {
+      const el = document.createElement('div');
+      el.className = 'column';
+      el.dataset.colId = col.id;
+
+      // Header
+      const header = document.createElement('div');
+      header.className = 'col-header';
+
+      const dot = document.createElement('div');
+      dot.className = 'col-dot';
+      dot.style.background = col.color || '#7c6af7';
+
+      const titleInput = document.createElement('input');
+      titleInput.className = 'col-title';
+      titleInput.value = col.name;
+      titleInput.spellcheck = false;
+      titleInput.addEventListener('blur', () => { col.name = titleInput.value.trim() || col.name; save(); });
+      titleInput.addEventListener('keydown', e => { if (e.key === 'Enter') titleInput.blur(); });
+
+      const count = document.createElement('span');
+      count.className = 'col-count';
+      count.textContent = (col.cards || []).length;
+
+      const menuBtn = document.createElement('button');
+      menuBtn.className = 'col-menu-btn';
+      menuBtn.title = 'List options';
+      menuBtn.textContent = '⋯';
+
+      header.append(dot, titleInput, count, menuBtn);
+      el.appendChild(header);
+
+      // Build dropdown in body (once per column)
+      if (!colDropdowns[col.id]) {
+        const dd = document.createElement('div');
+        dd.className = 'col-dropdown';
+        dd.innerHTML =
+          '<button class="col-drop-item" data-action="rename">&#9999;&#65039; Rename list</button>' +
+          '<button class="col-drop-item" data-action="clear">&#128465;&#65039; Clear cards</button>' +
+          '<div class="drop-divider"></div>' +
+          '<button class="col-drop-item danger" data-action="delete">&#10005; Delete list</button>';
+
+        dd.addEventListener('click', e => {
+          const btn = e.target.closest('[data-action]');
+          if (!btn) return;
+          closeAllDropdowns();
+          const action = btn.dataset.action;
+          if (action === 'rename') openAddColModal(col.id);
+          if (action === 'clear') clearColCards(col.id);
+          if (action === 'delete') deleteColumn(col.id);
+        });
+
+        document.body.appendChild(dd);
+        colDropdowns[col.id] = dd;
+      }
+
+      menuBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        const dd = colDropdowns[col.id];
+        const wasOpen = dd.classList.contains('open');
+        closeAllDropdowns();
+        if (!wasOpen) {
+          const rect = menuBtn.getBoundingClientRect();
+          dd.style.top = (rect.bottom + 6) + 'px';
+          dd.style.left = Math.min(rect.right - 175, window.innerWidth - 185) + 'px';
+          dd.classList.add('open');
+        }
+      });
+
+      // Cards
+      const cardsWrap = document.createElement('div');
+      cardsWrap.className = 'cards-wrap';
+      cardsWrap.dataset.colId = col.id;
+      (col.cards || []).forEach(card => cardsWrap.appendChild(renderCard(card, col.id)));
+
+      cardsWrap.addEventListener('dragover', e => {
+        e.preventDefault();
+        el.classList.add('drag-over');
+        const dragging = document.querySelector('.card.dragging');
+        if (!dragging) return;
+        const after = getDragAfterElement(cardsWrap, e.clientY);
+        if (after == null) cardsWrap.appendChild(dragging);
+        else cardsWrap.insertBefore(dragging, after);
+      });
+      cardsWrap.addEventListener('dragleave', e => {
+        if (!el.contains(e.relatedTarget)) el.classList.remove('drag-over');
+      });
+      cardsWrap.addEventListener('drop', e => {
+        e.preventDefault();
+        el.classList.remove('drag-over');
+        dropCard(col.id, cardsWrap);
+      });
+
+      el.appendChild(cardsWrap);
+
+      // Add card button
+      const addArea = document.createElement('div');
+      addArea.className = 'add-card-area';
+      const trigger = document.createElement('button');
+      trigger.className = 'add-card-trigger';
+      trigger.textContent = '+ Add card';
+      trigger.addEventListener('click', () => openAddCardModal(col.id));
+      addArea.appendChild(trigger);
+      el.appendChild(addArea);
+      return el;
+    }
+
+    function renderCard(card, colId) {
+      const el = document.createElement('div');
+      el.className = 'card' + (card.priority ? ' prio-' + card.priority : '');
+      el.draggable = true;
+      el.dataset.cardId = card.id;
+
+      // Open hint
+      const hint = document.createElement('span');
+      hint.className = 'card-open-hint';
+      hint.textContent = '✏️';
+      el.appendChild(hint);
+
+      // Labels
+      if (card.labels && card.labels.length) {
+        const lw = document.createElement('div');
+        lw.className = 'card-label';
+        card.labels.forEach(lname => {
+          const ldef = state.labels.find(l => l.name === lname);
+          if (ldef) {
+            const tag = document.createElement('span');
+            tag.className = 'label-tag';
+            tag.textContent = lname;
+            tag.style.background = ldef.bg;
+            tag.style.color = ldef.color;
+            lw.appendChild(tag);
+          }
+        });
+        if (lw.children.length) el.appendChild(lw);
+      }
+
+      // Title
+      const text = document.createElement('div');
+      text.className = 'card-text';
+      text.textContent = card.title;
+      el.appendChild(text);
+
+      // Description
+      if (card.desc) {
+        const desc = document.createElement('div');
+        desc.className = 'card-desc';
+        desc.textContent = card.desc;
+        el.appendChild(desc);
+      }
+
+      // Inline checklist — interactive directly on card
+      if (card.checklist && card.checklist.length > 0) {
+        const total = card.checklist.length;
+        const done = card.checklist.filter(i => i.done).length;
+        const pct = Math.round((done / total) * 100);
+        const allDone = done === total;
+
+        const clWrap = document.createElement('div');
+        clWrap.className = 'card-cl-wrap';
+
+        // Progress header
+        const clHead = document.createElement('div');
+        clHead.className = 'card-cl-head';
+        const clCount = document.createElement('span');
+        clCount.className = 'card-cl-count' + (allDone ? ' all-done' : '');
+        clCount.textContent = allDone ? '✓ Done' : `${done}/${total}`;
+        const clTrack = document.createElement('div');
+        clTrack.className = 'card-cl-track';
+        const clFill = document.createElement('div');
+        clFill.className = 'card-cl-fill';
+        clFill.style.width = pct + '%';
+        clTrack.appendChild(clFill);
+        clHead.append(clCount, clTrack);
+        clWrap.appendChild(clHead);
+
+        // Individual items — directly checkable
+        card.checklist.forEach((item, idx) => {
+          const itemEl = document.createElement('div');
+          itemEl.className = 'card-cl-item' + (item.done ? ' done' : '');
+
+          const cb = document.createElement('div');
+          cb.className = 'card-cl-cb' + (item.done ? ' checked' : '');
+          cb.textContent = item.done ? '✓' : '';
+          cb.addEventListener('click', e => {
+            e.stopPropagation();
+            const stateCol = state.columns.find(c => c.id === colId);
+            const stateCard = stateCol && stateCol.cards.find(c => c.id === card.id);
+            if (stateCard && stateCard.checklist && stateCard.checklist[idx] !== undefined) {
+              stateCard.checklist[idx].done = !stateCard.checklist[idx].done;
+              save(); render();
+            }
+          });
+
+          const txtEl = document.createElement('span');
+          txtEl.className = 'card-cl-item-text';
+          txtEl.textContent = item.text;
+
+          itemEl.append(cb, txtEl);
+          clWrap.appendChild(itemEl);
+        });
+
+        el.appendChild(clWrap);
+      }
+
+      // Footer
+      const footer = document.createElement('div');
+      footer.className = 'card-footer';
+
+      const meta = document.createElement('div');
+      meta.className = 'card-meta';
+
+      if (card.due) {
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        const dueDate = new Date(card.due + 'T00:00:00');
+        const diff = Math.round((dueDate - today) / 86400000);
+        const allDone = card.checklist && card.checklist.length > 0 && card.checklist.every(i => i.done);
+        const due = document.createElement('div');
+        due.className = 'card-due-pill';
+        if (allDone) due.classList.add('done-due');
+        else if (diff < 0) due.classList.add('overdue');
+        else if (diff <= 2) due.classList.add('soon');
+        due.textContent = (allDone ? '✓ ' : '📅 ') + dueDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+        meta.appendChild(due);
+      }
+
+      footer.appendChild(meta);
+
+      const actions = document.createElement('div');
+      actions.className = 'card-actions';
+
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'card-action-btn copy';
+      copyBtn.title = 'Duplicate';
+      copyBtn.textContent = '⧉';
+      copyBtn.addEventListener('click', e => { e.stopPropagation(); duplicateCard(colId, card.id); });
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'card-action-btn del';
+      delBtn.title = 'Delete';
+      delBtn.textContent = '✕';
+      delBtn.addEventListener('click', e => { e.stopPropagation(); deleteCard(colId, card.id); });
+
+      actions.append(copyBtn, delBtn);
+      footer.appendChild(actions);
+      el.appendChild(footer);
+
+      // Click card body → open edit (ignore checklist cb and action buttons)
+      el.addEventListener('click', e => {
+        if (e.target.closest('.card-action-btn') || e.target.closest('.card-cl-cb')) return;
+        openEditCardModal(colId, card.id);
+      });
+
+      el.addEventListener('dragstart', () => {
+        el.classList.add('dragging');
+        dragState = { card, srcColId: colId };
+      });
+      el.addEventListener('dragend', () => {
+        el.classList.remove('dragging');
+        document.querySelectorAll('.column').forEach(c => c.classList.remove('drag-over'));
+      });
+
+      return el;
+    }
+
+    // ── DRAG & DROP ──
+    function getDragAfterElement(container, y) {
+      const els = [...container.querySelectorAll('.card:not(.dragging)')];
+      return els.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) return { offset, el: child };
+        return closest;
+      }, { offset: Number.NEGATIVE_INFINITY }).el;
+    }
+
+    function dropCard(targetColId, cardsWrap) {
+      if (!dragState.card) return;
+      const { card, srcColId } = dragState;
+      const srcCol = state.columns.find(c => c.id === srcColId);
+      if (!srcCol) return;
+      srcCol.cards = srcCol.cards.filter(c => c.id !== card.id);
+
+      const targetCol = state.columns.find(c => c.id === targetColId);
+      const allDomCards = [...cardsWrap.querySelectorAll('.card')];
+      const draggedEl = document.querySelector('.card.dragging');
+      const idx = allDomCards.indexOf(draggedEl);
+      targetCol.cards.splice(idx === -1 ? targetCol.cards.length : idx, 0, card);
+
+      dragState = { card: null, srcColId: null };
+      save(); render();
+    }
+
+    // ── DROPDOWN HELPERS ──
+    function closeAllDropdowns() {
+      document.querySelectorAll('.col-dropdown.open').forEach(d => d.classList.remove('open'));
+    }
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.col-dropdown') && !e.target.closest('.col-menu-btn')) closeAllDropdowns();
+    });
+
+    // ── COLUMN ACTIONS ──
+    function openAddColModal(editId) {
+      if (editId && typeof editId === 'object') editId = null;
+      editingColId = editId || null;
+
+      if (editingColId) {
+        const col = state.columns.find(c => c.id === editingColId);
+        document.getElementById('colModalTitle').textContent = 'Rename List';
+        document.getElementById('colNameInput').value = col ? col.name : '';
+        selectedColColor = col ? col.color : COL_COLORS[0];
+      } else {
+        document.getElementById('colModalTitle').textContent = 'New List';
+        document.getElementById('colNameInput').value = '';
+        selectedColColor = COL_COLORS[Math.floor(Math.random() * COL_COLORS.length)];
+      }
+
+      buildColColorPicker();
+      document.getElementById('colModal').classList.add('open');
+      setTimeout(() => document.getElementById('colNameInput').focus(), 100);
+    }
+
+    function closeColModal() {
+      document.getElementById('colModal').classList.remove('open');
+      editingColId = null;
+    }
+
+    function buildColColorPicker() {
+      const picker = document.getElementById('colColorPicker');
+      picker.innerHTML = '';
+      COL_COLORS.forEach(c => {
+        const sw = document.createElement('div');
+        sw.className = 'col-swatch' + (c === selectedColColor ? ' selected' : '');
+        sw.style.background = c;
+        sw.addEventListener('click', () => {
+          selectedColColor = c;
+          picker.querySelectorAll('.col-swatch').forEach(s => s.classList.remove('selected'));
+          sw.classList.add('selected');
+        });
+        picker.appendChild(sw);
+      });
+    }
+
+    function saveColumn() {
+      const name = document.getElementById('colNameInput').value.trim();
+      if (!name) return;
+      if (editingColId) {
+        const col = state.columns.find(c => c.id === editingColId);
+        if (col) { col.name = name; col.color = selectedColColor; }
+      } else {
+        state.columns.push({ id: uid(), name, color: selectedColColor, cards: [] });
+      }
+      save(); render(); closeColModal();
+    }
+
+    function deleteColumn(colId) {
+      if (!confirm('Delete this list and all its cards?')) return;
+      state.columns = state.columns.filter(c => c.id !== colId);
+      if (colDropdowns[colId]) { colDropdowns[colId].remove(); delete colDropdowns[colId]; }
+      save(); render();
+      toast('List deleted');
+    }
+
+    function clearColCards(colId) {
+      if (!confirm('Clear all cards in this list?')) return;
+      const col = state.columns.find(c => c.id === colId);
+      if (col) col.cards = [];
+      save(); render();
+      toast('Cards cleared');
+    }
+
+    // ── LABEL MANAGEMENT ──
+    function buildLabelPicker() {
+      const container = document.getElementById('existingLabels');
+      container.innerHTML = '';
+      if (state.labels.length === 0) {
+        container.innerHTML = '<span style="font-size:0.78rem;color:var(--text-muted)">No labels yet — create one below.</span>';
+        return;
+      }
+      state.labels.forEach(l => {
+        const btn = document.createElement('div');
+        btn.className = 'label-option' + (selectedLabels.includes(l.name) ? ' selected' : '');
+        btn.textContent = l.name;
+        btn.style.background = l.bg;
+        btn.style.color = l.color;
+        btn.addEventListener('click', () => {
+          if (selectedLabels.includes(l.name)) {
+            selectedLabels = selectedLabels.filter(n => n !== l.name);
+            btn.classList.remove('selected');
+          } else {
+            selectedLabels.push(l.name);
+            btn.classList.add('selected');
+          }
+          autoSaveCard(true);
+        });
+        container.appendChild(btn);
+      });
+    }
+
+    function buildNewLabelColorRow() {
+      const row = document.getElementById('newLabelColorRow');
+      row.innerHTML = '';
+      LABEL_COLOR_PAIRS.forEach((pair, i) => {
+        const sw = document.createElement('div');
+        sw.className = 'color-swatch' + (i === newLabelColorIndex ? ' selected' : '');
+        sw.style.background = pair.color;
+        sw.addEventListener('click', () => {
+          newLabelColorIndex = i;
+          row.querySelectorAll('.color-swatch').forEach((s, j) => s.classList.toggle('selected', j === i));
+          updateLabelPreview();
+        });
+        row.appendChild(sw);
+      });
+    }
+
+    function addCustomLabel() {
+      const name = document.getElementById('newLabelName').value.trim();
+      if (!name) return;
+      if (state.labels.find(l => l.name.toLowerCase() === name.toLowerCase())) { toast('Label already exists'); return; }
+      const pair = LABEL_COLOR_PAIRS[newLabelColorIndex];
+      state.labels.push({ name, bg: pair.bg, color: pair.color });
+      selectedLabels.push(name);
+      save();
+      document.getElementById('newLabelName').value = '';
+      updateLabelPreview();
+      buildLabelPicker();
+      autoSaveCard(true);
+      toast('Label "' + name + '" created');
+    }
+
+    function updateLabelPreview() {
+      const previewEl = document.getElementById('newLabelPreview');
+      if (!previewEl) return;
+      const name = document.getElementById('newLabelName').value.trim();
+      const pair = LABEL_COLOR_PAIRS[newLabelColorIndex];
+      previewEl.innerHTML = name
+        ? `<span class="label-tag" style="background:${pair.bg};color:${pair.color}">${name}</span>`
+        : '';
+    }
+
+    // ── CHECKLIST MANAGEMENT ──
+    let editingChecklist = []; // working copy while modal is open
+
+    function buildChecklistUI() {
+      const items = document.getElementById('clItems');
+      const bar = document.getElementById('clProgressBar');
+      const fill = document.getElementById('clProgressFill');
+      items.innerHTML = '';
+
+      if (editingChecklist.length > 0) {
+        const total = editingChecklist.length;
+        const done = editingChecklist.filter(i => i.done).length;
+        const pct = total ? Math.round((done / total) * 100) : 0;
+        bar.style.display = '';
+        fill.style.width = pct + '%';
+      } else {
+        bar.style.display = 'none';
+      }
+
+      if (editingChecklist.length === 0) {
+        const empty = document.createElement('div');
+        empty.style.cssText = 'font-size:0.78rem;color:var(--text-muted);padding:4px 2px;font-style:italic';
+        empty.textContent = 'No items yet — add one below.';
+        items.appendChild(empty);
+      }
+
+      editingChecklist.forEach((item, idx) => {
+        const row = document.createElement('div');
+        row.className = 'checklist-item' + (item.done ? ' done-item' : '');
+
+        const cb = document.createElement('div');
+        cb.className = 'checklist-cb' + (item.done ? ' checked' : '');
+        cb.textContent = item.done ? '✓' : '';
+        cb.addEventListener('click', () => {
+          editingChecklist[idx].done = !editingChecklist[idx].done;
+          buildChecklistUI();
+          autoSaveCard(true);
+        });
+
+        // Inline editable text
+        const txt = document.createElement('span');
+        txt.className = 'checklist-item-text';
+        txt.textContent = item.text;
+        txt.contentEditable = 'true';
+        txt.spellcheck = false;
+        txt.style.cursor = 'text';
+        txt.style.outline = 'none';
+        txt.title = 'Click to edit';
+        txt.addEventListener('blur', () => {
+          const newText = txt.textContent.trim();
+          if (newText) { editingChecklist[idx].text = newText; autoSaveCard(true); }
+          else { editingChecklist.splice(idx, 1); buildChecklistUI(); autoSaveCard(true); }
+        });
+        txt.addEventListener('keydown', e => {
+          if (e.key === 'Enter') { e.preventDefault(); txt.blur(); }
+          if (e.key === 'Escape') { txt.textContent = item.text; txt.blur(); }
+        });
+        // Stop propagation so click on text doesn't open card again
+        txt.addEventListener('click', e => e.stopPropagation());
+
+        const del = document.createElement('button');
+        del.className = 'checklist-del';
+        del.textContent = '✕';
+        del.title = 'Remove item';
+        del.addEventListener('click', () => {
+          editingChecklist.splice(idx, 1);
+          buildChecklistUI();
+          autoSaveCard(true);
+        });
+
+        row.append(cb, txt, del);
+        items.appendChild(row);
+      });
+    }
+
+    function addChecklistItem() {
+      const inp = document.getElementById('clNewItemInput');
+      const text = inp.value.trim();
+      if (!text) { inp.focus(); return; }
+      editingChecklist.push({ id: uid(), text, done: false });
+      inp.value = '';
+      inp.focus();
+      buildChecklistUI();
+      autoSaveCard(true);
+    }
+
+    // ── DUE DATE HELPERS ──
+    function updateDuePreview() {
+      const val = document.getElementById('cardDueInput').value;
+      const el = document.getElementById('duePreview');
+      if (!val) { el.textContent = ''; el.className = 'due-preview'; return; }
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const due = new Date(val + 'T00:00:00');
+      const diff = Math.round((due - today) / 86400000);
+      if (diff < 0)      { el.textContent = `Overdue by ${Math.abs(diff)} day${Math.abs(diff)===1?'':'s'}`; el.className = 'due-preview overdue'; }
+      else if (diff === 0) { el.textContent = 'Due today!'; el.className = 'due-preview soon'; }
+      else if (diff === 1) { el.textContent = 'Due tomorrow'; el.className = 'due-preview soon'; }
+      else if (diff <= 7)  { el.textContent = `In ${diff} days`; el.className = 'due-preview ok'; }
+      else                 { el.textContent = due.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); el.className = 'due-preview ok'; }
+    }
+    function clearDueDate() {
+      document.getElementById('cardDueInput').value = '';
+      updateDuePreview();
+      autoSaveCard(true);
+    }
+
+    // ── MOVE CARD ──
+    function buildMoveToSelect(currentColId) {
+      const sel = document.getElementById('moveToSelect');
+      sel.innerHTML = '';
+      state.columns.forEach(col => {
+        const opt = document.createElement('option');
+        opt.value = col.id;
+        opt.textContent = col.name;
+        if (col.id === currentColId) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    }
+    function moveCardToList(targetColId) {
+      if (!editingCardId || targetColId === editingColIdForCard) return;
+      const srcCol = state.columns.find(c => c.id === editingColIdForCard);
+      const tgtCol = state.columns.find(c => c.id === targetColId);
+      if (!srcCol || !tgtCol) return;
+      const card = srcCol.cards.find(c => c.id === editingCardId);
+      if (!card) return;
+      srcCol.cards = srcCol.cards.filter(c => c.id !== editingCardId);
+      tgtCol.cards.push(card);
+      editingColIdForCard = targetColId;
+      // Update info bar
+      document.getElementById('cardInfoColName').textContent = tgtCol.name;
+      document.getElementById('cardInfoDot').style.background = tgtCol.color || '#7c6af7';
+      save(); render();
+      toast(`Moved to "${tgtCol.name}"`);
+    }
+
+    // ── PRIORITY HELPERS ──
+    function updatePriorityPills(val) {
+      document.querySelectorAll('.priority-pill').forEach(p => {
+        p.className = 'priority-pill';
+        if (p.dataset.pv === val) p.classList.add('psel-' + (val || 'none'));
+      });
+      document.getElementById('cardPriorityInput').value = val;
+    }
+    function setPriority(val) {
+      updatePriorityPills(val);
+      autoSaveCard(true);
+    }
+
+    // ── LABEL CREATOR TOGGLE ──
+    function toggleLabelCreator() {
+      const sec = document.getElementById('labelCreatorSection');
+      const isHidden = sec.style.display === 'none' || sec.style.display === '';
+      sec.style.display = isHidden ? 'block' : 'none';
+      if (isHidden) setTimeout(() => document.getElementById('newLabelName').focus(), 50);
+    }
+
+    // ── DELETE CARD FROM MODAL ──
+    function deleteCardFromModal() {
+      if (!editingCardId || !editingColIdForCard) return;
+      if (!confirm('Delete this card?')) return;
+      const col = state.columns.find(c => c.id === editingColIdForCard);
+      if (col) col.cards = col.cards.filter(c => c.id !== editingCardId);
+      save(); render(); closeCardModal();
+      toast('Card deleted');
+    }
+
+    // ── CARD ACTIONS ──
+    function openAddCardModal(colId) {
+      editingCardId = null;
+      editingColIdForCard = colId;
+      selectedLabels = [];
+      editingChecklist = [];
+      newLabelColorIndex = 0;
+      const col = state.columns.find(c => c.id === colId);
+      // Info bar
+      document.getElementById('cardInfoColName').textContent = col ? col.name : '';
+      document.getElementById('cardInfoDot').style.background = col ? (col.color || '#7c6af7') : '#7c6af7';
+      document.getElementById('cardInfoMode').textContent = 'New Card';
+      document.getElementById('cardTitleInput').value = '';
+      document.getElementById('cardDescInput').value = '';
+      autoGrow(document.getElementById('cardDescInput'));
+      document.getElementById('cardDueInput').value = '';
+      updateDuePreview();
+      document.getElementById('cardPriorityInput').value = '';
+      document.getElementById('newLabelName').value = '';
+      document.getElementById('clNewItemInput').value = '';
+      document.getElementById('cardDeleteSection').style.display = 'none';
+      document.getElementById('moveToSection').style.display = 'none';
+      const footer = document.getElementById('cardModalFooter');
+      footer.style.display = '';
+      document.getElementById('cardKbdHint').style.display = 'none';
+      buildLabelPicker();
+      buildNewLabelColorRow();
+      buildChecklistUI();
+      updatePriorityPills('');
+      document.getElementById('cardModal').classList.add('open');
+      setTimeout(() => document.getElementById('cardTitleInput').focus(), 100);
+    }
+
+    function openEditCardModal(colId, cardId) {
+      const col = state.columns.find(c => c.id === colId);
+      const card = col && col.cards.find(c => c.id === cardId);
+      if (!card) return;
+      editingCardId = cardId;
+      editingColIdForCard = colId;
+      selectedLabels = [...(card.labels || [])];
+      editingChecklist = (card.checklist || []).map(i => ({ ...i }));
+      newLabelColorIndex = 0;
+      // Info bar
+      document.getElementById('cardInfoColName').textContent = col ? col.name : '';
+      document.getElementById('cardInfoDot').style.background = col ? (col.color || '#7c6af7') : '#7c6af7';
+      document.getElementById('cardInfoMode').textContent = 'Editing';
+      document.getElementById('cardTitleInput').value = card.title;
+      document.getElementById('cardDescInput').value = card.desc || '';
+      autoGrow(document.getElementById('cardDescInput'));
+      document.getElementById('cardDueInput').value = card.due || '';
+      updateDuePreview();
+      document.getElementById('cardPriorityInput').value = card.priority || '';
+      document.getElementById('newLabelName').value = '';
+      document.getElementById('clNewItemInput').value = '';
+      document.getElementById('cardDeleteSection').style.display = '';
+      // Move to section (only show if >1 column)
+      if (state.columns.length > 1) {
+        document.getElementById('moveToSection').style.display = '';
+        buildMoveToSelect(colId);
+      } else {
+        document.getElementById('moveToSection').style.display = 'none';
+      }
+      const footer = document.getElementById('cardModalFooter');
+      footer.style.display = 'none';
+      document.getElementById('cardKbdHint').style.display = 'none';
+      buildLabelPicker();
+      buildNewLabelColorRow();
+      buildChecklistUI();
+      updatePriorityPills(card.priority || '');
+      document.getElementById('cardModal').classList.add('open');
+      setTimeout(() => document.getElementById('cardTitleInput').focus(), 100);
+    }
+
+    function closeCardModal() {
+      document.getElementById('cardModal').classList.remove('open');
+      editingCardId = null; editingColIdForCard = null;
+    }
+
+    function saveCard() {
+      const title = document.getElementById('cardTitleInput').value.trim();
+      if (!title) { document.getElementById('cardTitleInput').focus(); return; }
+      const col = state.columns.find(c => c.id === editingColIdForCard);
+      if (!col) return;
+      // Commit any unsubmitted checklist text
+      const pendingCl = document.getElementById('clNewItemInput').value.trim();
+      if (pendingCl) editingChecklist.push({ id: uid(), text: pendingCl, done: false });
+      const cardData = {
+        title,
+        desc: document.getElementById('cardDescInput').value.trim(),
+        labels: [...selectedLabels],
+        due: document.getElementById('cardDueInput').value,
+        priority: document.getElementById('cardPriorityInput').value,
+        checklist: editingChecklist.map(i => ({ ...i })),
+      };
+      if (editingCardId) {
+        const card = col.cards.find(c => c.id === editingCardId);
+        if (card) Object.assign(card, cardData);
+      } else {
+        col.cards.push({ id: uid(), ...cardData });
+      }
+      save(); render(); closeCardModal();
+    }
+
+    function deleteCard(colId, cardId) {
+      const col = state.columns.find(c => c.id === colId);
+      if (!col) return;
+      col.cards = col.cards.filter(c => c.id !== cardId);
+      save(); render();
+    }
+
+    function duplicateCard(colId, cardId) {
+      const col = state.columns.find(c => c.id === colId);
+      if (!col) return;
+      const card = col.cards.find(c => c.id === cardId);
+      if (!card) return;
+      const idx = col.cards.indexOf(card);
+      col.cards.splice(idx + 1, 0, { ...card, id: uid(), title: card.title + ' (copy)' });
+      save(); render();
+      toast('Card duplicated');
+    }
+
+    // ── AUTO-SAVE ──
+    let _autoSaveTimer = null;
+
+    function autoSaveCard(renderBoard) {
+      if (!editingCardId) return;
+      const col = state.columns.find(c => c.id === editingColIdForCard);
+      if (!col) return;
+      const card = col.cards.find(c => c.id === editingCardId);
+      if (!card) return;
+      const title = document.getElementById('cardTitleInput').value.trim();
+      if (!title) return; // need at least a title
+      Object.assign(card, {
+        title,
+        desc: document.getElementById('cardDescInput').value.trim(),
+        labels: [...selectedLabels],
+        due: document.getElementById('cardDueInput').value,
+        priority: document.getElementById('cardPriorityInput').value,
+        checklist: editingChecklist.map(i => ({ ...i })),
+      });
+      save();
+      if (renderBoard) render();
+    }
+
+    function autoSaveCardDebounced() {
+      clearTimeout(_autoSaveTimer);
+      _autoSaveTimer = setTimeout(() => autoSaveCard(true), 600);
+    }
+
+    // ── SHARE / CRYPTO ──
+    // Plain encode (no password)
+    function encodeBoard() {
+      try { return btoa(unescape(encodeURIComponent(JSON.stringify(state)))); } catch (e) { return ''; }
+    }
+    function decodeBoard(enc) {
+      try { return JSON.parse(decodeURIComponent(escape(atob(enc)))); } catch (e) { return null; }
+    }
+
+    // AES-GCM helpers
+    async function deriveKey(password, salt) {
+      const enc = new TextEncoder();
+      const keyMat = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+      return crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt, iterations: 200000, hash: 'SHA-256' },
+        keyMat, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
+      );
+    }
+
+    async function encryptBoard(password) {
+      const data = new TextEncoder().encode(JSON.stringify(state));
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveKey(password, salt);
+      const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
+      // Pack: [salt 16B][iv 12B][ciphertext]
+      const packed = new Uint8Array(16 + 12 + ct.byteLength);
+      packed.set(salt, 0); packed.set(iv, 16); packed.set(new Uint8Array(ct), 28);
+      return btoa(String.fromCharCode(...packed));
+    }
+
+    async function decryptBoard(b64, password) {
+      const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+      const salt = bytes.slice(0, 16);
+      const iv = bytes.slice(16, 28);
+      const ct = bytes.slice(28);
+      try {
+        const key = await deriveKey(password, salt);
+        const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+        return JSON.parse(new TextDecoder().decode(pt));
+      } catch (e) { return null; }
+    }
+
+    // Share modal state
+    let _shareLinkGenerated = false;
+
+    function openShareModal() {
+      _shareLinkGenerated = false;
+      document.getElementById('shareUrlBox').innerHTML = '<span style="color:var(--text-muted);font-family:\'DM Sans\',sans-serif;font-size:0.8rem">Click "Generate Link" below.</span>';
+      document.getElementById('copyLinkBtn').style.display = 'none';
+      document.getElementById('genLinkBtn').style.display = '';
+      // Reset toggle state
+      const row = document.getElementById('pwToggleRow');
+      row.classList.remove('active');
+      document.getElementById('pwEnabled').checked = false;
+      document.getElementById('pwInputWrap').classList.remove('visible');
+      document.getElementById('sharePasswordInput').value = '';
+      document.getElementById('shareModal').classList.add('open');
+    }
+
+    function closeShareModal() {
+      document.getElementById('shareModal').classList.remove('open');
+      _shareLinkGenerated = false;
+    }
+
+    function togglePwProtect() {
+      const row = document.getElementById('pwToggleRow');
+      const wrap = document.getElementById('pwInputWrap');
+      const cb = document.getElementById('pwEnabled');
+      cb.checked = !cb.checked;
+      row.classList.toggle('active', cb.checked);
+      wrap.classList.toggle('visible', cb.checked);
+      // Reset link on toggle change
+      _shareLinkGenerated = false;
+      document.getElementById('shareUrlBox').innerHTML = '<span style="color:var(--text-muted);font-family:\'DM Sans\',sans-serif;font-size:0.8rem">Click "Generate Link" below.</span>';
+      document.getElementById('copyLinkBtn').style.display = 'none';
+      document.getElementById('genLinkBtn').style.display = '';
+      if (cb.checked) setTimeout(() => document.getElementById('sharePasswordInput').focus(), 260);
+    }
+
+    function toggleSharePwEye() {
+      const inp = document.getElementById('sharePasswordInput');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+
+    async function generateShareLink() {
+      const pwEnabled = document.getElementById('pwEnabled').checked;
+      const password = document.getElementById('sharePasswordInput').value;
+
+      if (pwEnabled && !password) {
+        document.getElementById('sharePasswordInput').focus();
+        toast('Please enter a password first.');
+        return;
+      }
+
+      const genBtn = document.getElementById('genLinkBtn');
+      genBtn.textContent = '⏳ Generating...';
+      genBtn.disabled = true;
+
+      try {
+        let encoded, url;
+        if (pwEnabled) {
+          encoded = await encryptBoard(password);
+          url = location.href.split('#')[0] + '#board=' + encoded + '&pw=1';
+        } else {
+          encoded = encodeBoard();
+          url = location.href.split('#')[0] + '#board=' + encoded;
+        }
+        document.getElementById('shareUrlBox').textContent = url;
+        document.getElementById('copyLinkBtn').style.display = '';
+        _shareLinkGenerated = true;
+      } catch (e) {
+        toast('Failed to generate link.');
+      }
+
+      genBtn.textContent = '⚡ Regenerate';
+      genBtn.disabled = false;
+    }
+
+    function copyShareUrl() {
+      if (!_shareLinkGenerated) { toast('Generate the link first.'); return; }
+      const text = document.getElementById('shareUrlBox').textContent;
+      const finish = () => { toast('Link copied to clipboard! 🎉'); closeShareModal(); };
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(finish).catch(() => fallbackCopy(text, finish));
+      } else { fallbackCopy(text, finish); }
+    }
+    function fallbackCopy(text, cb) {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+      cb();
+    }
+
+    // Password unlock overlay helpers
+    let _pendingEncoded = null;
+
+    function toggleUnlockPwEye() {
+      const inp = document.getElementById('unlockPasswordInput');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+
+    function openUnlockOverlay(encoded) {
+      _pendingEncoded = encoded;
+      document.getElementById('unlockPasswordInput').value = '';
+      document.getElementById('pwUnlockError').textContent = '';
+      document.getElementById('pwUnlockOverlay').classList.add('open');
+      setTimeout(() => document.getElementById('unlockPasswordInput').focus(), 100);
+    }
+
+    function cancelUnlock() {
+      document.getElementById('pwUnlockOverlay').classList.remove('open');
+      _pendingEncoded = null;
+      history.replaceState(null, '', location.pathname);
+    }
+
+    async function submitUnlock() {
+      const pw = document.getElementById('unlockPasswordInput').value;
+      if (!pw) { document.getElementById('unlockPasswordInput').focus(); return; }
+      const errEl = document.getElementById('pwUnlockError');
+      errEl.textContent = '';
+      const btn = document.querySelector('#pwUnlockOverlay .btn-primary');
+      btn.textContent = '⏳ Decrypting...'; btn.disabled = true;
+
+      const imported = await decryptBoard(_pendingEncoded, pw);
+      btn.textContent = 'Unlock & Import'; btn.disabled = false;
+
+      if (!imported || !imported.columns) {
+        errEl.textContent = '❌ Wrong password or corrupted link.';
+        document.getElementById('unlockPasswordInput').value = '';
+        document.getElementById('unlockPasswordInput').focus();
+        return;
+      }
+
+      state = imported;
+      if (!state.labels) state.labels = [];
+      save();
+      document.getElementById('pwUnlockOverlay').classList.remove('open');
+      _pendingEncoded = null;
+      history.replaceState(null, '', location.pathname);
+      render();
+      toast('Board imported! Welcome 👋');
+    }
+
+    function checkUrlImport() {
+      const hash = location.hash;
+      if (!hash.startsWith('#board=')) return;
+
+      // Parse hash params: #board=<encoded>&pw=1
+      const hashBody = hash.slice(1); // remove '#'
+      const params = {};
+      hashBody.split('&').forEach(part => {
+        const [k, ...v] = part.split('=');
+        params[k] = v.join('=');
+      });
+      const encoded = params['board'];
+      const isProtected = params['pw'] === '1';
+
+      if (!encoded) return;
+
+      if (isProtected) {
+        // Show password unlock overlay; actual import happens in submitUnlock()
+        openUnlockOverlay(encoded);
+        return;
+      }
+
+      const imported = decodeBoard(encoded);
+      if (!imported || !imported.columns) { history.replaceState(null, '', location.pathname); return; }
+      const existing = localStorage.getItem(STORAGE_KEY);
+      if (existing && !confirm('Import this shared board? Your current board will be replaced.')) {
+        history.replaceState(null, '', location.pathname); return;
+      }
+      state = imported;
+      if (!state.labels) state.labels = [];
+      save();
+      history.replaceState(null, '', location.pathname);
+      toast('Board imported! Welcome 👋');
+    }
+
+    // ── GLOBAL ──
+    function clearAll() {
+      if (!confirm('Clear entire board? This cannot be undone.')) return;
+      Object.keys(colDropdowns).forEach(id => { colDropdowns[id].remove(); delete colDropdowns[id]; });
+      state.columns = [];
+      save(); render();
+    }
+
+    document.getElementById('boardTitle').addEventListener('blur', e => {
+      state.boardTitle = e.target.value.trim() || state.boardTitle; save();
+    });
+    document.getElementById('boardTitle').addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closeCardModal(); closeColModal(); closeShareModal(); closeAllDropdowns(); cancelUnlock(); }
+      if (e.key === 'Enter' && e.ctrlKey) {
+        if (document.getElementById('cardModal').classList.contains('open')) saveCard();
+        if (document.getElementById('colModal').classList.contains('open')) saveColumn();
+        if (document.getElementById('pwUnlockOverlay').classList.contains('open')) submitUnlock();
+      }
+    });
+
+    document.getElementById('unlockPasswordInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') submitUnlock();
+    });
+    document.getElementById('sharePasswordInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') generateShareLink();
+    });
+    document.getElementById('pwUnlockOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) cancelUnlock(); });
+
+    document.getElementById('cardModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeCardModal(); });
+    document.getElementById('colModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeColModal(); });
+    document.getElementById('shareModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeShareModal(); });
+    document.getElementById('newLabelName').addEventListener('keydown', e => { if (e.key === 'Enter') addCustomLabel(); });
+    document.getElementById('clNewItemInput').addEventListener('keydown', e => { if (e.key === 'Enter') addChecklistItem(); });
+
+    // Auto-grow textarea
+    function autoGrow(el) {
+      el.style.height = 'auto';
+      el.style.height = (el.scrollHeight) + 'px';
+    }
+    document.getElementById('cardDescInput').addEventListener('input', function() {
+      autoGrow(this);
+      autoSaveCardDebounced();
+    });
+
+    // Due date preview
+    document.getElementById('cardDueInput').addEventListener('change', () => {
+      updateDuePreview();
+      autoSaveCard(true);
+    });
+
+    // Label name preview
+    document.getElementById('newLabelName').addEventListener('input', updateLabelPreview);
+
+    // Auto-save on field changes (only fires when editing an existing card)
+    document.getElementById('cardTitleInput').addEventListener('input', autoSaveCardDebounced);
+    document.getElementById('cardPriorityInput').addEventListener('change', () => autoSaveCard(true));
+
+    // ── FIREBASE COLLABORATION ──
+    let _roomId = null;
+    let _fbWriting = false;
+    let _fbSaveTimer = null;
+    let _myPresenceId = null;
+    let _presenceRef = null;
+
+    function fbRoomRef() { return db.ref('rooms/' + _roomId + '/state'); }
+    function fbPresenceRef() { return db.ref('rooms/' + _roomId + '/presence'); }
+
+    function fbSave() {
+      if (!_roomId) return;
+      _fbWriting = true;
+      fbRoomRef().set(state).catch(e => console.warn('Firebase write error:', e));
+      // allow incoming updates again after a short delay
+      setTimeout(() => { _fbWriting = false; }, 400);
+    }
+    function fbSaveDebounced() {
+      if (!_roomId) return;
+      clearTimeout(_fbSaveTimer);
+      _fbSaveTimer = setTimeout(fbSave, 500);
+    }
+
+    // Firebase stores arrays as objects — convert them back
+    function normalizeState(s) {
+      if (!s) return s;
+      if (s.labels && !Array.isArray(s.labels))
+        s.labels = Object.values(s.labels);
+      if (s.columns && !Array.isArray(s.columns))
+        s.columns = Object.values(s.columns);
+      if (s.columns) s.columns.forEach(col => {
+        if (col.cards && !Array.isArray(col.cards))
+          col.cards = Object.values(col.cards);
+        if (col.cards) col.cards.forEach(card => {
+          if (card.labels && !Array.isArray(card.labels))
+            card.labels = Object.values(card.labels);
+          if (card.checklist && !Array.isArray(card.checklist))
+            card.checklist = Object.values(card.checklist);
+        });
+      });
+      return s;
+    }
+
+    function fbListen(roomId) {
+      fbRoomRef().on('value', snap => {
+        if (_fbWriting) return; // ignore echo from our own write
+        const data = snap.val();
+        if (!data) return;
+        state = normalizeState(data);
+        if (!state.labels) state.labels = [];
+        if (!state.columns) state.columns = [];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        render();
+        document.getElementById('boardTitle').value = state.boardTitle || 'My Board';
+      });
+    }
+
+    function fbSetupPresence() {
+      if (!_roomId) return;
+      _myPresenceId = uid();
+      _presenceRef = fbPresenceRef().child(_myPresenceId);
+      // Write our presence and auto-remove on disconnect
+      _presenceRef.set(true);
+      _presenceRef.onDisconnect().remove();
+      // Watch total count
+      fbPresenceRef().on('value', snap => {
+        const count = snap.numChildren();
+        const badge = document.getElementById('collabCount');
+        const pulse = document.getElementById('collabPulse');
+        badge.style.display = count > 0 ? '' : 'none';
+        badge.textContent = count;
+        pulse.style.display = '';
+        document.getElementById('collabBtn').classList.add('active');
+        document.getElementById('collabBtnText').textContent = '👥 ' + count + ' online';
+      });
+    }
+
+    function getRoomIdFromUrl() {
+      const match = location.href.match(/[?&#]r=([a-zA-Z0-9_-]{8,})/)
+      return match ? match[1] : null;
+    }
+    function generateRoomId() {
+      return Math.random().toString(36).slice(2, 7) + Math.random().toString(36).slice(2, 7);
+    }
+    function setRoomInUrl(id) {
+      const url = location.href.split('?')[0].split('#')[0] + '?r=' + id;
+      history.replaceState(null, '', url);
+    }
+    function getRoomShareUrl() {
+      return location.href.split('?')[0].split('#')[0] + '?r=' + _roomId;
+    }
+
+    function joinRoom(roomId) {
+      _roomId = roomId;
+      setRoomInUrl(roomId);
+      fbListen(roomId);
+      fbSetupPresence();
+      // Push our current local state to Firebase if room is empty
+      fbRoomRef().once('value', snap => {
+        if (!snap.val()) fbSave(); // seed the room
+      });
+    }
+
+    function collabAction() {
+      if (_roomId) {
+        // Already in a room — copy link to clipboard
+        const url = getRoomShareUrl();
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(url).then(() => toast('🔗 Collaboration link copied!'));
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = url; ta.style.cssText = 'position:fixed;opacity:0';
+          document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+          toast('🔗 Collaboration link copied!');
+        }
+        return;
+      }
+      // Start a new room
+      const roomId = generateRoomId();
+      joinRoom(roomId);
+      toast('✅ Collaboration started! Sharing link...');
+      // Auto-copy link
+      setTimeout(() => {
+        const url = getRoomShareUrl();
+        if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('🔗 Link copied to clipboard — share it!'));
+      }, 600);
+    }
+
+    // ── INIT ──
+    load();
+    checkUrlImport();
+
+    if (state.columns.length === 0) {
+      if (state.labels.length === 0) {
+        state.labels = [
+          { name: 'Design', bg: '#2a1f5e', color: '#a78bfa' },
+          { name: 'Dev', bg: '#1a3a2a', color: '#6af7c4' },
+          { name: 'Bug', bg: '#3a1a1a', color: '#f76a8a' },
+          { name: 'Feature', bg: '#1a2f3a', color: '#6ab4f7' },
+          { name: 'Docs', bg: '#3a2f1a', color: '#f7c26a' },
+        ];
+      }
+      state.columns = [
+        { id: uid(), name: 'To Do', color: '#7c6af7', cards: [] },
+        { id: uid(), name: 'In Progress', color: '#f7c26a', cards: [] },
+        { id: uid(), name: 'Done', color: '#6af7c4', cards: [] },
+      ];
+      save();
+    }
+
+    render();
+
+    // Auto-join room from URL (if someone opened a shared link)
+    const urlRoomId = getRoomIdFromUrl();
+    if (urlRoomId) {
+      joinRoom(urlRoomId);
+    }
+  </script>
+</body>
+
+</html>
