@@ -2013,6 +2013,13 @@
           <input type="text" id="usernamePopoverInput" placeholder="e.g. David" maxlength="24" autocomplete="off" />
           <button class="btn btn-primary" style="font-size:0.78rem;padding:6px 14px"
             onclick="saveUsernameFromChip()">Save</button>
+          <div style="margin-top:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;gap:6px">
+            <label>Device Identity</label>
+            <div style="display:flex;gap:6px">
+              <button class="btn" style="flex:1;font-size:0.7rem;padding:4px" onclick="exportIdentity()">Export</button>
+              <button class="btn" style="flex:1;font-size:0.7rem;padding:4px" onclick="openImportIdentity()">Import</button>
+            </div>
+          </div>
         </div>
       </div>
       <button class="collab-btn" id="collabBtn" onclick="collabAction()" title="Start or copy collaboration link">
@@ -2300,6 +2307,22 @@
       </div>
       <div class="modal-actions">
         <button class="btn btn-primary" id="usernameConfirmBtn" onclick="confirmUsername()">Save Name</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPORT IDENTITY OVERLAY -->
+  <div class="room-overlay" id="importIdentityOverlay">
+    <div class="room-box">
+      <h2>🔄 Import Identity</h2>
+      <p style="color:var(--accent2);font-weight:600;font-size:0.85rem">WARNING: This will overwrite your current device identity. You will lose owner access to any local boards on this device.</p>
+      <div class="form-group">
+        <label>Paste Exported Identity String</label>
+        <textarea id="importIdentityInput" style="height:80px;font-family:monospace;font-size:0.75rem;padding:8px" placeholder="eyJwYl91c2VySWQi..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="document.getElementById('importIdentityOverlay').classList.remove('open')">Cancel</button>
+        <button class="btn btn-danger" onclick="submitImportIdentity()">Overwrite & Import</button>
       </div>
     </div>
   </div>
@@ -3703,6 +3726,62 @@
       document.getElementById('usernameInput').value = '';
       document.getElementById('usernameOverlay').classList.add('open');
       setTimeout(() => document.getElementById('usernameInput').focus(), 100);
+    }
+
+    // ── IDENTITY EXPORT / IMPORT ──
+    function exportIdentity() {
+      const exportData = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('pb_')) {
+          exportData[key] = localStorage.getItem(key);
+        }
+      }
+      const jsonStr = JSON.stringify(exportData);
+      const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
+      
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(b64).then(() => {
+          toast('✅ Identity copied to clipboard!');
+          document.getElementById('usernamePopover').classList.remove('open');
+        });
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = b64; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+        toast('✅ Identity copied to clipboard!');
+        document.getElementById('usernamePopover').classList.remove('open');
+      }
+    }
+
+    function openImportIdentity() {
+      document.getElementById('usernamePopover').classList.remove('open');
+      document.getElementById('importIdentityInput').value = '';
+      document.getElementById('importIdentityOverlay').classList.add('open');
+      setTimeout(() => document.getElementById('importIdentityInput').focus(), 100);
+    }
+
+    function submitImportIdentity() {
+      const b64 = document.getElementById('importIdentityInput').value.trim();
+      if (!b64) return;
+      try {
+        const jsonStr = decodeURIComponent(escape(atob(b64)));
+        const data = JSON.parse(jsonStr);
+        if (!data || !data.pb_userId) throw new Error('Invalid format');
+        
+        for (const [key, value] of Object.entries(data)) {
+          if (key.startsWith('pb_')) {
+            localStorage.setItem(key, value);
+          }
+        }
+        
+        document.getElementById('importIdentityOverlay').classList.remove('open');
+        toast('⚡ Identity Imported! Reloading...');
+        setTimeout(() => location.reload(), 1200);
+      } catch (e) {
+        toast('❌ Invalid Identity String');
+        console.error(e);
+      }
     }
 
 
