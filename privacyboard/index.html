@@ -1644,6 +1644,54 @@
       min-width: 18px;
       text-align: center;
     }
+    /* ── Username chip ── */
+    .username-chip {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 12px 5px 6px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: all 0.18s;
+      white-space: nowrap;
+      position: relative;
+    }
+    .username-chip:hover { border-color: var(--accent); color: var(--accent); }
+    .username-avatar {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .username-avatar.anon { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); }
+    /* Popover */
+    .username-popover {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: var(--surface2);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.55);
+      padding: 14px;
+      width: 220px;
+      z-index: 10001;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .username-popover.open { display: flex; animation: ddIn 0.12s ease; }
+    .username-popover label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .username-popover input { width: 100%; }
+    .username-popover button { align-self: flex-end; }
   </style>
 
   <!-- Firebase Realtime Database (compat CDN) -->
@@ -1657,6 +1705,16 @@
     <div class="logo">PrivacyBoard</div>
     <input id="boardTitle" type="text" value="My Board" spellcheck="false" title="Click to rename" />
     <div class="header-actions">
+      <!-- Username chip -->
+      <div class="username-chip" id="usernameChip" onclick="toggleUsernamePopover()" title="Set your display name">
+        <div class="username-avatar anon" id="usernameAvatar">👤</div>
+        <span id="usernameChipLabel">Set name</span>
+        <div class="username-popover" id="usernamePopover" onclick="event.stopPropagation()">
+          <label>Your display name</label>
+          <input type="text" id="usernamePopoverInput" placeholder="e.g. David" maxlength="24" autocomplete="off" />
+          <button class="btn btn-primary" style="font-size:0.78rem;padding:6px 14px" onclick="saveUsernameFromChip()">Save</button>
+        </div>
+      </div>
       <button class="collab-btn" id="collabBtn" onclick="collabAction()" title="Start or copy collaboration link">
         <span class="collab-pulse" id="collabPulse" style="display:none"></span>
         <span id="collabBtnText">👥 Collaborate</span>
@@ -1912,6 +1970,56 @@
       <div class="modal-actions">
         <button class="btn" onclick="cancelRoomCreate()">Cancel</button>
         <button class="btn btn-primary" onclick="confirmRoomCreate()">Create Room</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- USERNAME PROMPT -->
+  <div class="room-overlay" id="usernameOverlay">
+    <div class="room-box">
+      <h2>👤 Your Display Name</h2>
+      <p>Set a name so your teammates can see who you are in the room.</p>
+      <div class="form-group">
+        <label>Display Name</label>
+        <input type="text" id="usernameInput" placeholder="e.g. David" maxlength="24" autocomplete="off" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="usernameConfirmBtn" onclick="confirmUsername()">Save Name</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROOM SETTINGS (owner only) -->
+  <div class="room-overlay" id="roomSettingsOverlay">
+    <div class="room-box" style="width:420px">
+      <h2>⚙️ Room Settings</h2>
+      <div style="font-size:0.8rem;color:var(--text-muted)">You are the <span style="color:var(--accent3);font-weight:600">👑 owner</span> of this room.</div>
+
+      <div class="form-group">
+        <label>Members Online</label>
+        <div id="membersList" style="display:flex;flex-direction:column;gap:6px;min-height:24px"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Change Room Password</label>
+        <div class="pw-input-inner">
+          <input type="password" id="newRoomPwInput" placeholder="New password (blank = remove)" autocomplete="new-password" />
+          <button class="pw-eye" onclick="toggleNewRoomPwEye()" tabindex="-1">👁</button>
+        </div>
+        <div class="room-error" id="roomPwChangeError"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Your Display Name</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="ownerNameInput" placeholder="Your name..." maxlength="24" style="flex:1" />
+          <button class="btn" onclick="saveOwnerName()">Save</button>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn" onclick="closeRoomSettings()">Close</button>
+        <button class="btn btn-primary" onclick="changeRoomPassword()">🔑 Update Password</button>
       </div>
     </div>
   </div>
@@ -2717,9 +2825,11 @@
         checklist: editingChecklist.map(i => ({ ...i })),
       };
       if (editingCardId) {
+        if (!col.cards) col.cards = [];
         const card = col.cards.find(c => c.id === editingCardId);
         if (card) Object.assign(card, cardData);
       } else {
+        if (!col.cards) col.cards = [];
         col.cards.push({ id: uid(), ...cardData });
       }
       save(); render(); closeCardModal();
@@ -3049,14 +3159,92 @@
     document.getElementById('cardTitleInput').addEventListener('input', autoSaveCardDebounced);
     document.getElementById('cardPriorityInput').addEventListener('change', () => autoSaveCard(true));
 
+    // ── IDENTITY ──
+    let _userId = localStorage.getItem('pb_userId');
+    if (!_userId) { _userId = uid(); localStorage.setItem('pb_userId', _userId); }
+    let _username = localStorage.getItem('pb_username') || '';
+
+    // \u2500\u2500 Username chip (header) \u2500\u2500
+    function updateUsernameChip() {
+      const label  = document.getElementById('usernameChipLabel');
+      const avatar = document.getElementById('usernameAvatar');
+      if (_username) {
+        label.textContent = _username;
+        avatar.textContent = _username.charAt(0).toUpperCase();
+        avatar.classList.remove('anon');
+      } else {
+        label.textContent = 'Set name';
+        avatar.textContent = '\ud83d\udc64';
+        avatar.classList.add('anon');
+      }
+    }
+    function toggleUsernamePopover() {
+      const pop = document.getElementById('usernamePopover');
+      const isOpen = pop.classList.contains('open');
+      pop.classList.toggle('open', !isOpen);
+      if (!isOpen) {
+        document.getElementById('usernamePopoverInput').value = _username;
+        setTimeout(() => document.getElementById('usernamePopoverInput').select(), 50);
+      }
+    }
+    function saveUsernameFromChip() {
+      const val = document.getElementById('usernamePopoverInput').value.trim();
+      if (!val) { document.getElementById('usernamePopoverInput').focus(); return; }
+      _username = val;
+      localStorage.setItem('pb_username', val);
+      document.getElementById('usernamePopover').classList.remove('open');
+      updateUsernameChip();
+      // Broadcast live to Firebase presence if in a room
+      if (_presenceRef) _presenceRef.set({ name: val, isOwner: _isOwner });
+      toast('\ud83d\udc64 Name saved: ' + val);
+    }
+    document.getElementById('usernamePopoverInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') saveUsernameFromChip();
+      if (e.key === 'Escape') document.getElementById('usernamePopover').classList.remove('open');
+    });
+    // Close popover on outside click
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#usernameChip')) {
+        document.getElementById('usernamePopover').classList.remove('open');
+      }
+    });
+    // Init chip on load
+    updateUsernameChip();
+
+    function confirmUsername() {
+      const val = document.getElementById('usernameInput').value.trim();
+      if (!val) { document.getElementById('usernameInput').focus(); return; }
+      _username = val;
+      localStorage.setItem('pb_username', val);
+      updateUsernameChip();
+      document.getElementById('usernameOverlay').classList.remove('open');
+      // If already in a room, update presence
+      if (_presenceRef) _presenceRef.set({ name: _username, isOwner: _isOwner });
+      if (_afterUsernameCallback) { _afterUsernameCallback(); _afterUsernameCallback = null; }
+    }
+    document.getElementById('usernameInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') confirmUsername();
+    });
+    let _afterUsernameCallback = null;
+    function ensureUsername(cb) {
+      if (_username) { cb(); return; }
+      _afterUsernameCallback = cb;
+      document.getElementById('usernameInput').value = '';
+      document.getElementById('usernameOverlay').classList.add('open');
+      setTimeout(() => document.getElementById('usernameInput').focus(), 100);
+    }
+
+
     // ── FIREBASE COLLABORATION ──
     let _roomId = null;
-    let _roomPassword = null; // AES key derived from password, held in memory only
+    let _roomPassword = null;
+    let _isOwner = false;
     let _fbWriting = false;
     let _fbSaveTimer = null;
     let _myPresenceId = null;
     let _presenceRef = null;
     let _pendingJoinRoomId = null;
+    let _membersCache = {};
 
     function fbRoomRef()     { return db.ref('rooms/' + _roomId + '/state'); }
     function fbPresenceRef() { return db.ref('rooms/' + _roomId + '/presence'); }
@@ -3098,10 +3286,13 @@
       if (s.labels && !Array.isArray(s.labels))     s.labels   = Object.values(s.labels);
       if (s.columns && !Array.isArray(s.columns))   s.columns  = Object.values(s.columns);
       if (s.columns) s.columns.forEach(col => {
-        if (col.cards && !Array.isArray(col.cards)) col.cards = Object.values(col.cards);
-        if (col.cards) col.cards.forEach(card => {
-          if (card.labels    && !Array.isArray(card.labels))    card.labels    = Object.values(card.labels);
-          if (card.checklist && !Array.isArray(card.checklist)) card.checklist = Object.values(card.checklist);
+        if (!col.cards) col.cards = [];
+        else if (!Array.isArray(col.cards)) col.cards = Object.values(col.cards);
+        col.cards.forEach(card => {
+          if (!card.labels)    card.labels    = [];
+          else if (!Array.isArray(card.labels))    card.labels    = Object.values(card.labels);
+          if (!card.checklist) card.checklist = [];
+          else if (!Array.isArray(card.checklist)) card.checklist = Object.values(card.checklist);
         });
       });
       return s;
@@ -3134,9 +3325,11 @@
       if (!_roomId) return;
       _myPresenceId = uid();
       _presenceRef = fbPresenceRef().child(_myPresenceId);
-      _presenceRef.set(true);
+      _presenceRef.set({ name: _username || 'Anonymous', isOwner: _isOwner });
       _presenceRef.onDisconnect().remove();
       fbPresenceRef().on('value', snap => {
+        _membersCache = {};
+        snap.forEach(child => { _membersCache[child.key] = child.val(); });
         const count = snap.numChildren();
         const badge = document.getElementById('collabCount');
         const pulse = document.getElementById('collabPulse');
@@ -3144,7 +3337,15 @@
         badge.textContent = count;
         pulse.style.display = '';
         document.getElementById('collabBtn').classList.add('active');
-        document.getElementById('collabBtnText').textContent = '👥 ' + count + ' online';
+        // Build tooltip label
+        const names = Object.values(_membersCache).map(m => {
+          const n = (m && m.name) ? m.name : 'Anonymous';
+          return (m && m.isOwner) ? '👑 ' + n : n;
+        });
+        document.getElementById('collabBtn').title = names.join('\n');
+        document.getElementById('collabBtnText').textContent = _isOwner
+          ? '⚙️ ' + count + ' online'
+          : '👥 ' + count + ' online';
       });
     }
 
@@ -3206,8 +3407,9 @@
       _roomPassword = pw;
       document.getElementById('roomJoinOverlay').classList.remove('open');
       btn.textContent = 'Join Room'; btn.disabled = false;
-      await finishJoinRoom(_pendingJoinRoomId);
+      const rid = _pendingJoinRoomId;
       _pendingJoinRoomId = null;
+      await finishJoinRoom(rid);
     }
     document.getElementById('roomJoinPwInput').addEventListener('keydown', e => {
       if (e.key === 'Enter') submitRoomJoin();
@@ -3220,15 +3422,13 @@
     async function confirmRoomCreate() {
       const pw = document.getElementById('roomCreatePwInput').value.trim();
       _roomPassword = pw || null;
+      _isOwner = true;
       document.getElementById('roomCreateOverlay').classList.remove('open');
       const roomId = generateRoomId();
       _roomId = roomId;
       setRoomInUrl(roomId);
-      // Write config flag to Firebase
-      if (_roomPassword) {
-        await fbConfigRef().set({ locked: true });
-      }
-      await fbSave(); // seed the room (encrypted if password set)
+      await fbConfigRef().set({ locked: !!_roomPassword, ownerId: _userId, ownerName: _username });
+      await fbSave();
       fbListen(roomId);
       fbSetupPresence();
       toast('✅ Room created! Link copied to clipboard.');
@@ -3244,6 +3444,10 @@
     async function finishJoinRoom(roomId) {
       _roomId = roomId;
       setRoomInUrl(roomId);
+      // Check ownership
+      const cfgSnap = await fbConfigRef().once('value');
+      const cfg = cfgSnap.val() || {};
+      _isOwner = (cfg.ownerId === _userId);
       fbListen(roomId);
       fbSetupPresence();
       // Seed room if empty
@@ -3251,9 +3455,59 @@
       if (!snap.val()) fbSave();
     }
 
+    // ── Room settings (owner only) ──
+    function toggleNewRoomPwEye() {
+      const i = document.getElementById('newRoomPwInput');
+      i.type = i.type === 'password' ? 'text' : 'password';
+    }
+    function openRoomSettings() {
+      // Populate members list
+      const list = document.getElementById('membersList');
+      list.innerHTML = '';
+      Object.values(_membersCache).forEach(m => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:0.82rem;padding:4px 8px;background:var(--surface2);border-radius:6px';
+        row.innerHTML = (m.isOwner ? '<span title="Owner">👑</span>' : '<span style="opacity:.4">👤</span>') +
+          '<span>' + (m.name || 'Anonymous') + (m.isOwner ? ' <span style="color:var(--accent3);font-size:0.7rem">(you)</span>' : '') + '</span>';
+        list.appendChild(row);
+      });
+      document.getElementById('ownerNameInput').value = _username;
+      document.getElementById('newRoomPwInput').value = '';
+      document.getElementById('roomPwChangeError').textContent = '';
+      document.getElementById('roomSettingsOverlay').classList.add('open');
+    }
+    function closeRoomSettings() {
+      document.getElementById('roomSettingsOverlay').classList.remove('open');
+    }
+    function saveOwnerName() {
+      const val = document.getElementById('ownerNameInput').value.trim();
+      if (!val) return;
+      _username = val;
+      localStorage.setItem('pb_username', val);
+      if (_presenceRef) _presenceRef.set({ name: val, isOwner: true });
+      toast('Name updated');
+    }
+    async function changeRoomPassword() {
+      if (!_isOwner) return;
+      const newPw = document.getElementById('newRoomPwInput').value.trim();
+      const errEl = document.getElementById('roomPwChangeError');
+      errEl.textContent = '';
+      // Re-encrypt and push
+      _roomPassword = newPw || null;
+      await fbConfigRef().update({ locked: !!_roomPassword });
+      await fbSave();
+      errEl.style.color = 'var(--accent3)';
+      errEl.textContent = newPw ? '✅ Password updated. Others must re-enter it.' : '✅ Password removed.';
+      setTimeout(() => { errEl.textContent = ''; errEl.style.color = ''; }, 3500);
+    }
+    document.getElementById('newRoomPwInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') changeRoomPassword();
+    });
+
     function collabAction() {
       if (_roomId) {
-        // Already in a room — copy link
+        if (_isOwner) { openRoomSettings(); return; }
+        // Member — copy link
         const url = getRoomShareUrl();
         if (navigator.clipboard) {
           navigator.clipboard.writeText(url).then(() => toast('🔗 Collaboration link copied!'));
@@ -3265,28 +3519,30 @@
         }
         return;
       }
-      // Show create room overlay
-      document.getElementById('roomCreatePwInput').value = '';
-      document.getElementById('roomCreateOverlay').classList.add('open');
-      setTimeout(() => document.getElementById('roomCreatePwInput').focus(), 100);
+      // Show create room overlay (ask for username first if not set)
+      ensureUsername(() => {
+        document.getElementById('roomCreatePwInput').value = '';
+        document.getElementById('roomCreateOverlay').classList.add('open');
+        setTimeout(() => document.getElementById('roomCreatePwInput').focus(), 100);
+      });
     }
 
     async function joinRoom(roomId) {
-      // Check if room is password-protected
-      const configSnap = await db.ref('rooms/' + roomId + '/config').once('value');
-      const config = configSnap.val();
-      if (config && config.locked) {
-        // Show password prompt — actual join happens in submitRoomJoin
-        _pendingJoinRoomId = roomId;
-        document.getElementById('roomJoinPwInput').value = '';
-        document.getElementById('roomJoinError').textContent = '';
-        document.getElementById('roomJoinOverlay').classList.add('open');
-        setTimeout(() => document.getElementById('roomJoinPwInput').focus(), 100);
-      } else {
-        // Open room, join directly
-        _roomPassword = null;
-        await finishJoinRoom(roomId);
-      }
+      // Ask for username first if not set
+      ensureUsername(async () => {
+        const configSnap = await db.ref('rooms/' + roomId + '/config').once('value');
+        const config = configSnap.val();
+        if (config && config.locked) {
+          _pendingJoinRoomId = roomId;
+          document.getElementById('roomJoinPwInput').value = '';
+          document.getElementById('roomJoinError').textContent = '';
+          document.getElementById('roomJoinOverlay').classList.add('open');
+          setTimeout(() => document.getElementById('roomJoinPwInput').focus(), 100);
+        } else {
+          _roomPassword = null;
+          await finishJoinRoom(roomId);
+        }
+      });
     }
 
     // ── INIT ──
