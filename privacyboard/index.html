@@ -2104,6 +2104,28 @@
       height: 8px;
       border-radius: 50%;
     }
+
+    .delete-btn-corner {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      color: var(--text-muted);
+      border-radius: 4px;
+      padding: 4px 6px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.2s;
+    }
+    .delete-btn-corner:hover {
+      background: var(--danger);
+      color: white;
+    }
+    .board-card:hover .delete-btn-corner {
+      opacity: 1;
+    }
   </style>
 
   <!-- Firebase Realtime Database (compat CDN) -->
@@ -3757,9 +3779,16 @@
       _workspaces.forEach(ws => {
         const sec = document.createElement('div');
         sec.className = 'workspace-section';
+        
+        let headerActions = '';
+        if (ws.id !== _workspaces[0].id) {
+          headerActions = `<button class="btn btn-danger" style="font-size:0.65rem;padding:4px 8px" onclick="deleteWorkspace('${ws.id}')">Delete Workspace</button>`;
+        }
+
         sec.innerHTML = `
           <div class="workspace-header">
             <h3>${ws.name}</h3>
+            ${headerActions}
           </div>
           <div class="board-grid" id="grid-${ws.id}"></div>
         `;
@@ -3773,13 +3802,14 @@
           const typeName = b.type === 'cloud' ? 'Cloud Sync' : 'Offline Local';
           
           grid.innerHTML += `
-            <a href="${href}" class="board-card">
+            <div class="board-card" onclick="location.href='${href}'">
               <div class="board-card-title">${b.name}</div>
               <div class="board-card-type">
                 <div class="type-dot" style="background:${bgType}"></div>
                 ${typeName}
               </div>
-            </a>
+              <button class="delete-btn-corner" onclick="event.stopPropagation(); deleteBoard('${ws.id}', '${b.id}')" title="Remove Shortcut">✕</button>
+            </div>
           `;
         });
         
@@ -3810,6 +3840,22 @@
       saveWorkspaces();
       
       location.href = (type === 'cloud') ? '?r=' + newId : '?local=' + newId;
+    }
+
+    function deleteBoard(wsId, boardId) {
+      if (!confirm('Remove this board shortcut from the workspace? (Data will not be permanently deleted from database)')) return;
+      const ws = _workspaces.find(w => w.id === wsId);
+      if (!ws) return;
+      ws.boards = ws.boards.filter(b => b.id !== boardId);
+      saveWorkspaces();
+      renderDashboard();
+    }
+
+    function deleteWorkspace(wsId) {
+      if (!confirm('Delete this workspace and hide all boards inside it?')) return;
+      _workspaces = _workspaces.filter(w => w.id !== wsId);
+      saveWorkspaces();
+      renderDashboard();
     }
 
     function checkUrlImport() {
