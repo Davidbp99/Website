@@ -1563,7 +1563,41 @@
         padding-top: 14px;
       }
     }
-    /* ── Collaboration UI ── */
+    /* ── Room join overlay ── */
+    .room-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20001;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .room-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .room-box {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius);
+      padding: 32px 28px 24px;
+      width: 380px;
+      max-width: 95vw;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      transform: scale(0.95) translateY(10px);
+      transition: transform 0.2s;
+    }
+    .room-overlay.open .room-box { transform: scale(1) translateY(0); }
+    .room-box h2 { font-family:'Syne',sans-serif; font-weight:700; font-size:1.1rem; }
+    .room-box p  { font-size:0.83rem; color:var(--text-muted); line-height:1.55; }
+    .room-error  { font-size:0.78rem; color:var(--accent2); min-height:18px; font-weight:500; }
     .collab-btn {
       display: flex;
       align-items: center;
@@ -1839,6 +1873,45 @@
       <div class="modal-actions">
         <button class="btn" onclick="cancelUnlock()">Cancel</button>
         <button class="btn btn-primary" onclick="submitUnlock()">Unlock & Import</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROOM JOIN OVERLAY (password-protected rooms) -->
+  <div class="room-overlay" id="roomJoinOverlay">
+    <div class="room-box">
+      <h2>🔐 Password Required</h2>
+      <p>This collaboration room is password protected. Enter the password to join.</p>
+      <div class="form-group">
+        <label>Room Password</label>
+        <div class="pw-input-inner">
+          <input type="password" id="roomJoinPwInput" placeholder="Enter password..." autocomplete="current-password" />
+          <button class="pw-eye" onclick="toggleRoomJoinEye()" tabindex="-1">👁</button>
+        </div>
+      </div>
+      <div class="room-error" id="roomJoinError"></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="cancelRoomJoin()">Cancel</button>
+        <button class="btn btn-primary" id="roomJoinBtn" onclick="submitRoomJoin()">Join Room</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROOM CREATE OVERLAY (set optional password) -->
+  <div class="room-overlay" id="roomCreateOverlay">
+    <div class="room-box">
+      <h2>👥 Start Collaboration</h2>
+      <p>Optionally protect this room with a password. Anyone joining will need to enter it.</p>
+      <div class="form-group">
+        <label>Password (optional)</label>
+        <div class="pw-input-inner">
+          <input type="password" id="roomCreatePwInput" placeholder="Leave blank for no password..." autocomplete="new-password" />
+          <button class="pw-eye" onclick="toggleRoomCreateEye()" tabindex="-1">👁</button>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="cancelRoomCreate()">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmRoomCreate()">Create Room</button>
       </div>
     </div>
   </div>
@@ -2978,19 +3051,39 @@
 
     // ── FIREBASE COLLABORATION ──
     let _roomId = null;
+    let _roomPassword = null; // AES key derived from password, held in memory only
     let _fbWriting = false;
     let _fbSaveTimer = null;
     let _myPresenceId = null;
     let _presenceRef = null;
+    let _pendingJoinRoomId = null;
 
-    function fbRoomRef() { return db.ref('rooms/' + _roomId + '/state'); }
+    function fbRoomRef()     { return db.ref('rooms/' + _roomId + '/state'); }
     function fbPresenceRef() { return db.ref('rooms/' + _roomId + '/presence'); }
+    function fbConfigRef()   { return db.ref('rooms/' + _roomId + '/config'); }
 
-    function fbSave() {
+    // ── Crypto helpers (reuse deriveKey / encryptBoard / decryptBoard already in file) ──
+    async function encryptForRoom(password) {
+      // Returns base64 AES-GCM encrypted board state
+      return encryptBoard(password); // already defined above
+    }
+    async function decryptFromRoom(b64, password) {
+      return decryptBoard(b64, password); // already defined above
+    }
+
+    async function fbSave() {
       if (!_roomId) return;
       _fbWriting = true;
-      fbRoomRef().set(state).catch(e => console.warn('Firebase write error:', e));
-      // allow incoming updates again after a short delay
+      try {
+        let payload;
+        if (_roomPassword) {
+          const enc = await encryptForRoom(_roomPassword);
+          payload = { encrypted: enc };
+        } else {
+          payload = state;
+        }
+        await fbRoomRef().set(payload);
+      } catch(e) { console.warn('Firebase write error:', e); }
       setTimeout(() => { _fbWriting = false; }, 400);
     }
     function fbSaveDebounced() {
@@ -3002,30 +3095,34 @@
     // Firebase stores arrays as objects — convert them back
     function normalizeState(s) {
       if (!s) return s;
-      if (s.labels && !Array.isArray(s.labels))
-        s.labels = Object.values(s.labels);
-      if (s.columns && !Array.isArray(s.columns))
-        s.columns = Object.values(s.columns);
+      if (s.labels && !Array.isArray(s.labels))     s.labels   = Object.values(s.labels);
+      if (s.columns && !Array.isArray(s.columns))   s.columns  = Object.values(s.columns);
       if (s.columns) s.columns.forEach(col => {
-        if (col.cards && !Array.isArray(col.cards))
-          col.cards = Object.values(col.cards);
+        if (col.cards && !Array.isArray(col.cards)) col.cards = Object.values(col.cards);
         if (col.cards) col.cards.forEach(card => {
-          if (card.labels && !Array.isArray(card.labels))
-            card.labels = Object.values(card.labels);
-          if (card.checklist && !Array.isArray(card.checklist))
-            card.checklist = Object.values(card.checklist);
+          if (card.labels    && !Array.isArray(card.labels))    card.labels    = Object.values(card.labels);
+          if (card.checklist && !Array.isArray(card.checklist)) card.checklist = Object.values(card.checklist);
         });
       });
       return s;
     }
 
     function fbListen(roomId) {
-      fbRoomRef().on('value', snap => {
-        if (_fbWriting) return; // ignore echo from our own write
+      fbRoomRef().on('value', async snap => {
+        if (_fbWriting) return;
         const data = snap.val();
         if (!data) return;
-        state = normalizeState(data);
-        if (!state.labels) state.labels = [];
+        let decoded;
+        if (data.encrypted) {
+          // Encrypted room — decrypt with stored password
+          if (!_roomPassword) return; // no key yet, skip
+          decoded = await decryptFromRoom(data.encrypted, _roomPassword);
+          if (!decoded) return; // decryption failed
+        } else {
+          decoded = data;
+        }
+        state = normalizeState(decoded);
+        if (!state.labels)  state.labels  = [];
         if (!state.columns) state.columns = [];
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         render();
@@ -3037,10 +3134,8 @@
       if (!_roomId) return;
       _myPresenceId = uid();
       _presenceRef = fbPresenceRef().child(_myPresenceId);
-      // Write our presence and auto-remove on disconnect
       _presenceRef.set(true);
       _presenceRef.onDisconnect().remove();
-      // Watch total count
       fbPresenceRef().on('value', snap => {
         const count = snap.numChildren();
         const badge = document.getElementById('collabCount');
@@ -3054,11 +3149,13 @@
     }
 
     function getRoomIdFromUrl() {
-      const match = location.href.match(/[?&#]r=([a-zA-Z0-9_-]{8,})/)
+      const match = location.href.match(/[?&#]r=([a-zA-Z0-9_-]{8,})/);
       return match ? match[1] : null;
     }
     function generateRoomId() {
-      return Math.random().toString(36).slice(2, 7) + Math.random().toString(36).slice(2, 7);
+      const arr = new Uint8Array(12);
+      crypto.getRandomValues(arr);
+      return Array.from(arr, b => b.toString(36)).join('').slice(0, 16);
     }
     function setRoomInUrl(id) {
       const url = location.href.split('?')[0].split('#')[0] + '?r=' + id;
@@ -3068,20 +3165,95 @@
       return location.href.split('?')[0].split('#')[0] + '?r=' + _roomId;
     }
 
-    function joinRoom(roomId) {
+    // ── Room join overlay ──
+    function toggleRoomJoinEye() {
+      const i = document.getElementById('roomJoinPwInput');
+      i.type = i.type === 'password' ? 'text' : 'password';
+    }
+    function toggleRoomCreateEye() {
+      const i = document.getElementById('roomCreatePwInput');
+      i.type = i.type === 'password' ? 'text' : 'password';
+    }
+    function cancelRoomJoin() {
+      document.getElementById('roomJoinOverlay').classList.remove('open');
+      _pendingJoinRoomId = null;
+      history.replaceState(null, '', location.pathname);
+    }
+    async function submitRoomJoin() {
+      const pw = document.getElementById('roomJoinPwInput').value;
+      if (!pw) { document.getElementById('roomJoinPwInput').focus(); return; }
+      const errEl = document.getElementById('roomJoinError');
+      const btn   = document.getElementById('roomJoinBtn');
+      errEl.textContent = '';
+      btn.textContent = '⏳ Joining...'; btn.disabled = true;
+      // Try to decrypt the current room data with this password
+      const snap = await fbRoomRef().once('value');
+      const data = snap.val();
+      if (!data || !data.encrypted) {
+        errEl.textContent = '❌ Room not found or not encrypted.';
+        btn.textContent = 'Join Room'; btn.disabled = false;
+        return;
+      }
+      const decoded = await decryptFromRoom(data.encrypted, pw);
+      if (!decoded) {
+        errEl.textContent = '❌ Wrong password.';
+        document.getElementById('roomJoinPwInput').value = '';
+        document.getElementById('roomJoinPwInput').focus();
+        btn.textContent = 'Join Room'; btn.disabled = false;
+        return;
+      }
+      // Success
+      _roomPassword = pw;
+      document.getElementById('roomJoinOverlay').classList.remove('open');
+      btn.textContent = 'Join Room'; btn.disabled = false;
+      await finishJoinRoom(_pendingJoinRoomId);
+      _pendingJoinRoomId = null;
+    }
+    document.getElementById('roomJoinPwInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') submitRoomJoin();
+    });
+
+    // ── Room create overlay ──
+    function cancelRoomCreate() {
+      document.getElementById('roomCreateOverlay').classList.remove('open');
+    }
+    async function confirmRoomCreate() {
+      const pw = document.getElementById('roomCreatePwInput').value.trim();
+      _roomPassword = pw || null;
+      document.getElementById('roomCreateOverlay').classList.remove('open');
+      const roomId = generateRoomId();
+      _roomId = roomId;
+      setRoomInUrl(roomId);
+      // Write config flag to Firebase
+      if (_roomPassword) {
+        await fbConfigRef().set({ locked: true });
+      }
+      await fbSave(); // seed the room (encrypted if password set)
+      fbListen(roomId);
+      fbSetupPresence();
+      toast('✅ Room created! Link copied to clipboard.');
+      setTimeout(() => {
+        const url = getRoomShareUrl();
+        if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('🔗 Link copied — share it!'));
+      }, 400);
+    }
+    document.getElementById('roomCreatePwInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') confirmRoomCreate();
+    });
+
+    async function finishJoinRoom(roomId) {
       _roomId = roomId;
       setRoomInUrl(roomId);
       fbListen(roomId);
       fbSetupPresence();
-      // Push our current local state to Firebase if room is empty
-      fbRoomRef().once('value', snap => {
-        if (!snap.val()) fbSave(); // seed the room
-      });
+      // Seed room if empty
+      const snap = await fbRoomRef().once('value');
+      if (!snap.val()) fbSave();
     }
 
     function collabAction() {
       if (_roomId) {
-        // Already in a room — copy link to clipboard
+        // Already in a room — copy link
         const url = getRoomShareUrl();
         if (navigator.clipboard) {
           navigator.clipboard.writeText(url).then(() => toast('🔗 Collaboration link copied!'));
@@ -3093,15 +3265,28 @@
         }
         return;
       }
-      // Start a new room
-      const roomId = generateRoomId();
-      joinRoom(roomId);
-      toast('✅ Collaboration started! Sharing link...');
-      // Auto-copy link
-      setTimeout(() => {
-        const url = getRoomShareUrl();
-        if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('🔗 Link copied to clipboard — share it!'));
-      }, 600);
+      // Show create room overlay
+      document.getElementById('roomCreatePwInput').value = '';
+      document.getElementById('roomCreateOverlay').classList.add('open');
+      setTimeout(() => document.getElementById('roomCreatePwInput').focus(), 100);
+    }
+
+    async function joinRoom(roomId) {
+      // Check if room is password-protected
+      const configSnap = await db.ref('rooms/' + roomId + '/config').once('value');
+      const config = configSnap.val();
+      if (config && config.locked) {
+        // Show password prompt — actual join happens in submitRoomJoin
+        _pendingJoinRoomId = roomId;
+        document.getElementById('roomJoinPwInput').value = '';
+        document.getElementById('roomJoinError').textContent = '';
+        document.getElementById('roomJoinOverlay').classList.add('open');
+        setTimeout(() => document.getElementById('roomJoinPwInput').focus(), 100);
+      } else {
+        // Open room, join directly
+        _roomPassword = null;
+        await finishJoinRoom(roomId);
+      }
     }
 
     // ── INIT ──
