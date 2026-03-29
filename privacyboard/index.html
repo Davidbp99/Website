@@ -1376,12 +1376,14 @@
       color: var(--text-muted);
       padding-bottom: 2px;
     }
+
     .card-info-bar .info-col-dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
       flex-shrink: 0;
     }
+
     .card-info-bar .info-sep {
       opacity: 0.35;
     }
@@ -1392,9 +1394,11 @@
       gap: 6px;
       align-items: center;
     }
+
     .due-row input[type="date"] {
       flex: 1;
     }
+
     .due-clear-btn {
       background: none;
       border: 1px solid var(--border);
@@ -1407,19 +1411,30 @@
       white-space: nowrap;
       flex-shrink: 0;
     }
+
     .due-clear-btn:hover {
       border-color: var(--accent2);
       color: var(--accent2);
     }
+
     .due-preview {
       font-size: 0.7rem;
       margin-top: 3px;
       font-weight: 500;
       min-height: 14px;
     }
-    .due-preview.overdue { color: var(--accent2); }
-    .due-preview.soon    { color: #f7c26a; }
-    .due-preview.ok      { color: var(--accent3); }
+
+    .due-preview.overdue {
+      color: var(--accent2);
+    }
+
+    .due-preview.soon {
+      color: #f7c26a;
+    }
+
+    .due-preview.ok {
+      color: var(--accent3);
+    }
 
     /* Move-to selector */
     .move-select {
@@ -1435,9 +1450,10 @@
       align-items: center;
       gap: 4px;
     }
+
     .kbd {
       background: var(--surface2);
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 4px;
       padding: 1px 5px;
       font-size: 0.65rem;
@@ -1456,6 +1472,39 @@
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.08em;
+    }
+
+    /* ── Read-Only Mode Overrides ── */
+    .readonly-mode .col-add-card,
+    .readonly-mode .col-menu-btn,
+    .readonly-mode .add-col-btn {
+      display: none !important;
+    }
+
+    .readonly-mode .card {
+      -webkit-user-drag: none !important;
+    }
+
+    .readonly-mode .col-title {
+      pointer-events: none !important;
+    }
+
+    .readonly-modal .modal-actions,
+    .readonly-modal #cardDeleteSection,
+    .readonly-modal #moveToSection,
+    .readonly-modal .checklist-add-row,
+    .readonly-modal .btn-add-label-toggle,
+    .readonly-modal .assign-chips,
+    .readonly-modal .due-clear-btn {
+      display: none !important;
+    }
+
+    .readonly-modal .checklist-cb {
+      pointer-events: none !important;
+    }
+
+    .readonly-modal .priority-pills button {
+      pointer-events: none !important;
     }
 
     .priority-pills {
@@ -1563,11 +1612,12 @@
         padding-top: 14px;
       }
     }
+
     /* ── Room join overlay ── */
     .room-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.72);
+      background: rgba(0, 0, 0, 0.72);
       backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
@@ -1577,13 +1627,15 @@
       pointer-events: none;
       transition: opacity 0.2s;
     }
+
     .room-overlay.open {
       opacity: 1;
       pointer-events: all;
     }
+
     .room-box {
       background: var(--surface);
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: var(--radius);
       padding: 32px 28px 24px;
       width: 380px;
@@ -1594,10 +1646,30 @@
       transform: scale(0.95) translateY(10px);
       transition: transform 0.2s;
     }
-    .room-overlay.open .room-box { transform: scale(1) translateY(0); }
-    .room-box h2 { font-family:'Syne',sans-serif; font-weight:700; font-size:1.1rem; }
-    .room-box p  { font-size:0.83rem; color:var(--text-muted); line-height:1.55; }
-    .room-error  { font-size:0.78rem; color:var(--accent2); min-height:18px; font-weight:500; }
+
+    .room-overlay.open .room-box {
+      transform: scale(1) translateY(0);
+    }
+
+    .room-box h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .room-box p {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .room-error {
+      font-size: 0.78rem;
+      color: var(--accent2);
+      min-height: 18px;
+      font-weight: 500;
+    }
+
     .collab-btn {
       display: flex;
       align-items: center;
@@ -1606,22 +1678,25 @@
       font-weight: 500;
       padding: 7px 14px;
       border-radius: 100px;
-      border: 1px solid rgba(106,247,196,0.25);
-      background: rgba(106,247,196,0.07);
+      border: 1px solid rgba(106, 247, 196, 0.25);
+      background: rgba(106, 247, 196, 0.07);
       color: var(--accent3);
       cursor: pointer;
       transition: all 0.18s;
       font-family: 'DM Sans', sans-serif;
       white-space: nowrap;
     }
+
     .collab-btn:hover {
       border-color: var(--accent3);
-      background: rgba(106,247,196,0.14);
+      background: rgba(106, 247, 196, 0.14);
     }
+
     .collab-btn.active {
-      background: rgba(106,247,196,0.15);
+      background: rgba(106, 247, 196, 0.15);
       border-color: var(--accent3);
     }
+
     .collab-pulse {
       width: 7px;
       height: 7px;
@@ -1630,10 +1705,19 @@
       flex-shrink: 0;
       animation: pulse 2s infinite;
     }
+
     @keyframes pulse {
-      0%,100% { box-shadow: 0 0 0 0 rgba(106,247,196,0.5); }
-      50%      { box-shadow: 0 0 0 5px rgba(106,247,196,0); }
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(106, 247, 196, 0.5);
+      }
+
+      50% {
+        box-shadow: 0 0 0 5px rgba(106, 247, 196, 0);
+      }
     }
+
     .collab-count {
       background: var(--accent3);
       color: #0f0f13;
@@ -1644,6 +1728,25 @@
       min-width: 18px;
       text-align: center;
     }
+
+    /* ── Board Veil ── */
+    #boardVeil {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #boardVeil.show {
+      display: flex;
+    }
+
     /* ── Role badges ── */
     .role-badge {
       font-size: 0.62rem;
@@ -1654,9 +1757,25 @@
       text-transform: uppercase;
       flex-shrink: 0;
     }
-    .role-badge.owner   { background: rgba(106,247,196,0.15); color: var(--accent3); border: 1px solid rgba(106,247,196,0.3); }
-    .role-badge.manager { background: rgba(247,194,106,0.15); color: #f7c26a;         border: 1px solid rgba(247,194,106,0.3); }
-    .role-badge.member  { background: rgba(255,255,255,0.06);  color: var(--text-muted); border: 1px solid var(--border); }
+
+    .role-badge.owner {
+      background: rgba(106, 247, 196, 0.15);
+      color: var(--accent3);
+      border: 1px solid rgba(106, 247, 196, 0.3);
+    }
+
+    .role-badge.manager {
+      background: rgba(247, 194, 106, 0.15);
+      color: #f7c26a;
+      border: 1px solid rgba(247, 194, 106, 0.3);
+    }
+
+    .role-badge.member {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
     /* Member row in Room Settings */
     .member-row {
       display: flex;
@@ -1667,15 +1786,30 @@
       border-radius: 8px;
       border: 1px solid var(--border);
     }
+
     .member-row-avatar {
-      width: 28px; height: 28px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.72rem; font-weight: 700; color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
       flex-shrink: 0;
     }
-    .member-row-name { flex: 1; font-size: 0.83rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .member-row-name {
+      flex: 1;
+      font-size: 0.83rem;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .member-row select {
       font-size: 0.75rem;
       padding: 4px 8px;
@@ -1683,6 +1817,7 @@
       width: auto;
       min-width: 90px;
     }
+
     /* Assignee avatars on card face */
     .card-assignees {
       display: flex;
@@ -1690,6 +1825,7 @@
       flex-wrap: wrap;
       gap: 3px;
     }
+
     .card-assignee-chip {
       display: inline-flex;
       align-items: center;
@@ -1703,14 +1839,21 @@
       color: var(--text-muted);
       white-space: nowrap;
     }
+
     .card-assignee-av {
-      width: 16px; height: 16px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.55rem; font-weight: 700; color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+      font-weight: 700;
+      color: #fff;
       flex-shrink: 0;
     }
+
     /* Assign section in sidebar */
     .assign-chips {
       display: flex;
@@ -1718,6 +1861,7 @@
       gap: 6px;
       min-height: 24px;
     }
+
     .assign-member-chip {
       display: flex;
       align-items: center;
@@ -1732,17 +1876,36 @@
       transition: all 0.15s;
       color: var(--text-muted);
     }
-    .assign-member-chip:hover { border-color: var(--accent); color: var(--accent); }
-    .assign-member-chip.assigned { background: rgba(124,106,247,0.12); border-color: var(--accent); color: var(--accent); }
+
+    .assign-member-chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .assign-member-chip.assigned {
+      background: rgba(124, 106, 247, 0.12);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
     .assign-member-chip .av {
-      width: 18px; height: 18px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      font-size: 0.6rem; font-weight: 700; color: #fff;
-      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
     }
-    .assign-member-chip.assigned .av { background: var(--accent); }
+
+    .assign-member-chip.assigned .av {
+      background: var(--accent);
+    }
+
     /* ── Username chip ── */
     .username-chip {
       display: flex;
@@ -1761,25 +1924,41 @@
       white-space: nowrap;
       position: relative;
     }
-    .username-chip:hover { border-color: var(--accent); color: var(--accent); }
+
+    .username-chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
     .username-avatar {
-      width: 22px; height: 22px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.65rem; font-weight: 700; color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #fff;
       flex-shrink: 0;
     }
-    .username-avatar.anon { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); }
+
+    .username-avatar.anon {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
     /* Popover */
     .username-popover {
       position: absolute;
       top: calc(100% + 10px);
       right: 0;
       background: var(--surface2);
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: var(--radius-sm);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.55);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
       padding: 14px;
       width: 220px;
       z-index: 10001;
@@ -1787,10 +1966,26 @@
       flex-direction: column;
       gap: 10px;
     }
-    .username-popover.open { display: flex; animation: ddIn 0.12s ease; }
-    .username-popover label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
-    .username-popover input { width: 100%; }
-    .username-popover button { align-self: flex-end; }
+
+    .username-popover.open {
+      display: flex;
+      animation: ddIn 0.12s ease;
+    }
+
+    .username-popover label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .username-popover input {
+      width: 100%;
+    }
+
+    .username-popover button {
+      align-self: flex-end;
+    }
   </style>
 
   <!-- Firebase Realtime Database (compat CDN) -->
@@ -1804,6 +1999,11 @@
     <div class="logo">PrivacyBoard</div>
     <input id="boardTitle" type="text" value="My Board" spellcheck="false" title="Click to rename" />
     <div class="header-actions">
+      <!-- Database Settings Button -->
+      <button class="btn"
+        style="font-size:0.75rem;padding:4px 8px;background:var(--bg-lighter);border-color:rgba(255,255,255,0.1);color:var(--text-muted)"
+        onclick="openStorageSettings()" title="Configure Storage Backend">🗄️ Database</button>
+
       <!-- Username chip -->
       <div class="username-chip" id="usernameChip" onclick="toggleUsernamePopover()" title="Set your display name">
         <div class="username-avatar anon" id="usernameAvatar">👤</div>
@@ -1811,7 +2011,8 @@
         <div class="username-popover" id="usernamePopover" onclick="event.stopPropagation()">
           <label>Your display name</label>
           <input type="text" id="usernamePopoverInput" placeholder="e.g. David" maxlength="24" autocomplete="off" />
-          <button class="btn btn-primary" style="font-size:0.78rem;padding:6px 14px" onclick="saveUsernameFromChip()">Save</button>
+          <button class="btn btn-primary" style="font-size:0.78rem;padding:6px 14px"
+            onclick="saveUsernameFromChip()">Save</button>
         </div>
       </div>
       <button class="collab-btn" id="collabBtn" onclick="collabAction()" title="Start or copy collaboration link">
@@ -2068,7 +2269,8 @@
       <div class="form-group">
         <label>Password (optional)</label>
         <div class="pw-input-inner">
-          <input type="password" id="roomCreatePwInput" placeholder="Leave blank for no password..." autocomplete="new-password" />
+          <input type="password" id="roomCreatePwInput" placeholder="Leave blank for no password..."
+            autocomplete="new-password" />
           <button class="pw-eye" onclick="toggleRoomCreateEye()" tabindex="-1">👁</button>
         </div>
       </div>
@@ -2094,22 +2296,58 @@
     </div>
   </div>
 
+  <!-- SITE CREATION LOCK -->
+  <div class="room-overlay" id="siteLockOverlay">
+    <div class="room-box">
+      <h2>🔒 Site Protected</h2>
+      <p>This instance of PrivacyBoard requires the site password to create new boards.</p>
+      <div class="form-group">
+        <label>Site Creation Password</label>
+        <div class="pw-input-inner">
+          <input type="password" id="siteLockPwInput" placeholder="Enter site password..." />
+          <button class="pw-eye" onclick="toggleSiteLockEye()" tabindex="-1">👁</button>
+        </div>
+        <div class="room-error" id="siteLockError"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn"
+          onclick="document.getElementById('siteLockOverlay').classList.remove('open')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitSiteLock()">Unlock</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ROOM SETTINGS (owner only) -->
   <div class="room-overlay" id="roomSettingsOverlay">
     <div class="room-box" style="width:440px;max-height:85vh;overflow-y:auto">
       <h2>⚙️ Room Settings</h2>
-      <div style="font-size:0.8rem;color:var(--text-muted)" id="settingsRoleLabel">You are the <span style="color:var(--accent3);font-weight:600">👑 owner</span> of this room.</div>
+      <div style="font-size:0.8rem;color:var(--text-muted)" id="settingsRoleLabel">You are the <span
+          style="color:var(--accent3);font-weight:600">👑 owner</span> of this room.</div>
 
       <div class="form-group">
         <label>👥 Members &amp; Roles</label>
         <div id="membersList" style="display:flex;flex-direction:column;gap:6px"></div>
-        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px">Managers can add/edit/delete cards and lists. Members must enter the room password.</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px">Managers can add/edit/delete cards and
+          lists. Members must enter the room password.</div>
+      </div>
+
+      <div class="form-group" id="settingsReadOnlySection">
+        <label>🔒 Board Permissions</label>
+        <div class="pw-toggle-row" onclick="toggleReadOnlyMode()">
+          <input type="checkbox" id="readOnlyToggle" />
+          <div class="pw-toggle-knob"></div>
+          <div class="pw-toggle-label">
+            Public Read-Only Mode
+            <small style="display:block">Members can only view the board, not edit.</small>
+          </div>
+        </div>
       </div>
 
       <div class="form-group" id="settingsPwSection">
         <label>🔑 Change Room Password</label>
         <div class="pw-input-inner">
-          <input type="password" id="newRoomPwInput" placeholder="New password (blank = remove)" autocomplete="new-password" />
+          <input type="password" id="newRoomPwInput" placeholder="New password (blank = remove)"
+            autocomplete="new-password" />
           <button class="pw-eye" onclick="toggleNewRoomPwEye()" tabindex="-1">👁</button>
         </div>
         <div class="room-error" id="roomPwChangeError"></div>
@@ -2123,6 +2361,13 @@
         </div>
       </div>
 
+      <div class="form-group" style="padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);margin-top:10px"
+        id="settingsStorageSection">
+        <label>🗄️ Advanced Storage</label>
+        <button class="btn" onclick="openStorageSettings()" style="width:100%">Configure Database
+          (SQL/Firebase)</button>
+      </div>
+
       <div class="modal-actions">
         <button class="btn" onclick="closeRoomSettings()">Close</button>
         <button class="btn btn-primary" id="settingsPwBtn" onclick="changeRoomPassword()">🔑 Update Password</button>
@@ -2133,25 +2378,76 @@
   <!-- SETTINGS AUTH (password gate for Room Settings) -->
   <div class="room-overlay" id="settingsAuthOverlay">
     <div class="room-box">
-      <h2>\ud83d\udd10 Settings Access</h2>
+      <h2>🔐 Settings Access</h2>
       <p>Enter the room password to access Room Settings.</p>
       <div class="form-group">
         <label>Room Password</label>
         <div class="pw-input-inner">
-          <input type="password" id="settingsAuthInput" placeholder="Enter room password..." autocomplete="current-password" />
-          <button class="pw-eye" onclick="toggleSettingsAuthEye()" tabindex="-1">\ud83d\udc41</button>
+          <input type="password" id="settingsAuthInput" placeholder="Enter room password..."
+            autocomplete="current-password" />
+          <button class="pw-eye" onclick="toggleSettingsAuthEye()" tabindex="-1">👁</button>
         </div>
         <div class="room-error" id="settingsAuthError"></div>
       </div>
       <div class="modal-actions">
-        <button class="btn" onclick="document.getElementById('settingsAuthOverlay').classList.remove('open')">Cancel</button>
-        <button class="btn btn-primary" id="settingsAuthBtn" onclick="submitSettingsAuth()">\ud83d\udd13 Unlock Settings</button>
+        <button class="btn"
+          onclick="document.getElementById('settingsAuthOverlay').classList.remove('open')">Cancel</button>
+        <button class="btn btn-primary" id="settingsAuthBtn" onclick="submitSettingsAuth()">🔓 Unlock Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STORAGE SETTINGS -->
+  <div class="room-overlay" id="storageSettingsOverlay">
+    <div class="room-box">
+      <h2>🗄️ Storage Configuration</h2>
+      <p style="font-size:0.8rem;color:var(--text-muted)">Override where this room's cards and data are saved. The
+        default uses the built-in Firebase.</p>
+
+      <div class="form-group">
+        <label>Storage Backend</label>
+        <select id="storageTypeSelect" class="col-title" style="padding:4px;width:100%"
+          onchange="toggleStorageFields()">
+          <option value="default">Default (Index.html Config)</option>
+          <option value="firebase">Custom Firebase RTDB</option>
+          <option value="sql">MySQL / REST API</option>
+        </select>
+      </div>
+
+      <div id="storageFirebaseFields" style="display:none">
+        <div class="form-group">
+          <label>Database URL</label>
+          <input type="text" id="customFbUrl" placeholder="https://your-project.firebaseio.com" />
+        </div>
+        <div class="form-group">
+          <label>API Key (Optional)</label>
+          <input type="text" id="customFbKey" placeholder="AIzaSy..." />
+        </div>
+      </div>
+
+      <div id="storageSqlFields" style="display:none">
+        <div class="form-group">
+          <label>API Endpoint URL</label>
+          <input type="text" id="customSqlUrl" placeholder="https://yourserver.com/api/board.php" />
+          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">Your endpoint must accept POST (JSON) to
+            save, and GET ?room=id to retrieve.</div>
+        </div>
+        <div class="form-group">
+          <label>Auth Token (Optional HTTP Header)</label>
+          <input type="text" id="customSqlToken" placeholder="Bearer your-secret-token" />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn" onclick="closeStorageSettings()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveStorageSettings()">💾 Apply Storage</button>
       </div>
     </div>
   </div>
 
   <script>
-    // ── FIREBASE ──
+    // ── DEFAULT CONFIG ──
+    const SITE_CREATION_PASSWORD = ""; // Set a password here to lock board creation for self-hosters
     const firebaseConfig = {
       apiKey: "AIzaSyDILCTJnT9XsypVygNB9Pyy7-IbiB99SbA",
       authDomain: "david-board.firebaseapp.com",
@@ -2192,6 +2488,7 @@
     let selectedColColor = COL_COLORS[0];
     let newLabelColorIndex = 0;
     let dragState = { card: null, srcColId: null };
+    let _roomConfig = null;
 
     // Track body-level dropdowns by colId so we can remove them cleanly
     const colDropdowns = {};
@@ -2205,6 +2502,7 @@
       } catch (e) { }
     }
     function save() {
+      if (_roomConfig && _roomConfig.readOnly && _myRole === 'member') return;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       fbSaveDebounced();
     }
@@ -2231,6 +2529,9 @@
 
       const board = document.getElementById('board');
       board.innerHTML = '';
+
+      if (_roomConfig && _roomConfig.readOnly) document.body.classList.add('readonly-mode');
+      else document.body.classList.remove('readonly-mode');
 
       if (state.columns.length === 0) {
         const empty = document.createElement('div');
@@ -2486,7 +2787,7 @@
           const av = document.createElement('span');
           av.className = 'card-assignee-av';
           const role = _rolesCache[a.userId] || 'member';
-          if (role === 'owner')   av.style.background = 'linear-gradient(135deg,#6af7c4,#3abf90)';
+          if (role === 'owner') av.style.background = 'linear-gradient(135deg,#6af7c4,#3abf90)';
           if (role === 'manager') av.style.background = 'linear-gradient(135deg,#f7c26a,#d4933a)';
           av.textContent = (a.name || '?').charAt(0).toUpperCase();
           chip.append(av, document.createTextNode(a.name || 'Unknown'));
@@ -2572,6 +2873,7 @@
 
     // ── COLUMN ACTIONS ──
     function openAddColModal(editId) {
+      if (_roomConfig && _roomConfig.readOnly && _myRole === 'member') return;
       if (editId && typeof editId === 'object') editId = null;
       editingColId = editId || null;
 
@@ -2803,11 +3105,11 @@
       const today = new Date(); today.setHours(0, 0, 0, 0);
       const due = new Date(val + 'T00:00:00');
       const diff = Math.round((due - today) / 86400000);
-      if (diff < 0)      { el.textContent = `Overdue by ${Math.abs(diff)} day${Math.abs(diff)===1?'':'s'}`; el.className = 'due-preview overdue'; }
+      if (diff < 0) { el.textContent = `Overdue by ${Math.abs(diff)} day${Math.abs(diff) === 1 ? '' : 's'}`; el.className = 'due-preview overdue'; }
       else if (diff === 0) { el.textContent = 'Due today!'; el.className = 'due-preview soon'; }
       else if (diff === 1) { el.textContent = 'Due tomorrow'; el.className = 'due-preview soon'; }
-      else if (diff <= 7)  { el.textContent = `In ${diff} days`; el.className = 'due-preview ok'; }
-      else                 { el.textContent = due.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); el.className = 'due-preview ok'; }
+      else if (diff <= 7) { el.textContent = `In ${diff} days`; el.className = 'due-preview ok'; }
+      else { el.textContent = due.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); el.className = 'due-preview ok'; }
     }
     function clearDueDate() {
       document.getElementById('cardDueInput').value = '';
@@ -2877,6 +3179,7 @@
 
     // ── CARD ACTIONS ──
     function openAddCardModal(colId) {
+      if (_roomConfig && _roomConfig.readOnly && _myRole === 'member') return;
       editingCardId = null;
       editingColIdForCard = colId;
       selectedLabels = [];
@@ -2948,8 +3251,14 @@
       buildChecklistUI();
       buildAssigneeSection();
       updatePriorityPills(card.priority || '');
+
+      const isReadOnly = _roomConfig && _roomConfig.readOnly && _myRole === 'member';
+      document.getElementById('cardModal').classList.toggle('readonly-modal', !!isReadOnly);
+      document.getElementById('cardTitleInput').readOnly = !!isReadOnly;
+      document.getElementById('cardDescInput').readOnly = !!isReadOnly;
+
       document.getElementById('cardModal').classList.add('open');
-      setTimeout(() => document.getElementById('cardTitleInput').focus(), 100);
+      if (!isReadOnly) setTimeout(() => document.getElementById('cardTitleInput').focus(), 100);
     }
 
     function closeCardModal() {
@@ -3292,7 +3601,7 @@
       el.style.height = 'auto';
       el.style.height = (el.scrollHeight) + 'px';
     }
-    document.getElementById('cardDescInput').addEventListener('input', function() {
+    document.getElementById('cardDescInput').addEventListener('input', function () {
       autoGrow(this);
       autoSaveCardDebounced();
     });
@@ -3320,7 +3629,7 @@
 
     // \u2500\u2500 Username chip (header) \u2500\u2500
     function updateUsernameChip() {
-      const label  = document.getElementById('usernameChipLabel');
+      const label = document.getElementById('usernameChipLabel');
       const avatar = document.getElementById('usernameAvatar');
       if (_username) {
         label.textContent = _username;
@@ -3402,9 +3711,9 @@
     let _membersCache = {};
     let _rolesRef = null;
 
-    function fbRoomRef()     { return db.ref('rooms/' + _roomId + '/state'); }
+    function fbRoomRef() { return db.ref('rooms/' + _roomId + '/state'); }
     function fbPresenceRef() { return db.ref('rooms/' + _roomId + '/presence'); }
-    function fbConfigRef()   { return db.ref('rooms/' + _roomId + '/config'); }
+    function fbConfigRef() { return db.ref('rooms/' + _roomId + '/config'); }
 
     // ── Crypto helpers (reuse deriveKey / encryptBoard / decryptBoard already in file) ──
     async function encryptForRoom(password) {
@@ -3415,34 +3724,80 @@
       return decryptBoard(b64, password); // already defined above
     }
 
-    // ── Password hashing helpers (PBKDF2) ──
-    async function hashPassword(password, salt) {
-      const enc = new TextEncoder();
-      const keyMat = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
-      const bits = await crypto.subtle.deriveBits(
-        { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' }, keyMat, 256
-      );
-      return btoa(String.fromCharCode(...new Uint8Array(bits)));
+    // ── Storage Interface Variables ──
+    let _currentStorage = { type: 'default' };
+    let _customDb = null;
+    let _sqlListenInterval = null;
+    let _unsubscribeData = null;
+
+    async function applyCustomStorage(storageConfig) {
+      if (!storageConfig) storageConfig = { type: 'default' };
+      if (JSON.stringify(_currentStorage) === JSON.stringify(storageConfig)) return;
+
+      _currentStorage = storageConfig;
+      if (_unsubscribeData) { _unsubscribeData(); _unsubscribeData = null; }
+      if (_sqlListenInterval) { clearInterval(_sqlListenInterval); _sqlListenInterval = null; }
+
+      if (storageConfig.type === 'firebase') {
+        const appName = 'app_' + Date.now();
+        const app = firebase.initializeApp({
+          databaseURL: storageConfig.url,
+          apiKey: storageConfig.apiKey || ''
+        }, appName);
+        _customDb = app.database();
+      }
     }
-    async function verifyPassword(input, storedHash, saltB64) {
-      try {
-        const salt = Uint8Array.from(atob(saltB64), c => c.charCodeAt(0));
-        const inputHash = await hashPassword(input, salt);
-        return inputHash === storedHash;
-      } catch (e) { return false; }
+
+    async function getSyncStateOnce() {
+      if (_currentStorage.type === 'firebase' && _customDb) {
+        const s = await _customDb.ref('rooms/' + _roomId + '/state').once('value');
+        return s.val();
+      } else if (_currentStorage.type === 'sql') {
+        try {
+          const res = await fetch(_currentStorage.url + '?room=' + _roomId, {
+            headers: _currentStorage.token ? { 'Authorization': _currentStorage.token } : {}
+          });
+          return await res.json();
+        } catch (e) { return null; }
+      }
+      const s = await db.ref('rooms/' + _roomId + '/state').once('value');
+      return s.val();
     }
-    async function buildPasswordHash(password) {
-      const salt = crypto.getRandomValues(new Uint8Array(16));
-      const hash = await hashPassword(password, salt);
-      return { memberPwHash: hash, memberPwSalt: btoa(String.fromCharCode(...salt)) };
+
+    async function syncSaveState(payload) {
+      if (_currentStorage.type === 'firebase' && _customDb) {
+        await _customDb.ref('rooms/' + _roomId + '/state').set(payload);
+      } else if (_currentStorage.type === 'sql') {
+        await fetch(_currentStorage.url + '?room=' + _roomId, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(_currentStorage.token ? { 'Authorization': _currentStorage.token } : {})
+          },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        await db.ref('rooms/' + _roomId + '/state').set(payload);
+      }
     }
 
     async function fbSave() {
       if (!_roomId) return;
+      if (_myRole === 'member' && _roomConfig && _roomConfig.readOnly) {
+        toast('This board is in Public Read-Only Mode!');
+        return;
+      }
       _fbWriting = true;
       try {
-        await fbRoomRef().set(state); // always plain JSON — access controlled by userId + password hash
-      } catch(e) { console.warn('Firebase write error:', e); }
+        let payload;
+        if (_roomPassword) {
+          const enc = await encryptForRoom(_roomPassword);
+          payload = { encrypted: enc };
+        } else {
+          payload = state;
+        }
+        await syncSaveState(payload);
+      } catch (e) { console.warn('Firebase write error:', e); }
       setTimeout(() => { _fbWriting = false; }, 400);
     }
     function fbSaveDebounced() {
@@ -3454,14 +3809,14 @@
     // Firebase stores arrays as objects — convert them back
     function normalizeState(s) {
       if (!s) return s;
-      if (s.labels && !Array.isArray(s.labels))     s.labels   = Object.values(s.labels);
-      if (s.columns && !Array.isArray(s.columns))   s.columns  = Object.values(s.columns);
+      if (s.labels && !Array.isArray(s.labels)) s.labels = Object.values(s.labels);
+      if (s.columns && !Array.isArray(s.columns)) s.columns = Object.values(s.columns);
       if (s.columns) s.columns.forEach(col => {
         if (!col.cards) col.cards = [];
         else if (!Array.isArray(col.cards)) col.cards = Object.values(col.cards);
         col.cards.forEach(card => {
-          if (!card.labels)    card.labels    = [];
-          else if (!Array.isArray(card.labels))    card.labels    = Object.values(card.labels);
+          if (!card.labels) card.labels = [];
+          else if (!Array.isArray(card.labels)) card.labels = Object.values(card.labels);
           if (!card.checklist) card.checklist = [];
           else if (!Array.isArray(card.checklist)) card.checklist = Object.values(card.checklist);
         });
@@ -3469,18 +3824,54 @@
       return s;
     }
 
-    function fbListen(roomId) {
-      fbRoomRef().on('value', snap => {
+    function startDataListener() {
+      if (_unsubscribeData) _unsubscribeData();
+      if (_sqlListenInterval) { clearInterval(_sqlListenInterval); _sqlListenInterval = null; }
+
+      const handleData = async (data) => {
         if (_fbWriting) return;
-        const data = snap.val();
-        if (!data) return;
-        state = normalizeState(data);
-        if (!state.labels)  state.labels  = [];
+        if (!data) {
+          document.getElementById('boardVeil').classList.remove('show');
+          return;
+        }
+        let decoded;
+        if (data.encrypted) {
+          if (!_roomPassword) return; // wait for password
+          decoded = await decryptFromRoom(data.encrypted, _roomPassword);
+          if (!decoded) return; // wrong password
+        } else {
+          decoded = data;
+        }
+        state = normalizeState(decoded);
+        if (!state.labels) state.labels = [];
         if (!state.columns) state.columns = [];
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         render();
         document.getElementById('boardTitle').value = state.boardTitle || 'My Board';
-      });
+        document.getElementById('boardVeil').classList.remove('show');
+      };
+
+      if (_currentStorage.type === 'firebase' && _customDb) {
+        const ref = _customDb.ref('rooms/' + _roomId + '/state');
+        ref.on('value', snap => handleData(snap.val()));
+        _unsubscribeData = () => ref.off();
+      } else if (_currentStorage.type === 'sql') {
+        const poll = async () => {
+          try {
+            const res = await fetch(_currentStorage.url + '?room=' + _roomId, {
+              headers: _currentStorage.token ? { 'Authorization': _currentStorage.token } : {}
+            });
+            handleData(await res.json());
+          } catch (e) { }
+        };
+        poll();
+        _sqlListenInterval = setInterval(poll, 5000);
+        _unsubscribeData = () => clearInterval(_sqlListenInterval);
+      } else {
+        const ref = db.ref('rooms/' + _roomId + '/state');
+        ref.on('value', snap => handleData(snap.val()));
+        _unsubscribeData = () => ref.off();
+      }
     }
 
     function fbSetupPresence() {
@@ -3510,6 +3901,7 @@
       _rolesRef = db.ref('rooms/' + _roomId + '/config');
       _rolesRef.on('value', snap => {
         const cfg = snap.val() || {};
+        _roomConfig = cfg;
         _rolesCache = cfg.roles || {};
         const newIsOwner = (cfg.ownerId === _userId);
         if (newIsOwner !== _isOwner) {
@@ -3517,14 +3909,19 @@
           if (_presenceRef) _presenceRef.update({ isOwner: _isOwner });
         }
         _myRole = _isOwner ? 'owner' : (_rolesCache[_userId] || 'member');
+        const newStorage = cfg.customStorage || { type: 'default' };
+        if (JSON.stringify(_currentStorage) !== JSON.stringify(newStorage)) {
+          applyCustomStorage(newStorage).then(() => startDataListener());
+        }
+        document.body.classList.toggle('readonly-mode', _myRole === 'member' && !!cfg.readOnly);
         _updateCollabBtnLabel();
       });
     }
     function _updateCollabBtnLabel() {
       const count = Object.keys(_membersCache).length;
-      if (_isOwner)            document.getElementById('collabBtnText').textContent = '⚙️ ' + count + ' online';
+      if (_isOwner) document.getElementById('collabBtnText').textContent = '⚙️ ' + count + ' online';
       else if (_myRole === 'manager') document.getElementById('collabBtnText').textContent = '⚡ ' + count + ' online';
-      else                     document.getElementById('collabBtnText').textContent = '👥 ' + count + ' online';
+      else document.getElementById('collabBtnText').textContent = '👥 ' + count + ' online';
     }
 
     function getRoomIdFromUrl() {
@@ -3558,28 +3955,31 @@
       const pw = document.getElementById('roomJoinPwInput').value;
       if (!pw) { document.getElementById('roomJoinPwInput').focus(); return; }
       const errEl = document.getElementById('roomJoinError');
-      const btn   = document.getElementById('roomJoinBtn');
+      const btn = document.getElementById('roomJoinBtn');
       errEl.textContent = '';
       btn.textContent = '⏳ Verifying...'; btn.disabled = true;
+
       const config = _pendingJoinConfig || {};
-      if (!config.memberPwHash || !config.memberPwSalt) {
-        _myRole = 'member';
-        document.getElementById('roomJoinOverlay').classList.remove('open');
-        btn.textContent = 'Join Room'; btn.disabled = false;
-        const rid = _pendingJoinRoomId;
-        _pendingJoinRoomId = null; _pendingJoinConfig = null;
-        await finishJoinRoom(rid);
-        return;
+      // Create a temporary storage instance to fetch the state
+      await applyCustomStorage(config.customStorage || { type: 'default' });
+      const data = await getSyncStateOnce();
+
+      if (data && data.encrypted) {
+        const decoded = await decryptFromRoom(data.encrypted, pw);
+        if (!decoded) {
+          errEl.textContent = '❌ Wrong password.';
+          document.getElementById('roomJoinPwInput').value = '';
+          document.getElementById('roomJoinPwInput').focus();
+          btn.textContent = 'Join Room'; btn.disabled = false;
+          return;
+        }
       }
-      const valid = await verifyPassword(pw, config.memberPwHash, config.memberPwSalt);
-      if (!valid) {
-        errEl.textContent = '❌ Wrong password.';
-        document.getElementById('roomJoinPwInput').value = '';
-        document.getElementById('roomJoinPwInput').focus();
-        btn.textContent = 'Join Room'; btn.disabled = false;
-        return;
-      }
-      _myRole = 'member';
+
+      _roomPassword = pw;
+      localStorage.setItem('pb_roomPw_' + _pendingJoinRoomId, pw);
+      _myRole = (_pendingJoinConfig.roles && _pendingJoinConfig.roles[_userId]) ? _pendingJoinConfig.roles[_userId] : 'member';
+      if (_pendingJoinConfig.ownerId === _userId) _myRole = 'owner';
+
       document.getElementById('roomJoinOverlay').classList.remove('open');
       btn.textContent = 'Join Room'; btn.disabled = false;
       const rid = _pendingJoinRoomId;
@@ -3598,18 +3998,16 @@
       const pw = document.getElementById('roomCreatePwInput').value.trim();
       _isOwner = true;
       _myRole = 'owner';
+      _roomPassword = pw || null;
       document.getElementById('roomCreateOverlay').classList.remove('open');
       const roomId = generateRoomId();
       _roomId = roomId;
       setRoomInUrl(roomId);
       const configData = { locked: !!pw, ownerId: _userId, ownerName: _username, roles: {} };
-      if (pw) {
-        const hashed = await buildPasswordHash(pw);
-        Object.assign(configData, hashed);
-        localStorage.setItem('pb_roomPw_' + roomId, pw);
-      }
+      if (pw) localStorage.setItem('pb_roomPw_' + roomId, pw);
       await fbConfigRef().set(configData);
-      await fbSave();
+      localStorage.setItem('pb_has_created_board', 'true'); // bypass subsequent site locks
+      await fbSave(); // Uses _roomPassword to encrypt
       fbListen(roomId);
       fbSetupPresence();
       toast('✅ Room created!');
@@ -3625,7 +4023,15 @@
     async function finishJoinRoom(roomId) {
       _roomId = roomId;
       setRoomInUrl(roomId);
-      fbListen(roomId);
+
+      const configSnap = await db.ref('rooms/' + roomId + '/config').once('value');
+      const cfg = configSnap.val() || {};
+      await applyCustomStorage(cfg.customStorage || { type: 'default' });
+
+      const existingState = await getSyncStateOnce();
+      if (!existingState) await fbSave(); // Seed room if empty
+
+      startDataListener();
       fbSetupPresence();
     }
 
@@ -3640,7 +4046,7 @@
     }
 
     function _roleBadgeHTML(role) {
-      if (role === 'owner')   return '<span class="role-badge owner">👑 Owner</span>';
+      if (role === 'owner') return '<span class="role-badge owner">👑 Owner</span>';
       if (role === 'manager') return '<span class="role-badge manager">⚡ Manager</span>';
       return '<span class="role-badge member">👤 Member</span>';
     }
@@ -3663,23 +4069,21 @@
       const btn = document.getElementById('settingsAuthBtn');
       errEl.textContent = '';
       btn.textContent = '⏳ Verifying...'; btn.disabled = true;
-      const snap = await fbConfigRef().once('value');
-      const cfg = snap.val() || {};
-      if (!cfg.memberPwHash || !cfg.memberPwSalt) {
-        localStorage.setItem('pb_roomPw_' + _roomId, pw);
-        document.getElementById('settingsAuthOverlay').classList.remove('open');
-        btn.textContent = '🔓 Unlock Settings'; btn.disabled = false;
-        openRoomSettings();
-        return;
+
+      // Verify by attempting to decrypt the board state
+      const data = await getSyncStateOnce();
+      if (data && data.encrypted) {
+        const decoded = await decryptFromRoom(data.encrypted, pw);
+        if (!decoded) {
+          errEl.textContent = '❌ Wrong password.';
+          document.getElementById('settingsAuthInput').value = '';
+          document.getElementById('settingsAuthInput').focus();
+          btn.textContent = '🔓 Unlock Settings'; btn.disabled = false;
+          return;
+        }
       }
-      const valid = await verifyPassword(pw, cfg.memberPwHash, cfg.memberPwSalt);
+
       btn.textContent = '🔓 Unlock Settings'; btn.disabled = false;
-      if (!valid) {
-        errEl.textContent = '❌ Wrong password.';
-        document.getElementById('settingsAuthInput').value = '';
-        document.getElementById('settingsAuthInput').focus();
-        return;
-      }
       localStorage.setItem('pb_roomPw_' + _roomId, pw);
       document.getElementById('settingsAuthOverlay').classList.remove('open');
       openRoomSettings();
@@ -3703,7 +4107,7 @@
         const av = document.createElement('div');
         av.className = 'member-row-avatar';
         if (memberRole === 'manager') av.style.background = 'linear-gradient(135deg,#f7c26a,#d4933a)';
-        if (memberRole === 'owner')   av.style.background = 'linear-gradient(135deg,#6af7c4,#3abf90)';
+        if (memberRole === 'owner') av.style.background = 'linear-gradient(135deg,#6af7c4,#3abf90)';
         av.textContent = (m.name || '?').charAt(0).toUpperCase();
 
         const name = document.createElement('div');
@@ -3740,10 +4144,22 @@
       document.getElementById('ownerNameInput').value = _username;
       document.getElementById('newRoomPwInput').value = '';
       document.getElementById('roomPwChangeError').textContent = '';
+
+      const readOnlyCb = document.getElementById('readOnlyToggle');
+      if (readOnlyCb) {
+        readOnlyCb.checked = !!_roomConfig.readOnly;
+        readOnlyCb.closest('.pw-toggle-row').classList.toggle('active', readOnlyCb.checked);
+      }
+
       const pwSection = document.getElementById('settingsPwSection');
       if (pwSection) pwSection.style.display = _isOwner ? '' : 'none';
+      const readOnlySection = document.getElementById('settingsReadOnlySection');
+      if (readOnlySection) readOnlySection.style.display = _isOwner ? '' : 'none';
+
       const pwBtn = document.getElementById('settingsPwBtn');
       if (pwBtn) pwBtn.style.display = _isOwner ? '' : 'none';
+      const storageSection = document.getElementById('settingsStorageSection');
+      if (storageSection) storageSection.style.display = _isOwner ? '' : 'none';
       const roleLabel = document.getElementById('settingsRoleLabel');
       if (roleLabel) roleLabel.innerHTML = _isOwner
         ? 'You are the <span style="color:var(--accent3);font-weight:600">👑 owner</span> of this room.'
@@ -3778,29 +4194,86 @@
       if (_presenceRef) _presenceRef.set({ name: val, isOwner: _isOwner, userId: _userId });
       toast('Name updated');
     }
+    function toggleReadOnlyMode() {
+      if (!_isOwner) return;
+      const cb = document.getElementById('readOnlyToggle');
+      cb.checked = !cb.checked;
+      cb.closest('.pw-toggle-row').classList.toggle('active', cb.checked);
+    }
+
     async function changeRoomPassword() {
       if (!_isOwner) return;
       const newPw = document.getElementById('newRoomPwInput').value.trim();
       const errEl = document.getElementById('roomPwChangeError');
       errEl.textContent = '';
-      const updates = { locked: !!newPw };
-      if (newPw) {
-        const hashed = await buildPasswordHash(newPw);
-        Object.assign(updates, hashed);
-        localStorage.setItem('pb_roomPw_' + _roomId, newPw);
-      } else {
-        updates.memberPwHash = null;
-        updates.memberPwSalt = null;
-        localStorage.removeItem('pb_roomPw_' + _roomId);
-      }
-      await fbConfigRef().update(updates);
+
+      _roomPassword = newPw || null;
+      if (newPw) localStorage.setItem('pb_roomPw_' + _roomId, newPw);
+      else localStorage.removeItem('pb_roomPw_' + _roomId);
+
+      const isReadOnly = document.getElementById('readOnlyToggle').checked;
+      await fbConfigRef().update({ locked: !!newPw, readOnly: isReadOnly });
+      await fbSave(); // Will re-encrypt the state using _roomPassword
+
       errEl.style.color = 'var(--accent3)';
-      errEl.textContent = newPw ? '✅ Password updated.' : '✅ Password removed.';
+      errEl.textContent = '✅ Settings applied.';
       setTimeout(() => { errEl.textContent = ''; errEl.style.color = ''; }, 3500);
     }
     document.getElementById('newRoomPwInput').addEventListener('keydown', e => {
       if (e.key === 'Enter') changeRoomPassword();
     });
+
+    // ── Storage Settings Overlay ──
+    function toggleStorageFields() {
+      const t = document.getElementById('storageTypeSelect').value;
+      document.getElementById('storageFirebaseFields').style.display = t === 'firebase' ? '' : 'none';
+      document.getElementById('storageSqlFields').style.display = t === 'sql' ? '' : 'none';
+    }
+    function openStorageSettings() {
+      document.getElementById('storageTypeSelect').value = _currentStorage.type;
+      document.getElementById('customFbUrl').value = _currentStorage.url || '';
+      document.getElementById('customFbKey').value = _currentStorage.apiKey || '';
+      document.getElementById('customSqlUrl').value = _currentStorage.url || '';
+      document.getElementById('customSqlToken').value = _currentStorage.token || '';
+      toggleStorageFields();
+      document.getElementById('storageSettingsOverlay').classList.add('open');
+      closeRoomSettings();
+    }
+    function closeStorageSettings() {
+      document.getElementById('storageSettingsOverlay').classList.remove('open');
+    }
+    async function saveStorageSettings() {
+      const type = document.getElementById('storageTypeSelect').value;
+      let newStorage = { type };
+
+      if (type === 'firebase') {
+        const url = document.getElementById('customFbUrl').value.trim();
+        if (!url) { toast('Database URL required'); return; }
+        newStorage.url = url;
+        newStorage.apiKey = document.getElementById('customFbKey').value.trim();
+      } else if (type === 'sql') {
+        const url = document.getElementById('customSqlUrl').value.trim();
+        if (!url) { toast('API URL required'); return; }
+        newStorage.url = url;
+        newStorage.token = document.getElementById('customSqlToken').value.trim();
+      }
+
+      document.getElementById('storageSettingsOverlay').classList.remove('open');
+      toast('💾 Saving storage config...');
+
+      if (_roomId && _isOwner) {
+        // We are inside a room and we are the owner, save it to the room's metadata so members get it
+        await fbConfigRef().update({ customStorage: newStorage });
+        await applyCustomStorage(newStorage);
+        await fbSave(); // Migrate state immediately
+        startDataListener(); // Refresh listeners
+      } else {
+        // Global setting for the user (they clicked it from the header)
+        localStorage.setItem('pb_globalStorage', JSON.stringify(newStorage));
+        await applyCustomStorage(newStorage);
+      }
+      toast('✅ Storage successfully updated');
+    }
 
     function collabAction() {
       if (_roomId) {
@@ -3820,16 +4293,44 @@
         return;
       }
       ensureUsername(() => {
-        document.getElementById('roomCreatePwInput').value = '';
-        document.getElementById('roomCreateOverlay').classList.add('open');
-        setTimeout(() => document.getElementById('roomCreatePwInput').focus(), 100);
+        if (SITE_CREATION_PASSWORD && !localStorage.getItem('pb_has_created_board')) {
+          document.getElementById('siteLockPwInput').value = '';
+          document.getElementById('siteLockError').textContent = '';
+          document.getElementById('siteLockOverlay').classList.add('open');
+          setTimeout(() => document.getElementById('siteLockPwInput').focus(), 100);
+          return;
+        }
+        showRoomCreatePrompt();
       });
     }
+
+    function showRoomCreatePrompt() {
+      document.getElementById('roomCreatePwInput').value = '';
+      document.getElementById('roomCreateOverlay').classList.add('open');
+      setTimeout(() => document.getElementById('roomCreatePwInput').focus(), 100);
+    }
+
+    function toggleSiteLockEye() {
+      const i = document.getElementById('siteLockPwInput');
+      i.type = i.type === 'password' ? 'text' : 'password';
+    }
+    function submitSiteLock() {
+      const pw = document.getElementById('siteLockPwInput').value;
+      if (pw !== SITE_CREATION_PASSWORD) {
+        document.getElementById('siteLockError').textContent = '❌ Incorrect site password.';
+        return;
+      }
+      document.getElementById('siteLockOverlay').classList.remove('open');
+      showRoomCreatePrompt();
+    }
+    document.getElementById('siteLockPwInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') submitSiteLock();
+    });
 
     // ── Assignee section ──
     function buildAssigneeSection() {
       const section = document.getElementById('assignSection');
-      const chips   = document.getElementById('assignChips');
+      const chips = document.getElementById('assignChips');
       chips.innerHTML = '';
       if (!_roomId) { section.style.display = 'none'; return; }
       // Gather unique members from presence (exclude self only if you want)
@@ -3843,11 +4344,11 @@
         const av = document.createElement('span');
         av.className = 'av';
         const role = m.isOwner ? 'owner' : (_rolesCache[m.userId] || 'member');
-        if (role === 'owner')   av.style.background = 'linear-gradient(135deg,#6af7c4,#3abf90)';
+        if (role === 'owner') av.style.background = 'linear-gradient(135deg,#6af7c4,#3abf90)';
         if (role === 'manager') av.style.background = 'linear-gradient(135deg,#f7c26a,#d4933a)';
         av.textContent = (m.name || '?').charAt(0).toUpperCase();
-        const badge = role === 'owner'   ? '<span class="role-badge owner" style="font-size:0.55rem;padding:1px 5px">👑</span>'
-                     : role === 'manager' ? '<span class="role-badge manager" style="font-size:0.55rem;padding:1px 5px">⚡</span>' : '';
+        const badge = role === 'owner' ? '<span class="role-badge owner" style="font-size:0.55rem;padding:1px 5px">👑</span>'
+          : role === 'manager' ? '<span class="role-badge manager" style="font-size:0.55rem;padding:1px 5px">⚡</span>' : '';
         chip.innerHTML = '';
         chip.appendChild(av);
         chip.insertAdjacentHTML('beforeend', (m.name || 'Unknown') + ' ' + badge);
@@ -3865,27 +4366,30 @@
     }
 
     async function joinRoom(roomId) {
+      document.getElementById('boardVeil').classList.add('show');
       ensureUsername(async () => {
         const configSnap = await db.ref('rooms/' + roomId + '/config').once('value');
         const config = configSnap.val() || {};
 
-        // Owner — recognized by saved userId, skip all prompts
-        if (config.ownerId === _userId) {
-          _isOwner = true;
-          _myRole = 'owner';
-          await finishJoinRoom(roomId);
-          return;
-        }
-
-        // Manager — recognized by userId in roles, skip password
-        if (config.roles && config.roles[_userId] === 'manager') {
-          _myRole = 'manager';
-          await finishJoinRoom(roomId);
-          return;
-        }
-
-        // Member — needs password if room is locked
+        // If room is locked, check if we have a locally cached password that works
         if (config.locked) {
+          const cachedPw = localStorage.getItem('pb_roomPw_' + roomId);
+          if (cachedPw) {
+            await applyCustomStorage(config.customStorage || { type: 'default' });
+            const data = await getSyncStateOnce();
+            if (data && data.encrypted) {
+              const decoded = await decryptFromRoom(data.encrypted, cachedPw);
+              if (decoded) {
+                // Cache works! Auto-join
+                _roomPassword = cachedPw;
+                _myRole = (config.roles && config.roles[_userId]) ? config.roles[_userId] : 'member';
+                if (config.ownerId === _userId) _myRole = 'owner';
+                await finishJoinRoom(roomId);
+                return;
+              }
+            }
+          }
+          // Need password
           _pendingJoinRoomId = roomId;
           _pendingJoinConfig = config;
           document.getElementById('roomJoinPwInput').value = '';
@@ -3893,13 +4397,20 @@
           document.getElementById('roomJoinOverlay').classList.add('open');
           setTimeout(() => document.getElementById('roomJoinPwInput').focus(), 100);
         } else {
-          _myRole = 'member';
+          _roomPassword = null;
+          _myRole = (config.roles && config.roles[_userId]) ? config.roles[_userId] : 'member';
+          if (config.ownerId === _userId) _myRole = 'owner';
           await finishJoinRoom(roomId);
         }
       });
     }
 
     // ── INIT ──
+    try {
+      const gs = localStorage.getItem('pb_globalStorage');
+      if (gs) applyCustomStorage(JSON.parse(gs));
+    } catch (e) { }
+
     load();
     checkUrlImport();
 
