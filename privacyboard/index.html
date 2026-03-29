@@ -1644,6 +1644,105 @@
       min-width: 18px;
       text-align: center;
     }
+    /* ── Role badges ── */
+    .role-badge {
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 100px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .role-badge.owner   { background: rgba(106,247,196,0.15); color: var(--accent3); border: 1px solid rgba(106,247,196,0.3); }
+    .role-badge.manager { background: rgba(247,194,106,0.15); color: #f7c26a;         border: 1px solid rgba(247,194,106,0.3); }
+    .role-badge.member  { background: rgba(255,255,255,0.06);  color: var(--text-muted); border: 1px solid var(--border); }
+    /* Member row in Room Settings */
+    .member-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: var(--surface2);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .member-row-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .member-row-name { flex: 1; font-size: 0.83rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .member-row select {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      width: auto;
+      min-width: 90px;
+    }
+    /* Assignee avatars on card face */
+    .card-assignees {
+      display: flex;
+      gap: -4px;
+      flex-wrap: wrap;
+      gap: 3px;
+    }
+    .card-assignee-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 2px 8px 2px 3px;
+      font-size: 0.67rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .card-assignee-av {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.55rem; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    /* Assign section in sidebar */
+    .assign-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 24px;
+    }
+    .assign-member-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px 4px 6px;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--text-muted);
+    }
+    .assign-member-chip:hover { border-color: var(--accent); color: var(--accent); }
+    .assign-member-chip.assigned { background: rgba(124,106,247,0.12); border-color: var(--accent); color: var(--accent); }
+    .assign-member-chip .av {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      font-size: 0.6rem; font-weight: 700; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .assign-member-chip.assigned .av { background: var(--accent); }
     /* ── Username chip ── */
     .username-chip {
       display: flex;
@@ -1830,6 +1929,12 @@
             </div>
           </div>
 
+          <!-- Assign members (collab only) -->
+          <div class="sidebar-section" id="assignSection" style="display:none">
+            <div class="sidebar-label">👥 Assigned To</div>
+            <div class="assign-chips" id="assignChips"></div>
+          </div>
+
           <!-- Delete (edit mode only) -->
           <div class="sidebar-section" id="cardDeleteSection" style="display:none">
             <div class="sidebar-divider"></div>
@@ -1991,17 +2096,18 @@
 
   <!-- ROOM SETTINGS (owner only) -->
   <div class="room-overlay" id="roomSettingsOverlay">
-    <div class="room-box" style="width:420px">
+    <div class="room-box" style="width:440px;max-height:85vh;overflow-y:auto">
       <h2>⚙️ Room Settings</h2>
       <div style="font-size:0.8rem;color:var(--text-muted)">You are the <span style="color:var(--accent3);font-weight:600">👑 owner</span> of this room.</div>
 
       <div class="form-group">
-        <label>Members Online</label>
-        <div id="membersList" style="display:flex;flex-direction:column;gap:6px;min-height:24px"></div>
+        <label>👥 Members &amp; Roles</label>
+        <div id="membersList" style="display:flex;flex-direction:column;gap:6px"></div>
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px">Managers can add/edit/delete cards and lists. Members can only add/edit cards.</div>
       </div>
 
       <div class="form-group">
-        <label>Change Room Password</label>
+        <label>🔑 Change Room Password</label>
         <div class="pw-input-inner">
           <input type="password" id="newRoomPwInput" placeholder="New password (blank = remove)" autocomplete="new-password" />
           <button class="pw-eye" onclick="toggleNewRoomPwEye()" tabindex="-1">👁</button>
@@ -2010,7 +2116,7 @@
       </div>
 
       <div class="form-group">
-        <label>Your Display Name</label>
+        <label>👤 Your Display Name</label>
         <div style="display:flex;gap:8px">
           <input type="text" id="ownerNameInput" placeholder="Your name..." maxlength="24" style="flex:1" />
           <button class="btn" onclick="saveOwnerName()">Save</button>
@@ -2348,6 +2454,25 @@
         else if (diff <= 2) due.classList.add('soon');
         due.textContent = (allDone ? '✓ ' : '📅 ') + dueDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
         meta.appendChild(due);
+      }
+
+      // Assignees
+      if (card.assignees && card.assignees.length) {
+        const aw = document.createElement('div');
+        aw.className = 'card-assignees';
+        card.assignees.forEach(a => {
+          const chip = document.createElement('span');
+          chip.className = 'card-assignee-chip';
+          const av = document.createElement('span');
+          av.className = 'card-assignee-av';
+          const role = _rolesCache[a.userId] || 'member';
+          if (role === 'owner')   av.style.background = 'linear-gradient(135deg,#6af7c4,#3abf90)';
+          if (role === 'manager') av.style.background = 'linear-gradient(135deg,#f7c26a,#d4933a)';
+          av.textContent = (a.name || '?').charAt(0).toUpperCase();
+          chip.append(av, document.createTextNode(a.name || 'Unknown'));
+          aw.appendChild(chip);
+        });
+        meta.appendChild(aw);
       }
 
       footer.appendChild(meta);
@@ -2736,6 +2861,7 @@
       editingColIdForCard = colId;
       selectedLabels = [];
       editingChecklist = [];
+      _selectedAssignees = [];
       newLabelColorIndex = 0;
       const col = state.columns.find(c => c.id === colId);
       // Info bar
@@ -2758,6 +2884,7 @@
       buildLabelPicker();
       buildNewLabelColorRow();
       buildChecklistUI();
+      buildAssigneeSection();
       updatePriorityPills('');
       document.getElementById('cardModal').classList.add('open');
       setTimeout(() => document.getElementById('cardTitleInput').focus(), 100);
@@ -2771,6 +2898,7 @@
       editingColIdForCard = colId;
       selectedLabels = [...(card.labels || [])];
       editingChecklist = (card.checklist || []).map(i => ({ ...i }));
+      _selectedAssignees = (card.assignees || []).map(a => ({ ...a }));
       newLabelColorIndex = 0;
       // Info bar
       document.getElementById('cardInfoColName').textContent = col ? col.name : '';
@@ -2798,6 +2926,7 @@
       buildLabelPicker();
       buildNewLabelColorRow();
       buildChecklistUI();
+      buildAssigneeSection();
       updatePriorityPills(card.priority || '');
       document.getElementById('cardModal').classList.add('open');
       setTimeout(() => document.getElementById('cardTitleInput').focus(), 100);
@@ -2823,6 +2952,7 @@
         due: document.getElementById('cardDueInput').value,
         priority: document.getElementById('cardPriorityInput').value,
         checklist: editingChecklist.map(i => ({ ...i })),
+        assignees: [..._selectedAssignees],
       };
       if (editingCardId) {
         if (!col.cards) col.cards = [];
@@ -2871,6 +3001,7 @@
         due: document.getElementById('cardDueInput').value,
         priority: document.getElementById('cardPriorityInput').value,
         checklist: editingChecklist.map(i => ({ ...i })),
+        assignees: [..._selectedAssignees],
       });
       save();
       if (renderBoard) render();
@@ -3163,6 +3294,9 @@
     let _userId = localStorage.getItem('pb_userId');
     if (!_userId) { _userId = uid(); localStorage.setItem('pb_userId', _userId); }
     let _username = localStorage.getItem('pb_username') || '';
+    let _myRole = 'member'; // 'owner' | 'manager' | 'member'
+    let _rolesCache = {}; // { userId: role }
+    let _selectedAssignees = []; // working copy while modal open [{userId, name}]
 
     // \u2500\u2500 Username chip (header) \u2500\u2500
     function updateUsernameChip() {
@@ -3245,6 +3379,7 @@
     let _presenceRef = null;
     let _pendingJoinRoomId = null;
     let _membersCache = {};
+    let _rolesRef = null;
 
     function fbRoomRef()     { return db.ref('rooms/' + _roomId + '/state'); }
     function fbPresenceRef() { return db.ref('rooms/' + _roomId + '/presence'); }
@@ -3325,7 +3460,7 @@
       if (!_roomId) return;
       _myPresenceId = uid();
       _presenceRef = fbPresenceRef().child(_myPresenceId);
-      _presenceRef.set({ name: _username || 'Anonymous', isOwner: _isOwner });
+      _presenceRef.set({ name: _username || 'Anonymous', isOwner: _isOwner, userId: _userId });
       _presenceRef.onDisconnect().remove();
       fbPresenceRef().on('value', snap => {
         _membersCache = {};
@@ -3337,7 +3472,6 @@
         badge.textContent = count;
         pulse.style.display = '';
         document.getElementById('collabBtn').classList.add('active');
-        // Build tooltip label
         const names = Object.values(_membersCache).map(m => {
           const n = (m && m.name) ? m.name : 'Anonymous';
           return (m && m.isOwner) ? '👑 ' + n : n;
@@ -3346,6 +3480,13 @@
         document.getElementById('collabBtnText').textContent = _isOwner
           ? '⚙️ ' + count + ' online'
           : '👥 ' + count + ' online';
+      });
+      // Watch roles from Firebase
+      _rolesRef = db.ref('rooms/' + _roomId + '/config/roles');
+      _rolesRef.on('value', snap => {
+        _rolesCache = snap.val() || {};
+        // Refresh my own role
+        _myRole = _isOwner ? 'owner' : (_rolesCache[_userId] || 'member');
       });
     }
 
@@ -3387,8 +3528,8 @@
       const btn   = document.getElementById('roomJoinBtn');
       errEl.textContent = '';
       btn.textContent = '⏳ Joining...'; btn.disabled = true;
-      // Try to decrypt the current room data with this password
-      const snap = await fbRoomRef().once('value');
+      // Use _pendingJoinRoomId directly — _roomId is not set yet at this point
+      const snap = await db.ref('rooms/' + _pendingJoinRoomId + '/state').once('value');
       const data = snap.val();
       if (!data || !data.encrypted) {
         errEl.textContent = '❌ Room not found or not encrypted.';
@@ -3460,17 +3601,52 @@
       const i = document.getElementById('newRoomPwInput');
       i.type = i.type === 'password' ? 'text' : 'password';
     }
+
+    function _roleBadgeHTML(role) {
+      if (role === 'owner')   return '<span class="role-badge owner">👑 Owner</span>';
+      if (role === 'manager') return '<span class="role-badge manager">⚡ Manager</span>';
+      return '<span class="role-badge member">👤 Member</span>';
+    }
+
     function openRoomSettings() {
-      // Populate members list
       const list = document.getElementById('membersList');
       list.innerHTML = '';
+      const currentRoles = _rolesCache || {};
       Object.values(_membersCache).forEach(m => {
+        if (!m || !m.userId) return;
+        const isMe = m.userId === _userId;
+        const memberRole = m.isOwner ? 'owner' : (currentRoles[m.userId] || 'member');
         const row = document.createElement('div');
-        row.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:0.82rem;padding:4px 8px;background:var(--surface2);border-radius:6px';
-        row.innerHTML = (m.isOwner ? '<span title="Owner">👑</span>' : '<span style="opacity:.4">👤</span>') +
-          '<span>' + (m.name || 'Anonymous') + (m.isOwner ? ' <span style="color:var(--accent3);font-size:0.7rem">(you)</span>' : '') + '</span>';
+        row.className = 'member-row';
+
+        const av = document.createElement('div');
+        av.className = 'member-row-avatar';
+        if (memberRole === 'manager') av.style.background = 'linear-gradient(135deg,#f7c26a,#d4933a)';
+        if (memberRole === 'owner')   av.style.background = 'linear-gradient(135deg,#6af7c4,#3abf90)';
+        av.textContent = (m.name || '?').charAt(0).toUpperCase();
+
+        const name = document.createElement('div');
+        name.className = 'member-row-name';
+        name.textContent = (m.name || 'Anonymous') + (isMe ? ' (you)' : '');
+
+        if (m.isOwner) {
+          // Owner can't be changed
+          row.append(av, name, document.createRange().createContextualFragment(_roleBadgeHTML('owner')));
+        } else {
+          // Dropdown to change role
+          const sel = document.createElement('select');
+          sel.innerHTML =
+            '<option value="member">👤 Member</option>' +
+            '<option value="manager">⚡ Manager</option>';
+          sel.value = memberRole;
+          sel.addEventListener('change', () => setMemberRole(m.userId, sel.value));
+          row.append(av, name, sel);
+        }
         list.appendChild(row);
       });
+      if (list.children.length === 0) {
+        list.innerHTML = '<span style="font-size:0.78rem;color:var(--text-muted)">No members online yet.</span>';
+      }
       document.getElementById('ownerNameInput').value = _username;
       document.getElementById('newRoomPwInput').value = '';
       document.getElementById('roomPwChangeError').textContent = '';
@@ -3479,12 +3655,18 @@
     function closeRoomSettings() {
       document.getElementById('roomSettingsOverlay').classList.remove('open');
     }
+    async function setMemberRole(userId, role) {
+      if (!_isOwner) return;
+      await db.ref('rooms/' + _roomId + '/config/roles/' + userId).set(role);
+      toast('⚡ Role updated');
+    }
     function saveOwnerName() {
       const val = document.getElementById('ownerNameInput').value.trim();
       if (!val) return;
       _username = val;
       localStorage.setItem('pb_username', val);
-      if (_presenceRef) _presenceRef.set({ name: val, isOwner: true });
+      updateUsernameChip();
+      if (_presenceRef) _presenceRef.set({ name: val, isOwner: true, userId: _userId });
       toast('Name updated');
     }
     async function changeRoomPassword() {
@@ -3492,7 +3674,6 @@
       const newPw = document.getElementById('newRoomPwInput').value.trim();
       const errEl = document.getElementById('roomPwChangeError');
       errEl.textContent = '';
-      // Re-encrypt and push
       _roomPassword = newPw || null;
       await fbConfigRef().update({ locked: !!_roomPassword });
       await fbSave();
@@ -3524,6 +3705,44 @@
         document.getElementById('roomCreatePwInput').value = '';
         document.getElementById('roomCreateOverlay').classList.add('open');
         setTimeout(() => document.getElementById('roomCreatePwInput').focus(), 100);
+      });
+    }
+
+    // ── Assignee section ──
+    function buildAssigneeSection() {
+      const section = document.getElementById('assignSection');
+      const chips   = document.getElementById('assignChips');
+      chips.innerHTML = '';
+      if (!_roomId) { section.style.display = 'none'; return; }
+      // Gather unique members from presence (exclude self only if you want)
+      const members = Object.values(_membersCache).filter(m => m && m.userId);
+      if (!members.length) { section.style.display = 'none'; return; }
+      section.style.display = '';
+      members.forEach(m => {
+        const isAssigned = _selectedAssignees.some(a => a.userId === m.userId);
+        const chip = document.createElement('div');
+        chip.className = 'assign-member-chip' + (isAssigned ? ' assigned' : '');
+        const av = document.createElement('span');
+        av.className = 'av';
+        const role = m.isOwner ? 'owner' : (_rolesCache[m.userId] || 'member');
+        if (role === 'owner')   av.style.background = 'linear-gradient(135deg,#6af7c4,#3abf90)';
+        if (role === 'manager') av.style.background = 'linear-gradient(135deg,#f7c26a,#d4933a)';
+        av.textContent = (m.name || '?').charAt(0).toUpperCase();
+        const badge = role === 'owner'   ? '<span class="role-badge owner" style="font-size:0.55rem;padding:1px 5px">👑</span>'
+                     : role === 'manager' ? '<span class="role-badge manager" style="font-size:0.55rem;padding:1px 5px">⚡</span>' : '';
+        chip.innerHTML = '';
+        chip.appendChild(av);
+        chip.insertAdjacentHTML('beforeend', (m.name || 'Unknown') + ' ' + badge);
+        chip.addEventListener('click', () => {
+          if (isAssigned) {
+            _selectedAssignees = _selectedAssignees.filter(a => a.userId !== m.userId);
+          } else {
+            _selectedAssignees.push({ userId: m.userId, name: m.name || 'Unknown' });
+          }
+          buildAssigneeSection();
+          autoSaveCard(true);
+        });
+        chips.appendChild(chip);
       });
     }
 
