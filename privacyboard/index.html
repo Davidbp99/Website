@@ -3892,47 +3892,154 @@
         const devSec = document.createElement('div');
         devSec.className = 'workspace-section';
         devSec.innerHTML = `
-          <div class="workspace-header" style="border-bottom:1px dashed var(--danger)">
-            <h3 style="color:var(--danger)">🛠️ Privacy Board Dev (Global View)</h3>
+          <div class="workspace-header" style="border-bottom:1px dashed rgba(247,106,138,0.5)">
+            <h3 style="color:var(--danger,#f76a8a)">🛠️ Dev Panel — All Users</h3>
             <div style="display:flex;gap:6px;align-items:center">
-              <button class="btn" style="font-size:0.65rem;padding:4px 10px;color:var(--danger);border-color:rgba(247,106,138,0.35)" onclick="openDevAdmin()">🛠️ Dev DB</button>
-              <button class="btn btn-danger" style="font-size:0.65rem;padding:4px 8px" onclick="loadAllGlobalBoards()">Load Global Array</button>
+              <button class="btn" style="font-size:0.65rem;padding:4px 10px;color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.35)" onclick="openDevAdmin()">🛠️ Dev DB</button>
+              <button class="btn" style="font-size:0.65rem;padding:4px 10px;color:var(--accent3);border-color:rgba(106,247,196,0.3)" onclick="devLoadUsers()">↻ Refresh Users</button>
             </div>
           </div>
-          <div class="board-grid" id="dev-grid"></div>
+          <div id="dev-users-container" style="margin-top:4px">
+            <p style="color:var(--text-muted);font-size:0.82rem;padding:8px 0">Click <strong>↻ Refresh Users</strong> to load all users from the database.</p>
+          </div>
         `;
         container.appendChild(devSec);
       }
     }
 
-    async function loadAllGlobalBoards() {
-      const grid = document.getElementById('dev-grid');
-      grid.innerHTML = '<p style="color:var(--text-muted)">Querying database...</p>';
+    async function devLoadUsers() {
+      const container = document.getElementById('dev-users-container');
+      if (!container) return;
+      container.innerHTML = '<p style="color:var(--text-muted);font-size:0.82rem;padding:8px 0">⏳ Scanning database...</p>';
       try {
         const snap = await db.ref('rooms').once('value');
-        grid.innerHTML = '';
         const rooms = snap.val() || {};
-        const roomIds = Object.keys(rooms);
-        if (roomIds.length === 0) {
-          grid.innerHTML = '<p style="color:var(--text-muted)">Database is empty.</p>';
+        // Build a map of userId → { name, ownedBoards[], managedBoards[] }
+        const usersMap = {};
+        Object.entries(rooms).forEach(([rId, room]) => {
+          const cfg = room.config || {};
+          const ownerId = cfg.ownerId;
+          const ownerName = cfg.ownerName || 'Unknown';
+          const roles = cfg.roles || {};
+          const isLocked = !!cfg.locked;
+          const boardTitle = (room.state && room.state.boardTitle) ? room.state.boardTitle : rId.slice(0, 8) + '…';
+
+          if (ownerId) {
+            if (!usersMap[ownerId]) usersMap[ownerId] = { name: ownerName, userId: ownerId, owned: [], managed: [] };
+            else if (usersMap[ownerId].name === 'Unknown' && ownerName !== 'Unknown') usersMap[ownerId].name = ownerName;
+            usersMap[ownerId].owned.push({ rId, boardTitle, isLocked });
+          }
+
+          Object.entries(roles).forEach(([uid, role]) => {
+            if (!usersMap[uid]) usersMap[uid] = { name: uid.slice(0, 10) + '…', userId: uid, owned: [], managed: [] };
+            if (role === 'manager') usersMap[uid].managed.push({ rId, boardTitle, isLocked, ownerName });
+          });
+        });
+
+        const userList = Object.values(usersMap);
+        container.innerHTML = '';
+
+        if (userList.length === 0) {
+          container.innerHTML = '<p style="color:var(--text-muted);font-size:0.82rem;padding:8px 0">No users found in database.</p>';
           return;
         }
-        roomIds.forEach(rId => {
-          const cfg = rooms[rId].config || {};
-          const isProtected = cfg.locked ? '🔒 Locked' : '🔓 Public';
-          const ownerName = cfg.ownerName || 'Unknown';
-          grid.innerHTML += `
-            <div class="board-card" style="border-color:var(--danger); background:rgba(255,100,100,0.05)" onclick="location.href='?r=${rId}'">
-              <div class="board-card-title" style="color:var(--danger); font-family:var(--font-mono)">${rId}</div>
-              <div class="board-card-type">
-                <div class="type-dot" style="background:var(--danger)"></div>
-                ${isProtected} (Owner: ${ownerName})
-              </div>
+
+        userList.forEach(user => {
+          const isMe = user.userId === _userId;
+          const totalBoards = user.owned.length + user.managed.length;
+
+          const userCard = document.createElement('div');
+          userCard.style.cssText = 'border:1px solid rgba(247,106,138,0.2);border-radius:10px;margin-bottom:10px;overflow:hidden;background:rgba(247,106,138,0.03)';
+
+          const header = document.createElement('div');
+          header.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;user-select:none;transition:background 0.15s';
+          header.onmouseenter = () => header.style.background = 'rgba(247,106,138,0.06)';
+          header.onmouseleave = () => header.style.background = '';
+
+          const avatar = document.createElement('div');
+          avatar.style.cssText = 'width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#f76a8a,#7c6af7);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;color:#fff;flex-shrink:0';
+          avatar.textContent = (user.name || '?').charAt(0).toUpperCase();
+
+          const info = document.createElement('div');
+          info.style.cssText = 'flex:1;min-width:0';
+          info.innerHTML = `
+            <div style="font-weight:600;font-size:0.9rem;display:flex;align-items:center;gap:7px">
+              ${user.name}
+              ${isMe ? '<span style="font-size:0.62rem;background:rgba(106,247,196,0.15);color:var(--accent3);border:1px solid rgba(106,247,196,0.3);border-radius:100px;padding:1px 7px;font-weight:600">you</span>' : ''}
             </div>
+            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;font-family:monospace">${user.userId}</div>
           `;
+
+          const meta = document.createElement('div');
+          meta.style.cssText = 'display:flex;align-items:center;gap:8px;flex-shrink:0';
+          meta.innerHTML = `
+            <span style="font-size:0.72rem;color:var(--text-muted);background:var(--surface2);border-radius:100px;padding:2px 9px;border:1px solid var(--border)">${totalBoards} board${totalBoards !== 1 ? 's' : ''}</span>
+            <span style="color:var(--text-muted);font-size:1rem;transition:transform 0.2s" class="dev-chevron">▾</span>
+          `;
+
+          header.append(avatar, info, meta);
+
+          const body = document.createElement('div');
+          body.style.cssText = 'display:none;padding:0 14px 14px;';
+
+          const buildBoardGrid = () => {
+            body.innerHTML = '';
+            if (user.owned.length === 0 && user.managed.length === 0) {
+              body.innerHTML = '<p style="color:var(--text-muted);font-size:0.8rem;padding:4px 2px">No boards found.</p>';
+              return;
+            }
+
+            const addSection = (title, boards, accent) => {
+              if (boards.length === 0) return;
+              const label = document.createElement('div');
+              label.style.cssText = `font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:${accent};margin:10px 0 6px`;
+              label.textContent = title;
+              body.appendChild(label);
+
+              const grid = document.createElement('div');
+              grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px';
+
+              boards.forEach(b => {
+                const card = document.createElement('div');
+                card.style.cssText = `background:var(--surface2);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 12px;cursor:pointer;transition:all 0.15s;position:relative`;
+                card.onmouseenter = () => { card.style.borderColor = accent; card.style.transform = 'translateY(-1px)'; };
+                card.onmouseleave = () => { card.style.borderColor = 'rgba(255,255,255,0.08)'; card.style.transform = ''; };
+                card.innerHTML = `
+                  <div style="font-weight:600;font-size:0.83rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px">${b.boardTitle}</div>
+                  <div style="display:flex;align-items:center;gap:5px;font-size:0.7rem;color:var(--text-muted)">
+                    ${b.isLocked ? '🔒' : '🔓'} ${b.isLocked ? 'Locked' : 'Public'}
+                  </div>
+                  <div style="font-size:0.62rem;color:var(--text-muted);font-family:monospace;margin-top:4px;opacity:0.6">${b.rId.slice(0, 14)}…</div>
+                  <div style="position:absolute;top:8px;right:8px;font-size:0.65rem;color:${accent};opacity:0;transition:opacity 0.15s" class="open-hint">Open →</div>
+                `;
+                card.onmouseenter = () => { card.style.borderColor = accent; card.style.transform = 'translateY(-1px)'; card.querySelector('.open-hint').style.opacity = '1'; };
+                card.onmouseleave = () => { card.style.borderColor = 'rgba(255,255,255,0.08)'; card.style.transform = ''; card.querySelector('.open-hint').style.opacity = '0'; };
+                card.onclick = () => { location.href = '?r=' + b.rId; };
+                grid.appendChild(card);
+              });
+              body.appendChild(grid);
+            };
+
+            addSection('👑 Owns', user.owned, '#f76a8a');
+            addSection('⚡ Manages', user.managed, '#f7c26a');
+          };
+
+          let expanded = false;
+          header.addEventListener('click', () => {
+            expanded = !expanded;
+            body.style.display = expanded ? '' : 'none';
+            const chevron = header.querySelector('.dev-chevron');
+            chevron.style.transform = expanded ? 'rotate(180deg)' : '';
+            if (expanded) buildBoardGrid();
+          });
+
+          userCard.append(header, body);
+          container.appendChild(userCard);
         });
+
       } catch (e) {
-        grid.innerHTML = '<p style="color:var(--danger)">Failed to load. Ensure Firebase rules allow read.</p>';
+        container.innerHTML = '<p style="color:var(--danger)">Failed to load. Check Firebase rules.</p>';
+        console.error(e);
       }
     }
 
@@ -3956,13 +4063,29 @@
       location.href = (type === 'cloud') ? '?r=' + newId : '?local=' + newId;
     }
 
-    function deleteBoard(wsId, boardId) {
-      if (!confirm('Remove this board shortcut from the workspace? (Data will not be permanently deleted from database)')) return;
+    async function deleteBoard(wsId, boardId) {
       const ws = _workspaces.find(w => w.id === wsId);
       if (!ws) return;
+      const board = ws.boards.find(b => b.id === boardId);
+      const isCloud = board && board.type === 'cloud';
+      const msg = isCloud
+        ? 'Delete this board?\n\nThis will permanently remove all data from the database and cannot be undone.'
+        : 'Delete this board?\n\nThis will remove the local board data and cannot be undone.';
+      if (!confirm(msg)) return;
+      // Remove from workspace list
       ws.boards = ws.boards.filter(b => b.id !== boardId);
       saveWorkspaces();
+      // Delete actual data
+      if (isCloud) {
+        try {
+          await db.ref('rooms/' + boardId).remove();
+        } catch (e) { toast('⚠️ Could not delete cloud data — check Firebase rules.'); }
+      } else {
+        localStorage.removeItem('pb_local_' + boardId);
+      }
+      localStorage.removeItem('pb_roomPw_' + boardId);
       renderDashboard();
+      toast('🗑 Board deleted.');
     }
 
     function deleteWorkspace(wsId) {
@@ -4942,7 +5065,7 @@
         const snap = await db.ref('app_admins/' + _userId).once('value');
         if (snap.val()) {
           _isDev = true;
-          if (_isDashboard) renderDashboard();
+          if (_isDashboard) { renderDashboard(); setTimeout(devLoadUsers, 100); }
           else if (_roomId) fbSetupPresence();
         }
         _adminCheckDone = true;
@@ -5028,6 +5151,7 @@
 
       document.getElementById('dashboardView').style.display = 'flex';
       renderDashboard();
+      if (_isDev) setTimeout(devLoadUsers, 300);
     } else {
       load();
       checkUrlImport();
