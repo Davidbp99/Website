@@ -6067,11 +6067,29 @@
       if (e.key === 'Escape') document.getElementById('settingsAuthOverlay').classList.remove('open');
     });
 
+    function getUniqueRoomMembers() {
+      const rawMembers = Object.values(_membersCache || {}).filter(m => m && getRoomMemberKey(m));
+      const map = new Map();
+      rawMembers.forEach(m => {
+        const key = getRoomMemberKey(m);
+        if (!key) return;
+        const existing = map.get(key);
+        if (!existing) {
+          map.set(key, m);
+          return;
+        }
+        const existingScore = (existing.isOwner ? 4 : 0) + (existing.isDev ? 2 : 0) + ((existing.name || '').trim() ? 1 : 0);
+        const newScore = (m.isOwner ? 4 : 0) + (m.isDev ? 2 : 0) + ((m.name || '').trim() ? 1 : 0);
+        if (newScore >= existingScore) map.set(key, { ...existing, ...m });
+      });
+      return Array.from(map.values());
+    }
+
     function openRoomSettings() {
       const list = document.getElementById('membersList');
       list.innerHTML = '';
       const currentRoles = _rolesCache || {};
-      Object.values(_membersCache).forEach(m => {
+      getUniqueRoomMembers().forEach(m => {
         const memberKey = getRoomMemberKey(m);
         if (!m || !memberKey) return;
         const isMe = memberKey === getRoomIdentity();
@@ -6351,8 +6369,7 @@
       const chips = document.getElementById('assignChips');
       chips.innerHTML = '';
       if (!_roomId) { section.style.display = 'none'; return; }
-      // Gather unique members from presence (exclude self only if you want)
-      const members = Object.values(_membersCache).filter(m => m && getRoomMemberKey(m));
+      const members = getUniqueRoomMembers();
       if (!members.length) { section.style.display = 'none'; return; }
       section.style.display = '';
       members.forEach(m => {
