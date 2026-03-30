@@ -772,17 +772,22 @@
       align-items: center;
       gap: 3px;
     }
+
     .label-del-btn {
       background: none;
       border: none;
-      color: rgba(255,255,255,0.35);
+      color: rgba(255, 255, 255, 0.35);
       cursor: pointer;
       font-size: 0.65rem;
       padding: 0 2px;
       line-height: 1;
       transition: color 0.15s;
     }
-    .label-del-btn:hover { color: #f76a8a; }
+
+    .label-del-btn:hover {
+      color: #f76a8a;
+    }
+
     .label-option {
       padding: 4px 12px;
       border-radius: 100px;
@@ -2004,41 +2009,117 @@
     }
 
     /* ── LANGUAGE PICKER ── */
-    .lang-picker { position: relative; width: 100%; }
+    .lang-picker {
+      position: relative;
+      width: 100%;
+    }
+
     .lang-picker-btn {
-      display: flex; align-items: center; gap: 7px; width: 100%;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 8px; padding: 7px 10px; cursor: pointer;
-      color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 10px;
+      cursor: pointer;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
       transition: border-color 0.15s, background 0.15s;
     }
-    .lang-picker-btn:hover { border-color: var(--accent); background: rgba(124,106,247,0.07); }
-    .lang-picker-chevron { margin-left: auto; opacity: 0.45; font-size: 0.7rem; transition: transform 0.15s; }
-    .lang-picker.open .lang-picker-chevron { transform: rotate(180deg); }
-    .lang-picker-flag { font-size: 1rem; line-height: 1; }
+
+    .lang-picker-btn:hover {
+      border-color: var(--accent);
+      background: rgba(124, 106, 247, 0.07);
+    }
+
+    .lang-picker-chevron {
+      margin-left: auto;
+      opacity: 0.45;
+      font-size: 0.7rem;
+      transition: transform 0.15s;
+    }
+
+    .lang-picker.open .lang-picker-chevron {
+      transform: rotate(180deg);
+    }
+
+    .lang-picker-flag {
+      font-size: 1rem;
+      line-height: 1;
+    }
+
     .lang-picker-dropdown {
-      position: absolute; bottom: calc(100% + 6px); left: 0; right: 0;
-      background: var(--surface2); border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 10px; overflow: hidden; display: none;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.55); z-index: 10010;
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: var(--surface2);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      overflow: hidden;
+      display: none;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+      z-index: 10010;
       flex-direction: column;
     }
-    .lang-picker.open .lang-picker-dropdown { display: flex; animation: ddIn 0.12s ease; }
+
+    .lang-picker.open .lang-picker-dropdown {
+      display: flex;
+      animation: ddIn 0.12s ease;
+    }
+
     .lang-picker-search {
-      padding: 9px 11px; border: none; border-bottom: 1px solid rgba(255,255,255,0.08);
-      background: transparent; color: var(--text); font-size: 0.8rem; font-family: 'DM Sans',sans-serif;
-      outline: none; width: 100%; box-sizing: border-box;
+      padding: 9px 11px;
+      border: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: transparent;
+      color: var(--text);
+      font-size: 0.8rem;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      width: 100%;
+      box-sizing: border-box;
     }
-    .lang-picker-search::placeholder { color: var(--text-muted); }
-    .lang-picker-list { max-height: 170px; overflow-y: auto; }
+
+    .lang-picker-search::placeholder {
+      color: var(--text-muted);
+    }
+
+    .lang-picker-list {
+      max-height: 170px;
+      overflow-y: auto;
+    }
+
     .lang-picker-item {
-      display: flex; align-items: center; gap: 9px;
-      padding: 7px 11px; cursor: pointer; font-size: 0.8rem; font-family: 'DM Sans',sans-serif;
-      transition: background 0.1s; color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 11px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.1s;
+      color: var(--text);
     }
-    .lang-picker-item:hover { background: rgba(255,255,255,0.05); }
-    .lang-picker-item.active { background: rgba(124,106,247,0.12); color: var(--accent); font-weight: 600; }
-    .lang-picker-item .lp-check { margin-left: auto; color: var(--accent); font-size: 0.75rem; }
+
+    .lang-picker-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .lang-picker-item.active {
+      background: rgba(124, 106, 247, 0.12);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .lang-picker-item .lp-check {
+      margin-left: auto;
+      color: var(--accent);
+      font-size: 0.75rem;
+    }
 
     /* ── DASHBOARD ── */
     #dashboardView {
@@ -2191,7 +2272,7 @@
 <body>
 
   <header>
-    <a href="?" class="logo" style="text-decoration:none">PrivacyBoard</a>
+    <a href="?" id="boardLogoContainer" class="logo" style="text-decoration:none;display:flex;align-items:center;gap:8px">PrivacyBoard</a>
     <input id="boardTitle" type="text" value="My Board" spellcheck="false" data-i18n-title="clickToEdit"
       title="Click to rename" />
     <div class="header-actions">
@@ -2231,8 +2312,8 @@
                 <span class="lang-picker-chevron">▾</span>
               </button>
               <div class="lang-picker-dropdown" id="langPickerDropdown" onclick="event.stopPropagation()">
-                <input class="lang-picker-search" id="langPickerSearch" type="text"
-                  placeholder="🔍 Search language..." oninput="filterLangs(this.value)" />
+                <input class="lang-picker-search" id="langPickerSearch" type="text" placeholder="🔍 Search language..."
+                  oninput="filterLangs(this.value)" />
                 <div class="lang-picker-list" id="langPickerList"></div>
               </div>
             </div>
@@ -2612,7 +2693,8 @@
       <div class="form-group">
         <label data-i18n="membersRoles">👥 Members &amp; Roles</label>
         <div id="membersList" style="display:flex;flex-direction:column;gap:6px"></div>
-        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px" data-i18n="rolesHint">Managers can add/edit/delete cards and
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px" data-i18n="rolesHint">Managers can
+          add/edit/delete cards and
           lists. Members must enter the room password.</div>
       </div>
 
@@ -2641,22 +2723,38 @@
       <div class="form-group">
         <label data-i18n="yourName">👤 Your Display Name</label>
         <div style="display:flex;gap:8px">
-          <input type="text" id="ownerNameInput" data-i18n-placeholder="yourNamePlaceholder"
-            placeholder="Your name..." maxlength="24" style="flex:1" />
+          <input type="text" id="ownerNameInput" data-i18n-placeholder="yourNamePlaceholder" placeholder="Your name..."
+            maxlength="24" style="flex:1" />
           <button class="btn" onclick="saveOwnerName()" data-i18n="save">Save</button>
+        </div>
+      </div>
+
+      <div class="form-group" style="padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);margin-top:10px" id="settingsBrandingSection">
+        <label>🎨 Branding / Logo</label>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px">
+          <input type="text" id="logoUrlInput" placeholder="Image URL (e.g. https://.../logo.png)" style="font-size:0.75rem" />
+          <input type="text" id="logoTextInput" placeholder="Logo Text (default: PrivacyBoard)" style="font-size:0.75rem" />
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:0.7rem;color:var(--text-muted)">Size:</span>
+            <input type="range" id="logoSizeSlider" min="12" max="64" value="22" style="flex:1" oninput="document.getElementById('logoSizePreview').textContent=this.value+'px'" />
+            <span id="logoSizePreview" style="font-size:0.7rem;color:var(--text-muted);width:35px;text-align:right">22px</span>
+          </div>
+          <button class="btn" style="align-self:flex-end;font-size:0.75rem" onclick="saveRoomBranding()">Apply Branding</button>
         </div>
       </div>
 
       <div class="form-group" style="padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);margin-top:10px"
         id="settingsStorageSection">
         <label data-i18n="advancedStorage">🗄️ Advanced Storage</label>
-        <button class="btn" onclick="openStorageSettings()" style="width:100%" data-i18n="configureDb">Configure Database
+        <button class="btn" onclick="openStorageSettings()" style="width:100%" data-i18n="configureDb">Configure
+          Database
           (SQL/Firebase)</button>
       </div>
 
       <div class="modal-actions">
         <button class="btn" onclick="closeRoomSettings()" data-i18n="close">Close</button>
-        <button class="btn btn-primary" id="settingsPwBtn" onclick="changeRoomPassword()" data-i18n="updatePassword">🔑 Update Password</button>
+        <button class="btn btn-primary" id="settingsPwBtn" onclick="changeRoomPassword()" data-i18n="updatePassword">🔑
+          Update Password</button>
       </div>
     </div>
   </div>
@@ -2723,9 +2821,13 @@
       </div>
 
       <!-- Board creation lock -->
-      <div style="background:rgba(247,106,138,0.05);border:1px solid rgba(247,106,138,0.2);border-radius:10px;padding:12px 14px">
-        <div style="font-size:0.68rem;font-weight:600;color:var(--danger,#f76a8a);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px" data-i18n="devLockTitle">Board Creation Lock</div>
-        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px" data-i18n="devLockDesc">When enabled, only registered devs can create new boards on this instance.</div>
+      <div
+        style="background:rgba(247,106,138,0.05);border:1px solid rgba(247,106,138,0.2);border-radius:10px;padding:12px 14px">
+        <div
+          style="font-size:0.68rem;font-weight:600;color:var(--danger,#f76a8a);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px"
+          data-i18n="devLockTitle">Board Creation Lock</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px" data-i18n="devLockDesc">When enabled,
+          only registered devs can create new boards on this instance.</div>
         <div style="display:flex;align-items:center;gap:10px">
           <div class="pw-toggle-row" id="devLockToggleRow" onclick="toggleDevLock()" style="flex:1">
             <input type="checkbox" id="devLockCheckbox" />
@@ -2758,10 +2860,12 @@
       <div id="confirmIconWrap" style="text-align:center;font-size:2.2rem;margin-bottom:10px">🗑</div>
       <h2 id="confirmTitle" style="text-align:center;margin-bottom:6px" data-i18n="confirmDelete">Confirm Delete</h2>
       <p id="confirmMsg" style="text-align:center;font-size:0.88rem;color:var(--text-muted);margin:0 0 6px"></p>
-      <p id="confirmSubMsg" style="text-align:center;font-size:0.78rem;color:var(--accent2);margin:0 0 20px;min-height:1em"></p>
+      <p id="confirmSubMsg"
+        style="text-align:center;font-size:0.78rem;color:var(--accent2);margin:0 0 20px;min-height:1em"></p>
       <div class="modal-actions" style="justify-content:center;gap:10px">
         <button class="btn" onclick="confirmDialogCancel()" id="confirmNoBtn" data-i18n="confirmNo">Cancel</button>
-        <button class="btn btn-danger" onclick="confirmDialogOk()" id="confirmYesBtn" data-i18n="confirmYes">Yes, delete</button>
+        <button class="btn btn-danger" onclick="confirmDialogOk()" id="confirmYesBtn" data-i18n="confirmYes">Yes,
+          delete</button>
       </div>
     </div>
   </div>
@@ -2770,7 +2874,8 @@
   <div class="room-overlay" id="storageSettingsOverlay">
     <div class="room-box">
       <h2 data-i18n="storageConfigTitle">🗄️ Storage Configuration</h2>
-      <p style="font-size:0.8rem;color:var(--text-muted)" data-i18n="storageConfigDesc">Override where this room's cards and data are saved. The
+      <p style="font-size:0.8rem;color:var(--text-muted)" data-i18n="storageConfigDesc">Override where this room's cards
+        and data are saved. The
         default uses the built-in Firebase.</p>
 
       <div class="form-group">
@@ -2798,7 +2903,8 @@
         <div class="form-group">
           <label data-i18n="storageSqlUrl">API Endpoint URL</label>
           <input type="text" id="customSqlUrl" placeholder="https://yourserver.com/api/board.php" />
-          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px" data-i18n="storageSqlHint">Your endpoint must accept POST (JSON) to
+          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px" data-i18n="storageSqlHint">Your endpoint
+            must accept POST (JSON) to
             save, and GET ?room=id to retrieve.</div>
         </div>
         <div class="form-group">
@@ -2809,7 +2915,8 @@
 
       <div class="modal-actions">
         <button class="btn" onclick="closeStorageSettings()" data-i18n="cancel">Cancel</button>
-        <button class="btn btn-primary" onclick="saveStorageSettings()" data-i18n="storageApply">💾 Apply Storage</button>
+        <button class="btn btn-primary" onclick="saveStorageSettings()" data-i18n="storageApply">💾 Apply
+          Storage</button>
       </div>
     </div>
   </div>
@@ -2850,22 +2957,22 @@
     // ── i18n ──
     let _lang = localStorage.getItem('pb_lang') || 'en';
     const LANGUAGES = [
-      { code: 'en', name: 'English',    flag: '🇬🇧' },
-      { code: 'de', name: 'Deutsch',    flag: '🇩🇪' },
-      { code: 'fr', name: 'Français',   flag: '🇫🇷' },
-      { code: 'es', name: 'Español',    flag: '🇪🇸' },
+      { code: 'en', name: 'English', flag: '🇬🇧' },
+      { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+      { code: 'fr', name: 'Français', flag: '🇫🇷' },
+      { code: 'es', name: 'Español', flag: '🇪🇸' },
       { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
-      { code: 'it', name: 'Italiano',   flag: '🇮🇹' },
-      { code: 'pt', name: 'Português',  flag: '🇵🇹' },
-      { code: 'pl', name: 'Polski',     flag: '🇵🇱' },
-      { code: 'tr', name: 'Türkçe',     flag: '🇹🇷' },
-      { code: 'sv', name: 'Svenska',    flag: '🇸🇪' },
-      { code: 'no', name: 'Norsk',      flag: '🇳🇴' },
-      { code: 'da', name: 'Dansk',      flag: '🇩🇰' },
-      { code: 'fi', name: 'Suomi',      flag: '🇫🇮' },
-      { code: 'ru', name: 'Русский',    flag: '🇷🇺' },
-      { code: 'zh', name: '中文',        flag: '🇨🇳' },
-      { code: 'ja', name: '日本語',       flag: '🇯🇵' },
+      { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+      { code: 'pt', name: 'Português', flag: '🇵🇹' },
+      { code: 'pl', name: 'Polski', flag: '🇵🇱' },
+      { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+      { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
+      { code: 'no', name: 'Norsk', flag: '🇳🇴' },
+      { code: 'da', name: 'Dansk', flag: '🇩🇰' },
+      { code: 'fi', name: 'Suomi', flag: '🇫🇮' },
+      { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+      { code: 'zh', name: '中文', flag: '🇨🇳' },
+      { code: 'ja', name: '日本語', flag: '🇯🇵' },
     ];
     const TRANSLATIONS = {
       en: {
@@ -3728,6 +3835,26 @@
 
     // ── RENDER ──
     function render() {
+      // 1. Update Custom Logo if defined
+      const logoContainer = document.getElementById('boardLogoContainer');
+      if (logoContainer) {
+        if (state.roomLogo && (state.roomLogo.url || state.roomLogo.text || state.roomLogo.size)) {
+          const size = state.roomLogo.size || 22;
+          let html = '';
+          if (state.roomLogo.url) {
+            html += `<img src="${state.roomLogo.url}" style="height:${size + 8}px;object-fit:contain;border-radius:4px" />`;
+          }
+          if (state.roomLogo.text) {
+            html += `<span style="font-size:${size}px">${state.roomLogo.text}</span>`;
+          } else if (!state.roomLogo.url) {
+            html += `<span style="font-size:${size}px">PrivacyBoard</span>`;
+          }
+          logoContainer.innerHTML = html;
+        } else {
+          logoContainer.innerHTML = 'PrivacyBoard'; // Reset to default
+        }
+      }
+
       // Remove dropdowns for deleted columns
       Object.keys(colDropdowns).forEach(id => {
         if (!state.columns.find(c => c.id === id)) {
@@ -4829,8 +4956,27 @@
       const container = document.getElementById('workspacesContainer');
       container.innerHTML = '';
 
+      // Inject explicitly visible User Identity block on the Dashboard
+      const identitySec = document.createElement('div');
+      identitySec.className = 'workspace-section';
+      identitySec.innerHTML = `
+        <div class="workspace-header">
+          <h3>👤 User Identity &amp; Data</h3>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:4px">
+          <button class="btn" style="flex:1;min-width:140px;font-size:0.8rem;padding:10px" onclick="exportIdentity()" data-i18n="export">📤 Export Identity</button>
+          <button class="btn" style="flex:1;min-width:140px;font-size:0.8rem;padding:10px" onclick="openImportIdentity()" data-i18n="import">📥 Import Identity</button>
+          <button class="btn" style="flex:1;min-width:140px;font-size:0.8rem;padding:10px;border-color:rgba(255,100,100,0.3);color:var(--danger)" onclick="copyRawUserId()" data-i18n="copyUserId">📋 Copy User ID (Dev Role)</button>
+        </div>
+      `;
+      container.appendChild(identitySec);
+
       if (_workspaces.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted)">No workspaces found.</p>';
+        const noWs = document.createElement('p');
+        noWs.style.color = 'var(--text-muted)';
+        noWs.style.marginTop = '20px';
+        noWs.textContent = 'No workspaces found.';
+        container.appendChild(noWs);
         return;
       }
 
@@ -5179,7 +5325,7 @@
       if (existing) {
         showConfirm({
           icon: '📥',
-          title: t('importBoardConfirm').replace('?',''),
+          title: t('importBoardConfirm').replace('?', ''),
           message: t('importBoardConfirm'),
           yesLabel: t('import'),
           onConfirm: doImport
@@ -5450,7 +5596,7 @@
       if (_sqlListenInterval) { clearInterval(_sqlListenInterval); _sqlListenInterval = null; }
 
       // Clean up previous custom Firebase app before creating a new one
-      if (_customDb) { try { await _customDb.app.delete(); } catch (e) {} _customDb = null; }
+      if (_customDb) { try { await _customDb.app.delete(); } catch (e) { } _customDb = null; }
 
       if (storageConfig.type === 'firebase') {
         const appName = 'app_' + Date.now();
@@ -5905,6 +6051,20 @@
         readOnlyCb.closest('.pw-toggle-row').classList.toggle('active', readOnlyCb.checked);
       }
 
+      const brandingSection = document.getElementById('settingsBrandingSection');
+      if (brandingSection) brandingSection.style.display = _isOwner ? '' : 'none';
+      if (state.roomLogo) {
+        document.getElementById('logoUrlInput').value = state.roomLogo.url || '';
+        document.getElementById('logoTextInput').value = state.roomLogo.text || '';
+        document.getElementById('logoSizeSlider').value = state.roomLogo.size || 22;
+        document.getElementById('logoSizePreview').textContent = (state.roomLogo.size || 22) + 'px';
+      } else {
+        document.getElementById('logoUrlInput').value = '';
+        document.getElementById('logoTextInput').value = '';
+        document.getElementById('logoSizeSlider').value = 22;
+        document.getElementById('logoSizePreview').textContent = '22px';
+      }
+
       const pwSection = document.getElementById('settingsPwSection');
       if (pwSection) pwSection.style.display = _isOwner ? '' : 'none';
       const readOnlySection = document.getElementById('settingsReadOnlySection');
@@ -5960,6 +6120,20 @@
       const cb = document.getElementById('readOnlyToggle');
       cb.checked = !cb.checked;
       cb.closest('.pw-toggle-row').classList.toggle('active', cb.checked);
+    }
+
+    function saveRoomBranding() {
+      if (!_isOwner) return;
+      const url = document.getElementById('logoUrlInput').value.trim();
+      const text = document.getElementById('logoTextInput').value.trim();
+      const size = parseInt(document.getElementById('logoSizeSlider').value, 10) || 22;
+
+      state.roomLogo = { url, text, size };
+      save(); // Save to local storage over FB debounced save
+      if (_roomId) fbSaveDebounced();
+      
+      render(); // Instantly update header
+      toast('🎨 Branding updated!');
     }
 
     async function changeRoomPassword() {
@@ -6067,7 +6241,7 @@
         try {
           const lockSnap = await db.ref('app_config/creation_locked').once('value');
           if (lockSnap.val() && !_isDev) { toast(t('toastNotDevLocked')); return; }
-        } catch (e) {}
+        } catch (e) { }
         showRoomCreatePrompt();
       });
     }
@@ -6238,7 +6412,7 @@
         if (cb) cb.checked = locked;
         if (row) row.classList.toggle('active', locked);
         if (label) label.textContent = locked ? t('devLockEnabled') : t('devLockDisabled');
-      } catch (e) {}
+      } catch (e) { }
     }
 
     async function toggleDevLock() {
