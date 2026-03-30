@@ -2773,6 +2773,32 @@
           (SQL/Firebase)</button>
       </div>
 
+      <!-- DEV CONTROLS (only visible to devs) -->
+      <div class="form-group" id="settingsDevSection" style="display:none;padding-top:12px;border-top:1px solid rgba(247,106,138,0.25);margin-top:10px">
+        <label style="color:var(--danger,#f76a8a)">🛠️ Dev Controls</label>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;font-size:0.76rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--surface2);border-radius:7px;padding:7px 10px">
+            <div>
+              <span style="color:var(--text-muted);font-size:0.68rem;display:block;margin-bottom:1px">ROOM ID</span>
+              <span id="settingsDevRoomId" style="font-family:monospace;font-size:0.75rem;color:var(--text)">—</span>
+            </div>
+            <button class="btn" style="font-size:0.68rem;padding:3px 8px" onclick="devCopyRoomId()">📋 Copy</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--surface2);border-radius:7px;padding:7px 10px">
+            <div style="min-width:0;flex:1">
+              <span style="color:var(--text-muted);font-size:0.68rem;display:block;margin-bottom:1px">OWNER</span>
+              <span id="settingsDevOwnerName" style="font-size:0.75rem;color:var(--text)">—</span>
+              <span id="settingsDevOwnerUid" style="font-family:monospace;font-size:0.68rem;color:var(--text-muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+            </div>
+            <button class="btn" style="font-size:0.68rem;padding:3px 8px;flex-shrink:0" onclick="devCopyOwnerUid()">📋 Copy UID</button>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn" style="flex:1;font-size:0.72rem;padding:6px;color:#6ab4f7;border-color:rgba(106,180,247,0.35)" onclick="devForceTransferToMe()">🔑 Force Transfer to Me</button>
+            <button class="btn" style="flex:1;font-size:0.72rem;padding:6px;color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.3)" onclick="closeRoomSettings();openDevAdmin()">🛠️ Open Dev Panel</button>
+          </div>
+        </div>
+      </div>
+
       <div class="modal-actions">
         <button class="btn" onclick="closeRoomSettings()" data-i18n="close">Close</button>
         <button class="btn btn-primary" id="settingsPwBtn" onclick="changeRoomPassword()" data-i18n="updatePassword">🔑
@@ -6244,7 +6270,11 @@
 
         if (isActualOwner) {
           row.append(av, name, document.createRange().createContextualFragment(_roleBadgeHTML('owner', m.isDev)));
-        } else if (_isOwner) {
+        } else if (m.isDev && !isMe) {
+          // Other devs: always show DEV badge, no role controls (devs have global admin)
+          row.append(av, name, document.createRange().createContextualFragment(_roleBadgeHTML('member', true)));
+        } else if (_isOwner || _isDev) {
+          // Owner or viewing dev: show role selector + transfer button
           const wrap = document.createElement('div');
           wrap.style.cssText = 'display:flex;gap:6px;align-items:center;flex-shrink:0';
           const sel = document.createElement('select');
@@ -6306,10 +6336,47 @@
       if (roleLabel) roleLabel.innerHTML = _isOwner
         ? t('youAreOwner')
         : t('youAreManager');
+      // Dev controls section
+      const devSection = document.getElementById('settingsDevSection');
+      if (devSection) {
+        devSection.style.display = _isDev ? '' : 'none';
+        if (_isDev) {
+          document.getElementById('settingsDevRoomId').textContent = _roomId || '—';
+          document.getElementById('settingsDevOwnerUid').textContent = (_roomConfig && _roomConfig.ownerAuthUid) || '—';
+          document.getElementById('settingsDevOwnerName').textContent = (_roomConfig && _roomConfig.ownerName) || '—';
+        }
+      }
+
       document.getElementById('roomSettingsOverlay').classList.add('open');
     }
     function closeRoomSettings() {
       document.getElementById('roomSettingsOverlay').classList.remove('open');
+    }
+    function devCopyRoomId() {
+      const val = _roomId || '';
+      navigator.clipboard ? navigator.clipboard.writeText(val).then(() => toast('📋 Room ID copied')) : (() => { const ta = document.createElement('textarea'); ta.value = val; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('📋 Room ID copied'); })();
+    }
+    function devCopyOwnerUid() {
+      const val = (_roomConfig && _roomConfig.ownerAuthUid) || '';
+      navigator.clipboard ? navigator.clipboard.writeText(val).then(() => toast('📋 Owner UID copied')) : (() => { const ta = document.createElement('textarea'); ta.value = val; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('📋 Owner UID copied'); })();
+    }
+    async function devForceTransferToMe() {
+      if (!_isDev || !_authUid || !_roomId) return;
+      showConfirm({
+        icon: '🔑',
+        title: 'Force Transfer Ownership',
+        message: 'Transfer this room to your current account?',
+        subMessage: 'Previous owner: ' + ((_roomConfig && _roomConfig.ownerName) || 'unknown'),
+        yesLabel: '🔑 Transfer',
+        onConfirm: async () => {
+          try {
+            await db.ref('rooms/' + _roomId + '/config').update({ ownerAuthUid: _authUid, ownerName: _username || 'Dev' });
+            await logAccountEvent(_authUid, 'ownership_received', { roomId: _roomId, by: 'dev_force', from: _roomConfig && _roomConfig.ownerAuthUid });
+            toast('✅ Room transferred to your account.');
+            closeRoomSettings();
+          } catch (e) { toast('❌ Transfer failed: ' + (e.message || 'Check rules.')); }
+        }
+      });
     }
     async function transferOwnership(newOwnerId, newOwnerName) {
       if (!_isOwner) return;
