@@ -767,6 +767,22 @@
       min-height: 24px;
     }
 
+    .label-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .label-del-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.35);
+      cursor: pointer;
+      font-size: 0.65rem;
+      padding: 0 2px;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+    .label-del-btn:hover { color: #f76a8a; }
     .label-option {
       padding: 4px 12px;
       border-radius: 100px;
@@ -1987,6 +2003,43 @@
       align-self: flex-end;
     }
 
+    /* ── LANGUAGE PICKER ── */
+    .lang-picker { position: relative; width: 100%; }
+    .lang-picker-btn {
+      display: flex; align-items: center; gap: 7px; width: 100%;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 7px 10px; cursor: pointer;
+      color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .lang-picker-btn:hover { border-color: var(--accent); background: rgba(124,106,247,0.07); }
+    .lang-picker-chevron { margin-left: auto; opacity: 0.45; font-size: 0.7rem; transition: transform 0.15s; }
+    .lang-picker.open .lang-picker-chevron { transform: rotate(180deg); }
+    .lang-picker-flag { font-size: 1rem; line-height: 1; }
+    .lang-picker-dropdown {
+      position: absolute; bottom: calc(100% + 6px); left: 0; right: 0;
+      background: var(--surface2); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px; overflow: hidden; display: none;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.55); z-index: 10010;
+      flex-direction: column;
+    }
+    .lang-picker.open .lang-picker-dropdown { display: flex; animation: ddIn 0.12s ease; }
+    .lang-picker-search {
+      padding: 9px 11px; border: none; border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: transparent; color: var(--text); font-size: 0.8rem; font-family: 'DM Sans',sans-serif;
+      outline: none; width: 100%; box-sizing: border-box;
+    }
+    .lang-picker-search::placeholder { color: var(--text-muted); }
+    .lang-picker-list { max-height: 170px; overflow-y: auto; }
+    .lang-picker-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 7px 11px; cursor: pointer; font-size: 0.8rem; font-family: 'DM Sans',sans-serif;
+      transition: background 0.1s; color: var(--text);
+    }
+    .lang-picker-item:hover { background: rgba(255,255,255,0.05); }
+    .lang-picker-item.active { background: rgba(124,106,247,0.12); color: var(--accent); font-weight: 600; }
+    .lang-picker-item .lp-check { margin-left: auto; color: var(--accent); font-size: 0.75rem; }
+
     /* ── DASHBOARD ── */
     #dashboardView {
       display: none;
@@ -2139,52 +2192,71 @@
 
   <header>
     <a href="?" class="logo" style="text-decoration:none">PrivacyBoard</a>
-    <input id="boardTitle" type="text" value="My Board" spellcheck="false" title="Click to rename" />
+    <input id="boardTitle" type="text" value="My Board" spellcheck="false" data-i18n-title="clickToEdit"
+      title="Click to rename" />
     <div class="header-actions">
       <!-- Database Settings Button -->
       <button class="btn"
         style="font-size:0.75rem;padding:4px 8px;background:var(--bg-lighter);border-color:rgba(255,255,255,0.1);color:var(--text-muted)"
-        onclick="openStorageSettings()" title="Configure Storage Backend">🗄️ Database</button>
+        onclick="openStorageSettings()" data-i18n-title="dbBtn" title="Configure Storage Backend" data-i18n="dbBtn">🗄️
+        Database</button>
 
       <!-- Username chip -->
-      <div class="username-chip" id="usernameChip" onclick="toggleUsernamePopover()" title="Set your display name">
+      <div class="username-chip" id="usernameChip" onclick="toggleUsernamePopover()" data-i18n-title="yourDisplayName"
+        title="Set your display name">
         <div class="username-avatar anon" id="usernameAvatar">👤</div>
         <span id="usernameChipLabel">Set name</span>
         <div class="username-popover" id="usernamePopover" onclick="event.stopPropagation()">
-          <label>Your display name</label>
-          <input type="text" id="usernamePopoverInput" placeholder="e.g. David" maxlength="24" autocomplete="off" />
-          <button class="btn btn-primary" style="font-size:0.78rem;padding:6px 14px"
-            onclick="saveUsernameFromChip()">Save</button>
+          <label data-i18n="yourDisplayName">Your display name</label>
+          <input type="text" id="usernamePopoverInput" data-i18n-placeholder="namePlaceholder" placeholder="e.g. David"
+            maxlength="24" autocomplete="off" />
+          <button class="btn btn-primary" style="font-size:0.78rem;padding:6px 14px" onclick="saveUsernameFromChip()"
+            data-i18n="save">Save</button>
           <div
             style="margin-top:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;gap:6px">
-            <label>Device Identity</label>
+            <label data-i18n="deviceIdentity">Device Identity</label>
             <div style="display:flex;gap:6px">
-              <button class="btn" style="flex:1;font-size:0.7rem;padding:4px" onclick="exportIdentity()">Export</button>
-              <button class="btn" style="flex:1;font-size:0.7rem;padding:4px"
-                onclick="openImportIdentity()">Import</button>
+              <button class="btn" style="flex:1;font-size:0.7rem;padding:4px" onclick="exportIdentity()"
+                data-i18n="export">Export</button>
+              <button class="btn" style="flex:1;font-size:0.7rem;padding:4px" onclick="openImportIdentity()"
+                data-i18n="import">Import</button>
             </div>
             <button class="btn"
               style="margin-top:4px;font-size:0.7rem;padding:4px;border-color:rgba(255,100,100,0.3);color:var(--danger)"
-              onclick="copyRawUserId()">Copy Raw User ID (For Dev Role)</button>
+              onclick="copyRawUserId()" data-i18n="copyUserId">Copy Raw User ID (For Dev Role)</button>
+            <div class="lang-picker" id="langPickerWrap">
+              <button class="lang-picker-btn" onclick="toggleLangPicker(event)">
+                <span class="lang-picker-flag" id="langPickerFlag">🇬🇧</span>
+                <span id="langPickerName">English</span>
+                <span class="lang-picker-chevron">▾</span>
+              </button>
+              <div class="lang-picker-dropdown" id="langPickerDropdown" onclick="event.stopPropagation()">
+                <input class="lang-picker-search" id="langPickerSearch" type="text"
+                  placeholder="🔍 Search language..." oninput="filterLangs(this.value)" />
+                <div class="lang-picker-list" id="langPickerList"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <button class="collab-btn" id="collabBtn" onclick="collabAction()" title="Start or copy collaboration link">
+      <button class="collab-btn" id="collabBtn" onclick="collabAction()" data-i18n-title="collaborate"
+        title="Start or copy collaboration link">
         <span class="collab-pulse" id="collabPulse" style="display:none"></span>
-        <span id="collabBtnText">👥 Collaborate</span>
+        <span id="collabBtnText" data-i18n="collaborate">👥 Collaborate</span>
         <span class="collab-count" id="collabCount" style="display:none">1</span>
       </button>
-      <button class="btn btn-share" onclick="openShareModal()">🔗 Share</button>
-      <button class="btn btn-danger" onclick="clearAll()">Clear All</button>
-      <button class="btn btn-primary" onclick="openAddColModal()">+ New List</button>
+      <button class="btn btn-share" onclick="openShareModal()" data-i18n="share">🔗 Share</button>
+      <button class="btn btn-danger" onclick="clearAll()" data-i18n="clearAll">Clear All</button>
+      <button class="btn btn-primary" onclick="openAddColModal()" data-i18n="newList">+ New List</button>
     </div>
   </header>
 
   <!-- DASHBOARD VIEW -->
   <div id="dashboardView">
     <div class="dashboard-header">
-      <h2>Your Workspaces</h2>
-      <button class="btn btn-primary" onclick="createWorkspacePrompt()">+ New Workspace</button>
+      <h2 data-i18n="yourWorkspaces">Your Workspaces</h2>
+      <button class="btn btn-primary" onclick="createWorkspacePrompt()" data-i18n="newWorkspace">+ New
+        Workspace</button>
     </div>
     <div id="workspacesContainer"></div>
   </div>
@@ -2196,8 +2268,9 @@
     <div style="text-align:center">
       <div class="collab-pulse"
         style="display:inline-block;width:12px;height:12px;background:var(--accent);margin-bottom:16px"></div>
-      <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;margin-bottom:8px">Joining Room...</h3>
-      <p style="font-size:0.85rem;color:var(--text-muted)">Synchronizing secure data</p>
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;margin-bottom:8px" data-i18n="joiningRoom">Joining
+        Room...</h3>
+      <p style="font-size:0.85rem;color:var(--text-muted)" data-i18n="syncData">Synchronizing secure data</p>
     </div>
   </div>
 
@@ -2208,22 +2281,23 @@
       <!-- Info bar: column name + mode -->
       <div class="card-info-bar" id="cardInfoBar">
         <div class="info-col-dot" id="cardInfoDot"></div>
-        <span id="cardInfoColName">Column</span>
+        <span id="cardInfoColName" data-i18n="column">Column</span>
         <span class="info-sep">›</span>
-        <span id="cardInfoMode">New Card</span>
+        <span id="cardInfoMode" data-i18n="newCardMode">New Card</span>
       </div>
 
       <!-- Header: big title + autosave + close -->
       <div class="card-modal-header">
         <div class="card-modal-title-wrap">
           <input class="card-modal-title-input" id="cardTitleInput" type="text" placeholder="Card title..."
-            spellcheck="false" />
+            data-i18n-placeholder="cardTitlePlaceholder" spellcheck="false" />
         </div>
         <div class="card-modal-header-right">
           <div class="autosave-status" id="autosaveStatus">
-            <div class="autosave-dot"></div><span>Saved</span>
+            <div class="autosave-dot"></div><span data-i18n="saved">Saved</span>
           </div>
-          <button class="modal-close-btn" onclick="closeCardModal()" title="Close (Esc)">✕</button>
+          <button class="modal-close-btn" onclick="closeCardModal()" data-i18n-title="closeEsc"
+            title="Close (Esc)">✕</button>
         </div>
       </div>
 
@@ -2233,19 +2307,21 @@
         <!-- Left: description + checklist -->
         <div class="card-modal-main">
           <div class="form-group">
-            <label>Description</label>
-            <textarea id="cardDescInput" class="auto-grow" placeholder="Add notes, links, or context..."></textarea>
+            <label data-i18n="description">Description</label>
+            <textarea id="cardDescInput" class="auto-grow" data-i18n-placeholder="descPlaceholder"
+              placeholder="Add notes, links, or context..."></textarea>
           </div>
           <div class="form-group">
-            <label>☑ Checklist</label>
+            <label data-i18n="checklist">☑ Checklist</label>
             <div class="checklist-section">
               <div class="checklist-progress-bar" id="clProgressBar" style="display:none">
                 <div class="checklist-progress-fill" id="clProgressFill"></div>
               </div>
               <div id="clItems"></div>
               <div class="checklist-add-row">
-                <input type="text" id="clNewItemInput" placeholder="Add an item and press Enter..." />
-                <button class="btn btn-primary" onclick="addChecklistItem()">Add</button>
+                <input type="text" id="clNewItemInput" data-i18n-placeholder="clPlaceholder"
+                  placeholder="Add an item and press Enter..." />
+                <button class="btn btn-primary" onclick="addChecklistItem()" data-i18n="clAddBtn">Add</button>
               </div>
             </div>
           </div>
@@ -2256,12 +2332,15 @@
 
           <!-- Priority pills -->
           <div class="sidebar-section">
-            <div class="sidebar-label">⚡ Priority</div>
+            <div class="sidebar-label" data-i18n="priority">⚡ Priority</div>
             <div class="priority-pills">
-              <button class="priority-pill" data-pv="" onclick="setPriority('')">— None</button>
-              <button class="priority-pill" data-pv="low" onclick="setPriority('low')">🟢 Low</button>
-              <button class="priority-pill" data-pv="medium" onclick="setPriority('medium')">🟡 Med</button>
-              <button class="priority-pill" data-pv="high" onclick="setPriority('high')">🔴 High</button>
+              <button class="priority-pill" data-pv="" onclick="setPriority('')" data-i18n="prioNone">— None</button>
+              <button class="priority-pill" data-pv="low" onclick="setPriority('low')" data-i18n="prioLow">🟢
+                Low</button>
+              <button class="priority-pill" data-pv="medium" onclick="setPriority('medium')" data-i18n="prioMed">🟡
+                Med</button>
+              <button class="priority-pill" data-pv="high" onclick="setPriority('high')" data-i18n="prioHigh">🔴
+                High</button>
             </div>
             <select id="cardPriorityInput" style="display:none">
               <option value="">None</option>
@@ -2273,29 +2352,32 @@
 
           <!-- Due date -->
           <div class="sidebar-section">
-            <div class="sidebar-label">📅 Due Date</div>
+            <div class="sidebar-label" data-i18n="dueDate">📅 Due Date</div>
             <div class="due-row">
               <input type="date" id="cardDueInput" />
-              <button class="due-clear-btn" onclick="clearDueDate()" title="Clear due date">✕</button>
+              <button class="due-clear-btn" onclick="clearDueDate()" data-i18n-title="clearDueDateTitle"
+                title="Clear due date">✕</button>
             </div>
             <div class="due-preview" id="duePreview"></div>
           </div>
 
           <!-- Move to list -->
           <div class="sidebar-section" id="moveToSection" style="display:none">
-            <div class="sidebar-label">📂 Move To List</div>
+            <div class="sidebar-label" data-i18n="moveToList">📂 Move To List</div>
             <select id="moveToSelect" class="move-select" onchange="moveCardToList(this.value)"></select>
           </div>
 
           <!-- Labels -->
           <div class="sidebar-section">
-            <div class="sidebar-label">🏷 Labels</div>
+            <div class="sidebar-label" data-i18n="labels">🏷 Labels</div>
             <div class="existing-labels" id="existingLabels"></div>
-            <button class="btn-add-label-toggle" onclick="toggleLabelCreator()">+ New label</button>
+            <button class="btn-add-label-toggle" onclick="toggleLabelCreator()" data-i18n="newLabel">+ New
+              label</button>
             <div id="labelCreatorSection" style="display:none">
               <div class="add-label-row" style="margin-top:6px">
-                <input type="text" id="newLabelName" placeholder="Label name..." />
-                <button class="btn btn-primary" onclick="addCustomLabel()">Add</button>
+                <input type="text" id="newLabelName" data-i18n-placeholder="labelPlaceholder"
+                  placeholder="Label name..." />
+                <button class="btn btn-primary" onclick="addCustomLabel()" data-i18n="clAddBtn">Add</button>
               </div>
               <div class="color-swatch-row" id="newLabelColorRow" style="margin-top:6px"></div>
               <div id="newLabelPreview" style="margin-top:6px;min-height:22px"></div>
@@ -2304,14 +2386,15 @@
 
           <!-- Assign members (collab only) -->
           <div class="sidebar-section" id="assignSection" style="display:none">
-            <div class="sidebar-label">👥 Assigned To</div>
+            <div class="sidebar-label" data-i18n="assignedTo">👥 Assigned To</div>
             <div class="assign-chips" id="assignChips"></div>
           </div>
 
           <!-- Delete (edit mode only) -->
           <div class="sidebar-section" id="cardDeleteSection" style="display:none">
             <div class="sidebar-divider"></div>
-            <button class="btn btn-danger sidebar-danger-btn" onclick="deleteCardFromModal()">🗑 Delete card</button>
+            <button class="btn btn-danger sidebar-danger-btn" onclick="deleteCardFromModal()" data-i18n="deleteCard">🗑
+              Delete card</button>
           </div>
 
         </div>
@@ -2322,8 +2405,8 @@
         <span class="modal-kbd-hint" id="cardKbdHint">
           <span class="kbd">Esc</span> close &nbsp;·&nbsp; <span class="kbd">Ctrl+Enter</span> save
         </span>
-        <button class="btn" onclick="closeCardModal()">Cancel</button>
-        <button class="btn btn-primary" onclick="saveCard()">✓ Create Card</button>
+        <button class="btn" onclick="closeCardModal()" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-primary" onclick="saveCard()" data-i18n="createCard">✓ Create Card</button>
       </div>
 
     </div>
@@ -2332,18 +2415,19 @@
   <!-- COLUMN MODAL -->
   <div class="modal-overlay" id="colModal">
     <div class="modal">
-      <h2 id="colModalTitle">New List</h2>
+      <h2 id="colModalTitle" data-i18n="newListTitle">New List</h2>
       <div class="form-group">
-        <label>List Name *</label>
-        <input type="text" id="colNameInput" placeholder="e.g. To Do, In Progress..." />
+        <label data-i18n="listName">List Name *</label>
+        <input type="text" id="colNameInput" data-i18n-placeholder="listNamePlaceholder"
+          placeholder="e.g. To Do, In Progress..." />
       </div>
       <div class="form-group">
-        <label>Color</label>
+        <label data-i18n="color">Color</label>
         <div class="col-color-row" id="colColorPicker"></div>
       </div>
       <div class="modal-actions">
-        <button class="btn" onclick="closeColModal()">Cancel</button>
-        <button class="btn btn-primary" onclick="saveColumn()">Save List</button>
+        <button class="btn" onclick="closeColModal()" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-primary" onclick="saveColumn()" data-i18n="saveList">Save List</button>
       </div>
     </div>
   </div>
@@ -2351,43 +2435,46 @@
   <!-- SHARE MODAL -->
   <div class="modal-overlay" id="shareModal">
     <div class="modal">
-      <h2>🔗 Share Board</h2>
-      <p class="share-notice">Your board is encoded into a URL. Anyone with the link can <strong>import your
-          board</strong> — no account needed.</p>
+      <h2 data-i18n="shareBoard">🔗 Share Board</h2>
+      <p class="share-notice" data-i18n="shareNotice">Your board is encoded into a URL. Anyone with the link can import
+        your board — no account needed.</p>
 
       <!-- Password toggle -->
       <div class="pw-toggle-row" id="pwToggleRow" onclick="togglePwProtect()">
         <input type="checkbox" id="pwEnabled" />
         <div class="pw-toggle-knob"></div>
         <div class="pw-toggle-label">
-          🔒 Password protect
-          <small>Recipients must enter the password to import.</small>
+          <span data-i18n="passwordProtect">🔒 Password protect</span>
+          <small data-i18n="pwRecipient">Recipients must enter the password to import.</small>
         </div>
       </div>
 
       <!-- Password input (hidden until toggled on) -->
       <div class="pw-input-wrap" id="pwInputWrap">
         <div class="form-group">
-          <label>Password</label>
+          <label data-i18n="password">Password</label>
           <div class="pw-input-inner">
-            <input type="password" id="sharePasswordInput" placeholder="Set a password..."
-              autocomplete="new-password" />
+            <input type="password" id="sharePasswordInput" data-i18n-placeholder="enterPw"
+              placeholder="Set a password..." autocomplete="new-password" />
             <button class="pw-eye" onclick="toggleSharePwEye()" tabindex="-1">👁</button>
           </div>
         </div>
       </div>
 
       <div class="form-group">
-        <label>Your Share Link</label>
+        <label data-i18n="yourShareLink">Your Share Link</label>
         <div class="share-url-box" id="shareUrlBox"><span
             style="color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:0.8rem">Click "Generate Link"
+            style="color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:0.8rem"
+            data-i18n="clickGenLink">Click "Generate Link"
             below.</span></div>
       </div>
       <div class="modal-actions">
-        <button class="btn" onclick="closeShareModal()">Close</button>
-        <button class="btn btn-share" onclick="generateShareLink()" id="genLinkBtn">⚡ Generate Link</button>
-        <button class="btn btn-primary" onclick="copyShareUrl()" id="copyLinkBtn" style="display:none">📋 Copy
+        <button class="btn" onclick="closeShareModal()" data-i18n="close">Close</button>
+        <button class="btn btn-share" onclick="generateShareLink()" id="genLinkBtn" data-i18n="generateLink">⚡ Generate
           Link</button>
+        <button class="btn btn-primary" onclick="copyShareUrl()" id="copyLinkBtn" style="display:none"
+          data-i18n="copyLink">📋 Copy Link</button>
       </div>
     </div>
   </div>
@@ -2395,20 +2482,20 @@
   <!-- PASSWORD UNLOCK OVERLAY (for importing password-protected boards) -->
   <div class="pw-unlock-overlay" id="pwUnlockOverlay">
     <div class="pw-unlock-box">
-      <h2>🔐 Password Required</h2>
-      <p>This board is password protected. Enter the password to import it.</p>
+      <h2 data-i18n="passwordRequired">🔐 Password Required</h2>
+      <p data-i18n="boardPasswordProtected">This board is password protected. Enter the password to import it.</p>
       <div class="form-group">
-        <label>Password</label>
+        <label data-i18n="password">Password</label>
         <div class="pw-input-inner">
-          <input type="password" id="unlockPasswordInput" placeholder="Enter password..."
-            autocomplete="current-password" />
+          <input type="password" id="unlockPasswordInput" data-i18n-placeholder="enterPw"
+            placeholder="Enter password..." autocomplete="current-password" />
           <button class="pw-eye" onclick="toggleUnlockPwEye()" tabindex="-1">👁</button>
         </div>
       </div>
       <div class="pw-unlock-error" id="pwUnlockError"></div>
       <div class="modal-actions">
-        <button class="btn" onclick="cancelUnlock()">Cancel</button>
-        <button class="btn btn-primary" onclick="submitUnlock()">Unlock & Import</button>
+        <button class="btn" onclick="cancelUnlock()" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-primary" onclick="submitUnlock()" data-i18n="unlockImport">Unlock &amp; Import</button>
       </div>
     </div>
   </div>
@@ -2416,19 +2503,22 @@
   <!-- ROOM JOIN OVERLAY (password-protected rooms) -->
   <div class="room-overlay" id="roomJoinOverlay">
     <div class="room-box">
-      <h2>🔐 Password Required</h2>
-      <p>This collaboration room is password protected. Enter the password to join.</p>
+      <h2 data-i18n="passwordRequired">🔐 Password Required</h2>
+      <p data-i18n="roomPasswordProtected">This collaboration room is password protected. Enter the password to join.
+      </p>
       <div class="form-group">
-        <label>Room Password</label>
+        <label data-i18n="roomPassword">Room Password</label>
         <div class="pw-input-inner">
-          <input type="password" id="roomJoinPwInput" placeholder="Enter password..." autocomplete="current-password" />
+          <input type="password" id="roomJoinPwInput" data-i18n-placeholder="enterPw" placeholder="Enter password..."
+            autocomplete="current-password" />
           <button class="pw-eye" onclick="toggleRoomJoinEye()" tabindex="-1">👁</button>
         </div>
       </div>
       <div class="room-error" id="roomJoinError"></div>
       <div class="modal-actions">
-        <button class="btn" onclick="cancelRoomJoin()">Cancel</button>
-        <button class="btn btn-primary" id="roomJoinBtn" onclick="submitRoomJoin()">Join Room</button>
+        <button class="btn" onclick="cancelRoomJoin()" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-primary" id="roomJoinBtn" onclick="submitRoomJoin()" data-i18n="joinRoom">Join
+          Room</button>
       </div>
     </div>
   </div>
@@ -2436,19 +2526,20 @@
   <!-- ROOM CREATE OVERLAY (set optional password) -->
   <div class="room-overlay" id="roomCreateOverlay">
     <div class="room-box">
-      <h2>👥 Start Collaboration</h2>
-      <p>Optionally protect this room with a password. Anyone joining will need to enter it.</p>
+      <h2 data-i18n="startCollab">👥 Start Collaboration</h2>
+      <p data-i18n="collabOptional">Optionally protect this room with a password. Anyone joining will need to enter it.
+      </p>
       <div class="form-group">
-        <label>Password (optional)</label>
+        <label data-i18n="pwOptional">Password (optional)</label>
         <div class="pw-input-inner">
-          <input type="password" id="roomCreatePwInput" placeholder="Leave blank for no password..."
-            autocomplete="new-password" />
+          <input type="password" id="roomCreatePwInput" data-i18n-placeholder="pwLeaveBlank"
+            placeholder="Leave blank for no password..." autocomplete="new-password" />
           <button class="pw-eye" onclick="toggleRoomCreateEye()" tabindex="-1">👁</button>
         </div>
       </div>
       <div class="modal-actions">
-        <button class="btn" onclick="cancelRoomCreate()">Cancel</button>
-        <button class="btn btn-primary" onclick="confirmRoomCreate()">Create Room</button>
+        <button class="btn" onclick="cancelRoomCreate()" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmRoomCreate()" data-i18n="createRoom">Create Room</button>
       </div>
     </div>
   </div>
@@ -2456,14 +2547,16 @@
   <!-- USERNAME PROMPT -->
   <div class="room-overlay" id="usernameOverlay">
     <div class="room-box">
-      <h2>👤 Your Display Name</h2>
-      <p>Set a name so your teammates can see who you are in the room.</p>
+      <h2 data-i18n="usernameTitle">👤 Your Display Name</h2>
+      <p data-i18n="usernameSubtitle">Set a name so your teammates can see who you are in the room.</p>
       <div class="form-group">
-        <label>Display Name</label>
-        <input type="text" id="usernameInput" placeholder="e.g. David" maxlength="24" autocomplete="off" />
+        <label data-i18n="displayName">Display Name</label>
+        <input type="text" id="usernameInput" data-i18n-placeholder="namePlaceholder" placeholder="e.g. David"
+          maxlength="24" autocomplete="off" />
       </div>
       <div class="modal-actions">
-        <button class="btn btn-primary" id="usernameConfirmBtn" onclick="confirmUsername()">Save Name</button>
+        <button class="btn btn-primary" id="usernameConfirmBtn" onclick="confirmUsername()" data-i18n="saveName">Save
+          Name</button>
       </div>
     </div>
   </div>
@@ -2471,18 +2564,19 @@
   <!-- IMPORT IDENTITY OVERLAY -->
   <div class="room-overlay" id="importIdentityOverlay">
     <div class="room-box">
-      <h2>🔄 Import Identity</h2>
-      <p style="color:var(--accent2);font-weight:600;font-size:0.85rem">WARNING: This will overwrite your current device
-        identity. You will lose owner access to any local boards on this device.</p>
+      <h2 data-i18n="importIdentity">🔄 Import Identity</h2>
+      <p style="color:var(--accent2);font-weight:600;font-size:0.85rem" data-i18n="importWarning">WARNING: This will
+        overwrite your current device identity. You will lose owner access to any local boards on this device.</p>
       <div class="form-group">
-        <label>Paste Exported Identity String</label>
+        <label data-i18n="pasteIdentity">Paste Exported Identity String</label>
         <textarea id="importIdentityInput" style="height:80px;font-family:monospace;font-size:0.75rem;padding:8px"
           placeholder="eyJwYl91c2VySWQi..."></textarea>
       </div>
       <div class="modal-actions">
-        <button class="btn"
-          onclick="document.getElementById('importIdentityOverlay').classList.remove('open')">Cancel</button>
-        <button class="btn btn-danger" onclick="submitImportIdentity()">Overwrite & Import</button>
+        <button class="btn" onclick="document.getElementById('importIdentityOverlay').classList.remove('open')"
+          data-i18n="cancel">Cancel</button>
+        <button class="btn btn-danger" onclick="submitImportIdentity()" data-i18n="overwriteImport">Overwrite &amp;
+          Import</button>
       </div>
     </div>
   </div>
@@ -2511,57 +2605,58 @@
   <!-- ROOM SETTINGS (owner only) -->
   <div class="room-overlay" id="roomSettingsOverlay">
     <div class="room-box" style="width:440px;max-height:85vh;overflow-y:auto">
-      <h2>⚙️ Room Settings</h2>
+      <h2 data-i18n="roomSettings">⚙️ Room Settings</h2>
       <div style="font-size:0.8rem;color:var(--text-muted)" id="settingsRoleLabel">You are the <span
           style="color:var(--accent3);font-weight:600">👑 owner</span> of this room.</div>
 
       <div class="form-group">
-        <label>👥 Members &amp; Roles</label>
+        <label data-i18n="membersRoles">👥 Members &amp; Roles</label>
         <div id="membersList" style="display:flex;flex-direction:column;gap:6px"></div>
-        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px">Managers can add/edit/delete cards and
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px" data-i18n="rolesHint">Managers can add/edit/delete cards and
           lists. Members must enter the room password.</div>
       </div>
 
       <div class="form-group" id="settingsReadOnlySection">
-        <label>🔒 Board Permissions</label>
+        <label data-i18n="boardPerms">🔒 Board Permissions</label>
         <div class="pw-toggle-row" onclick="toggleReadOnlyMode()">
           <input type="checkbox" id="readOnlyToggle" />
           <div class="pw-toggle-knob"></div>
           <div class="pw-toggle-label">
-            Public Read-Only Mode
-            <small style="display:block">Members can only view the board, not edit.</small>
+            <span data-i18n="publicReadOnly">Public Read-Only Mode</span>
+            <small style="display:block" data-i18n="readOnlyHint">Members can only view the board, not edit.</small>
           </div>
         </div>
       </div>
 
       <div class="form-group" id="settingsPwSection">
-        <label>🔑 Change Room Password</label>
+        <label data-i18n="changeRoomPw">🔑 Change Room Password</label>
         <div class="pw-input-inner">
-          <input type="password" id="newRoomPwInput" placeholder="New password (blank = remove)"
-            autocomplete="new-password" />
+          <input type="password" id="newRoomPwInput" data-i18n-placeholder="newPwPlaceholder"
+            placeholder="New password (blank = remove)" autocomplete="new-password" />
           <button class="pw-eye" onclick="toggleNewRoomPwEye()" tabindex="-1">👁</button>
         </div>
         <div class="room-error" id="roomPwChangeError"></div>
       </div>
 
       <div class="form-group">
-        <label>👤 Your Display Name</label>
+        <label data-i18n="yourName">👤 Your Display Name</label>
         <div style="display:flex;gap:8px">
-          <input type="text" id="ownerNameInput" placeholder="Your name..." maxlength="24" style="flex:1" />
-          <button class="btn" onclick="saveOwnerName()">Save</button>
+          <input type="text" id="ownerNameInput" data-i18n-placeholder="yourNamePlaceholder"
+            placeholder="Your name..." maxlength="24" style="flex:1" />
+          <button class="btn" onclick="saveOwnerName()" data-i18n="save">Save</button>
         </div>
       </div>
 
       <div class="form-group" style="padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);margin-top:10px"
         id="settingsStorageSection">
-        <label>🗄️ Advanced Storage</label>
-        <button class="btn" onclick="openStorageSettings()" style="width:100%">Configure Database
+        <label data-i18n="advancedStorage">🗄️ Advanced Storage</label>
+        <button class="btn" onclick="openStorageSettings()" style="width:100%" data-i18n="configureDb">Configure Database
           (SQL/Firebase)</button>
       </div>
 
       <div class="modal-actions">
-        <button class="btn" onclick="closeRoomSettings()">Close</button>
-        <button class="btn btn-primary" id="settingsPwBtn" onclick="changeRoomPassword()">🔑 Update Password</button>
+        <button class="btn" onclick="closeRoomSettings()" data-i18n="close">Close</button>
+        <button class="btn btn-primary" id="settingsPwBtn" onclick="changeRoomPassword()" data-i18n="updatePassword">🔑 Update Password</button>
       </div>
     </div>
   </div>
@@ -2627,12 +2722,25 @@
         <div id="devAdminAddError" style="font-size:0.75rem;color:var(--accent2);min-height:16px;margin-top:4px"></div>
       </div>
 
+      <!-- Board creation lock -->
+      <div style="background:rgba(247,106,138,0.05);border:1px solid rgba(247,106,138,0.2);border-radius:10px;padding:12px 14px">
+        <div style="font-size:0.68rem;font-weight:600;color:var(--danger,#f76a8a);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px" data-i18n="devLockTitle">Board Creation Lock</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px" data-i18n="devLockDesc">When enabled, only registered devs can create new boards on this instance.</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="pw-toggle-row" id="devLockToggleRow" onclick="toggleDevLock()" style="flex:1">
+            <input type="checkbox" id="devLockCheckbox" />
+            <div class="pw-toggle-knob"></div>
+            <div class="pw-toggle-label" id="devLockLabel" data-i18n="devLockDisabled">Open — anyone can create</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Current dev list -->
       <div>
         <div
           style="font-size:0.68rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">
           Current Devs in DB</div>
-        <div id="devAdminList" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto">
+        <div id="devAdminList" style="display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto">
         </div>
       </div>
 
@@ -2644,50 +2752,64 @@
     </div>
   </div>
 
+  <!-- FANCY CONFIRM DIALOG -->
+  <div class="room-overlay" id="confirmOverlay">
+    <div class="room-box" style="width:380px;gap:0">
+      <div id="confirmIconWrap" style="text-align:center;font-size:2.2rem;margin-bottom:10px">🗑</div>
+      <h2 id="confirmTitle" style="text-align:center;margin-bottom:6px" data-i18n="confirmDelete">Confirm Delete</h2>
+      <p id="confirmMsg" style="text-align:center;font-size:0.88rem;color:var(--text-muted);margin:0 0 6px"></p>
+      <p id="confirmSubMsg" style="text-align:center;font-size:0.78rem;color:var(--accent2);margin:0 0 20px;min-height:1em"></p>
+      <div class="modal-actions" style="justify-content:center;gap:10px">
+        <button class="btn" onclick="confirmDialogCancel()" id="confirmNoBtn" data-i18n="confirmNo">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmDialogOk()" id="confirmYesBtn" data-i18n="confirmYes">Yes, delete</button>
+      </div>
+    </div>
+  </div>
+
   <!-- STORAGE SETTINGS -->
   <div class="room-overlay" id="storageSettingsOverlay">
     <div class="room-box">
-      <h2>🗄️ Storage Configuration</h2>
-      <p style="font-size:0.8rem;color:var(--text-muted)">Override where this room's cards and data are saved. The
+      <h2 data-i18n="storageConfigTitle">🗄️ Storage Configuration</h2>
+      <p style="font-size:0.8rem;color:var(--text-muted)" data-i18n="storageConfigDesc">Override where this room's cards and data are saved. The
         default uses the built-in Firebase.</p>
 
       <div class="form-group">
-        <label>Storage Backend</label>
+        <label data-i18n="storageBackend">Storage Backend</label>
         <select id="storageTypeSelect" class="col-title" style="padding:4px;width:100%"
           onchange="toggleStorageFields()">
-          <option value="default">Default (Index.html Config)</option>
-          <option value="firebase">Custom Firebase RTDB</option>
-          <option value="sql">MySQL / REST API</option>
+          <option value="default" data-i18n="storageDefault">Default (Index.html Config)</option>
+          <option value="firebase" data-i18n="storageFirebase">Custom Firebase RTDB</option>
+          <option value="sql" data-i18n="storageSql">MySQL / REST API</option>
         </select>
       </div>
 
       <div id="storageFirebaseFields" style="display:none">
         <div class="form-group">
-          <label>Database URL</label>
+          <label data-i18n="storageFbUrl">Database URL</label>
           <input type="text" id="customFbUrl" placeholder="https://your-project.firebaseio.com" />
         </div>
         <div class="form-group">
-          <label>API Key (Optional)</label>
+          <label data-i18n="storageFbKey">API Key (Optional)</label>
           <input type="text" id="customFbKey" placeholder="AIzaSy..." />
         </div>
       </div>
 
       <div id="storageSqlFields" style="display:none">
         <div class="form-group">
-          <label>API Endpoint URL</label>
+          <label data-i18n="storageSqlUrl">API Endpoint URL</label>
           <input type="text" id="customSqlUrl" placeholder="https://yourserver.com/api/board.php" />
-          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">Your endpoint must accept POST (JSON) to
+          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px" data-i18n="storageSqlHint">Your endpoint must accept POST (JSON) to
             save, and GET ?room=id to retrieve.</div>
         </div>
         <div class="form-group">
-          <label>Auth Token (Optional HTTP Header)</label>
+          <label data-i18n="storageSqlToken">Auth Token (Optional HTTP Header)</label>
           <input type="text" id="customSqlToken" placeholder="Bearer your-secret-token" />
         </div>
       </div>
 
       <div class="modal-actions">
-        <button class="btn" onclick="closeStorageSettings()">Cancel</button>
-        <button class="btn btn-primary" onclick="saveStorageSettings()">💾 Apply Storage</button>
+        <button class="btn" onclick="closeStorageSettings()" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-primary" onclick="saveStorageSettings()" data-i18n="storageApply">💾 Apply Storage</button>
       </div>
     </div>
   </div>
@@ -2724,6 +2846,757 @@
     let _currentBoardId = _boardParamCloud || _boardParamLocal || 'default';
     let _currentBoardType = _boardParamCloud ? 'cloud' : 'local';
     let STORAGE_KEY = _currentBoardType === 'local' ? 'pb_local_' + _currentBoardId : 'pb_cloud_' + _currentBoardId;
+
+    // ── i18n ──
+    let _lang = localStorage.getItem('pb_lang') || 'en';
+    const LANGUAGES = [
+      { code: 'en', name: 'English',    flag: '🇬🇧' },
+      { code: 'de', name: 'Deutsch',    flag: '🇩🇪' },
+      { code: 'fr', name: 'Français',   flag: '🇫🇷' },
+      { code: 'es', name: 'Español',    flag: '🇪🇸' },
+      { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
+      { code: 'it', name: 'Italiano',   flag: '🇮🇹' },
+      { code: 'pt', name: 'Português',  flag: '🇵🇹' },
+      { code: 'pl', name: 'Polski',     flag: '🇵🇱' },
+      { code: 'tr', name: 'Türkçe',     flag: '🇹🇷' },
+      { code: 'sv', name: 'Svenska',    flag: '🇸🇪' },
+      { code: 'no', name: 'Norsk',      flag: '🇳🇴' },
+      { code: 'da', name: 'Dansk',      flag: '🇩🇰' },
+      { code: 'fi', name: 'Suomi',      flag: '🇫🇮' },
+      { code: 'ru', name: 'Русский',    flag: '🇷🇺' },
+      { code: 'zh', name: '中文',        flag: '🇨🇳' },
+      { code: 'ja', name: '日本語',       flag: '🇯🇵' },
+    ];
+    const TRANSLATIONS = {
+      en: {
+        // Header
+        dbBtn: '🗄️ Database', setName: 'Set name', collaborate: '👥 Collaborate',
+        share: '🔗 Share', clearAll: 'Clear All', newList: '+ New List',
+        // Username popover
+        yourDisplayName: 'Your display name', save: 'Save',
+        deviceIdentity: 'Device Identity', export: 'Export', import: 'Import',
+        copyUserId: 'Copy Raw User ID (For Dev Role)',
+        langToggle: '🌐 Deutsch', // button label (switches to German)
+        // Veil
+        joiningRoom: 'Joining Room...', syncData: 'Synchronizing secure data',
+        // Dashboard
+        yourWorkspaces: 'Your Workspaces', newWorkspace: '+ New Workspace',
+        newBoard: 'New Board', cloudSync: 'Cloud Sync', offlineLocal: 'Offline Local',
+        deleteWorkspace: 'Delete Workspace',
+        createBoardConfirm: 'Create a multi-player Collaborative Board?\n(Click OK for Cloud Sync, Cancel for Offline Local)',
+        untitledBoard: 'Untitled Board',
+        // Card modal
+        description: 'Description', descPlaceholder: 'Add notes, links, or context...',
+        checklist: '☑ Checklist', clPlaceholder: 'Add an item and press Enter...',
+        clAddBtn: 'Add', priority: '⚡ Priority', prioNone: '— None', prioLow: '🟢 Low',
+        prioMed: '🟡 Med', prioHigh: '🔴 High', dueDate: '📅 Due Date',
+        moveToList: '📂 Move To List', labels: '🏷 Labels', newLabel: '+ New label',
+        labelPlaceholder: 'Label name...', assignedTo: '👥 Assigned To',
+        deleteCard: '🗑 Delete card', cancel: 'Cancel', createCard: '✓ Create Card',
+        saveCard: '✓ Save Changes', saved: 'Saved',
+        // Col modal
+        newListTitle: 'New List', editListTitle: 'Edit List', listName: 'List Name *',
+        listNamePlaceholder: 'e.g. To Do, In Progress...', color: 'Color', saveList: 'Save List',
+        // Share modal
+        shareBoard: '🔗 Share Board',
+        shareNotice: 'Your board is encoded into a URL. Anyone with the link can import your board — no account needed.',
+        passwordProtect: '🔒 Password protect',
+        pwRecipient: 'Recipients must enter the password to import.',
+        password: 'Password', yourShareLink: 'Your Share Link',
+        close: 'Close', generateLink: '⚡ Generate Link', copyLink: '📋 Copy Link',
+        // Overlays
+        passwordRequired: '🔐 Password Required',
+        boardPasswordProtected: 'This board is password protected. Enter the password to import it.',
+        roomPasswordProtected: 'This collaboration room is password protected. Enter the password to join.',
+        roomPassword: 'Room Password', enterPw: 'Enter password...',
+        unlockImport: 'Unlock & Import', joinRoom: 'Join Room',
+        startCollab: '👥 Start Collaboration',
+        collabOptional: 'Optionally protect this room with a password. Anyone joining will need to enter it.',
+        pwOptional: 'Password (optional)', pwLeaveBlank: 'Leave blank for no password...',
+        createRoom: 'Create Room',
+        usernameTitle: '👤 Your Display Name',
+        usernameSubtitle: 'Set a name so your teammates can see who you are in the room.',
+        displayName: 'Display Name', namePlaceholder: 'e.g. David', saveName: 'Save Name',
+        importIdentity: '🔄 Import Identity',
+        importWarning: 'WARNING: This will overwrite your current device identity. You will lose owner access to any local boards on this device.',
+        pasteIdentity: 'Paste Exported Identity String', overwriteImport: 'Overwrite & Import',
+        siteLocked: '🔒 Site Protected',
+        siteLockedMsg: 'This instance of PrivacyBoard requires the site password to create new boards.',
+        siteCreationPw: 'Site Creation Password', unlock: 'Unlock',
+        // Room settings
+        roomSettings: '⚙️ Room Settings', membersRoles: '👥 Members & Roles',
+        rolesHint: 'Managers can add/edit/delete cards and lists. Members must enter the room password.',
+        boardPerms: '🔒 Board Permissions', publicReadOnly: 'Public Read-Only Mode',
+        readOnlyHint: 'Members can only view the board, not edit.',
+        changeRoomPw: '🔑 Change Room Password', newPwPlaceholder: 'New password (blank = remove)',
+        yourName: '👤 Your Display Name', advancedStorage: '🗄️ Advanced Storage',
+        configureDb: 'Configure Database (SQL/Firebase)',
+        transferOwnership: '👑 Transfer Ownership',
+        dangerZone: '💀 Danger Zone', deleteRoomData: '🗑 Delete Room Data',
+        roleBadgeOwner: 'Owner', roleBadgeManager: 'Manager', roleBadgeMember: 'Member',
+        devBadge: 'Dev', online: 'online', anonymous: 'Anonymous', you: 'You', thisUser: 'this user',
+        unlockSettings: 'Unlock Settings', verifying: 'Verifying...', wrongPassword: 'Wrong password',
+        workspaceNamePrompt: 'Workspace name?', deleteWorkspaceConfirm: 'Delete this workspace?',
+        deleteLocalBoardConfirm: 'Delete this local board?', deleteCloudBoardConfirm: 'Delete this cloud board?',
+        transferTo: 'Transfer to', transferConfirm: 'Transfer ownership to {{name}}? You will become a manager.',
+        ownershipTransferred: 'Ownership transferred', noMembersOnline: 'No members online',
+        youAreOwner: 'You are the owner of this room.', youAreManager: 'You are a manager in this room.',
+        settingsApplied: '✅ Settings applied', nameUpdated: 'Name updated', clearAllConfirm: 'Clear entire board? This cannot be undone.',
+        clickGenLink: 'Generate the link first.', apiUrlRequired: 'API URL required', dbUrlRequired: 'Database URL required',
+        encryptedRoomNoKey: 'Encrypted room — no key found', importBoardConfirm: 'Import this board into your current board?',
+        toastDeleteCloudError: '❌ Failed to delete cloud board.', toastEncryptedRoomNoKey: '❌ Missing decryption key for room.',
+        toastInvalidIdentity: '❌ Invalid identity string.', toastReadOnlyMode: '👁 Read-only mode enabled.',
+        toastRoleUpdated: '✅ Role updated', toastSavingStorage: 'Saving storage settings...',
+        updatePassword: '🔑 Update Password', settingsAccess: '🔐 Settings Access',
+        settingsAccessMsg: 'Enter the room password to access Room Settings.',
+        enterRoomPassword: 'Enter room password...', yourNamePlaceholder: 'Your name...',
+        cardTitlePlaceholder: 'Card title...', addCard: '+ Add card', noChecklistItems: 'No items yet — add one below.',
+        clickToEdit: 'Click to edit', removeItem: 'Remove item', movedToList: 'Moved to',
+        deleteCardConfirm: 'Delete this card?', cardDeleted: 'Card deleted', newCardMode: 'New Card',
+        editingMode: 'Editing', noListsYetHtml: 'No lists yet — click <strong>+ New List</strong> to get started.',
+        addList: 'Add list', listOptions: 'List options', renameList: 'Rename list', clearCards: 'Clear cards',
+        deleteList: 'Delete list', duplicate: 'Duplicate', delete: 'Delete', doneBadge: '✓ Done', unknown: 'Unknown',
+        myBoard: 'My Board', column: 'Column', closeEsc: 'Close (Esc)', clearDueDateTitle: 'Clear due date',
+        // Toasts
+        toastRoomCreated: '✅ Room created!', toastLinkCopied: '🔗 Link copied — share it!',
+        toastNameSaved: '👤 Name saved: ', toastIdentityCopied: '✅ Identity copied to clipboard!',
+        toastIdentityImported: '⚡ Identity Imported! Reloading...',
+        toastBoardImported: 'Board imported! Welcome 👋',
+        toastBoardDeleted: '🗑 Board deleted.',
+        toastClearConfirm: 'Clear entire board? This cannot be undone.',
+        noLabelsYet: 'No labels yet — create one below.',
+        dueToday: 'Due today!', dueTomorrow: 'Due tomorrow',
+        dueInDays: 'In {{n}} days', dueOverdue: 'Overdue by {{n}} day(s)',
+        toastLabelExists: 'Label already exists', toastLabelCreated: '🏷 Label "',
+        // Storage config
+        storageConfigTitle: '🗄️ Storage Configuration', storageConfigDesc: "Override where this room's cards and data are saved. The default uses the built-in Firebase.",
+        storageBackend: 'Storage Backend', storageDefault: 'Default (Index.html Config)',
+        storageFirebase: 'Custom Firebase RTDB', storageSql: 'MySQL / REST API',
+        storageFbUrl: 'Database URL', storageFbKey: 'API Key (Optional)',
+        storageSqlUrl: 'API Endpoint URL', storageSqlToken: 'Auth Token (Optional HTTP Header)',
+        storageSqlHint: 'Your endpoint must accept POST (JSON) to save, and GET ?room=id to retrieve.',
+        storageApply: '💾 Apply Storage',
+        // Confirm dialog
+        confirmDelete: 'Confirm Delete', confirmDeleteList: 'Delete list "{{name}}"?',
+        confirmDeleteListCards: 'This will also delete {{n}} card(s) inside it.',
+        confirmDeleteCard: 'Delete card "{{name}}"?', confirmDeleteBoard: 'Delete board "{{name}}"?',
+        confirmDeleteWorkspace: 'Delete workspace "{{name}}"?',
+        confirmClearList: 'Clear all cards in "{{name}}"?',
+        confirmRemoveDev: 'Remove dev privileges for this user?',
+        confirmYes: 'Yes, delete', confirmNo: 'Cancel',
+        // Board reappear / deleted room
+        toastRoomDeletedRemote: '🗑 This room was deleted from the database.',
+        // Dev lock
+        devLockTitle: 'Board Creation Lock', devLockDesc: 'When enabled, only registered devs can create new boards on this instance.',
+        devLockEnabled: 'Locked — devs only', devLockDisabled: 'Open — anyone can create',
+        toastDevLockOn: '🔒 Board creation locked to devs only.',
+        toastDevLockOff: '🔓 Board creation unlocked.',
+        toastNotDevLocked: '🔒 Board creation is restricted to devs on this instance.',
+        updatePassword: '🔑 Update Password',
+      },
+      de: {
+        // Header
+        dbBtn: '🗄️ Datenbank', setName: 'Name setzen', collaborate: '👥 Zusammenarbeiten',
+        share: '🔗 Teilen', clearAll: 'Alles löschen', newList: '+ Neue Liste',
+        // Username popover
+        yourDisplayName: 'Dein Anzeigename', save: 'Speichern',
+        deviceIdentity: 'Geräteidentität', export: 'Exportieren', import: 'Importieren',
+        copyUserId: 'Benutzer-ID kopieren (für Dev-Rolle)',
+        langToggle: '🌐 English',
+        // Veil
+        joiningRoom: 'Raum beitreten...', syncData: 'Sichere Daten synchronisieren',
+        // Dashboard
+        yourWorkspaces: 'Deine Arbeitsbereiche', newWorkspace: '+ Neuer Bereich',
+        newBoard: 'Neues Board', cloudSync: 'Cloud-Sync', offlineLocal: 'Offline lokal',
+        deleteWorkspace: 'Bereich löschen',
+        createBoardConfirm: 'Mehrspieler-Kollaborations-Board erstellen?\n(OK = Cloud-Sync, Abbrechen = Offline)',
+        untitledBoard: 'Unbenanntes Board',
+        // Card modal
+        description: 'Beschreibung', descPlaceholder: 'Notizen, Links oder Kontext hinzufügen...',
+        checklist: '☑ Checkliste', clPlaceholder: 'Eintrag hinzufügen und Enter drücken...',
+        clAddBtn: 'Hinzufügen', priority: '⚡ Priorität', prioNone: '— Keine', prioLow: '🟢 Niedrig',
+        prioMed: '🟡 Mittel', prioHigh: '🔴 Hoch', dueDate: '📅 Fälligkeitsdatum',
+        moveToList: '📂 In Liste verschieben', labels: '🏷 Labels', newLabel: '+ Neues Label',
+        labelPlaceholder: 'Label-Name...', assignedTo: '👥 Zugewiesen an',
+        deleteCard: '🗑 Karte löschen', cancel: 'Abbrechen', createCard: '✓ Karte erstellen',
+        saveCard: '✓ Änderungen speichern', saved: 'Gespeichert',
+        // Col modal
+        newListTitle: 'Neue Liste', editListTitle: 'Liste bearbeiten', listName: 'Listenname *',
+        listNamePlaceholder: 'z.B. Zu tun, In Bearbeitung...', color: 'Farbe', saveList: 'Liste speichern',
+        // Share modal
+        shareBoard: '🔗 Board teilen',
+        shareNotice: 'Dein Board wird als URL kodiert. Jeder mit dem Link kann dein Board importieren — kein Konto erforderlich.',
+        passwordProtect: '🔒 Passwortschutz',
+        pwRecipient: 'Empfänger müssen das Passwort eingeben, um zu importieren.',
+        password: 'Passwort', yourShareLink: 'Dein Freigabelink',
+        close: 'Schließen', generateLink: '⚡ Link generieren', copyLink: '📋 Link kopieren',
+        // Overlays
+        passwordRequired: '🔐 Passwort erforderlich',
+        boardPasswordProtected: 'Dieses Board ist passwortgeschützt. Gib das Passwort ein, um es zu importieren.',
+        roomPasswordProtected: 'Dieser Kollaborationsraum ist passwortgeschützt. Gib das Passwort ein, um beizutreten.',
+        roomPassword: 'Raumpasswort', enterPw: 'Passwort eingeben...',
+        unlockImport: 'Entsperren & Importieren', joinRoom: 'Raum beitreten',
+        startCollab: '👥 Zusammenarbeiten starten',
+        collabOptional: 'Schütze diesen Raum optional mit einem Passwort. Alle Beitretenden müssen es eingeben.',
+        pwOptional: 'Passwort (optional)', pwLeaveBlank: 'Leer lassen für kein Passwort...',
+        createRoom: 'Raum erstellen',
+        usernameTitle: '👤 Dein Anzeigename',
+        usernameSubtitle: 'Lege einen Namen fest, damit deine Teamkollegen wissen, wer du bist.',
+        displayName: 'Anzeigename', namePlaceholder: 'z.B. David', saveName: 'Namen speichern',
+        importIdentity: '🔄 Identität importieren',
+        importWarning: 'WARNUNG: Dies überschreibt deine aktuelle Geräteidentität. Du verlierst den Besitzerzugang zu lokalen Boards auf diesem Gerät.',
+        pasteIdentity: 'Exportierten Identitätsstring einfügen', overwriteImport: 'Überschreiben & Importieren',
+        siteLocked: '🔒 Seite geschützt',
+        siteLockedMsg: 'Diese PrivacyBoard-Instanz erfordert das Seitenpasswort zum Erstellen neuer Boards.',
+        siteCreationPw: 'Seiten-Erstellungspasswort', unlock: 'Entsperren',
+        // Room settings
+        roomSettings: '⚙️ Raumeinstellungen', membersRoles: '👥 Mitglieder & Rollen',
+        rolesHint: 'Manager können Karten und Listen hinzufügen/bearbeiten/löschen. Mitglieder müssen das Raumpasswort eingeben.',
+        boardPerms: '🔒 Board-Berechtigungen', publicReadOnly: 'Öffentlicher Nur-Lese-Modus',
+        readOnlyHint: 'Mitglieder können das Board nur anzeigen, nicht bearbeiten.',
+        changeRoomPw: '🔑 Raumpasswort ändern', newPwPlaceholder: 'Neues Passwort (leer = entfernen)',
+        yourName: '👤 Dein Anzeigename', advancedStorage: '🗄️ Erweiterter Speicher',
+        configureDb: 'Datenbank konfigurieren (SQL/Firebase)',
+        transferOwnership: '👑 Besitz übertragen',
+        dangerZone: '💀 Gefahrenzone', deleteRoomData: '🗑 Raumdaten löschen',
+        roleBadgeOwner: 'Besitzer', roleBadgeManager: 'Manager', roleBadgeMember: 'Mitglied',
+        devBadge: 'Dev', online: 'online', anonymous: 'Anonym', you: 'Du', thisUser: 'diesem Benutzer',
+        unlockSettings: 'Einstellungen entsperren', verifying: 'Überprüfen...', wrongPassword: 'Falsches Passwort',
+        workspaceNamePrompt: 'Name des Arbeitsbereichs?', deleteWorkspaceConfirm: 'Diesen Arbeitsbereich löschen?',
+        deleteLocalBoardConfirm: 'Dieses lokale Board löschen?', deleteCloudBoardConfirm: 'Dieses Cloud-Board löschen?',
+        transferTo: 'Übertragen an', transferConfirm: 'Besitz an {{name}} übertragen? Du wirst danach Manager.',
+        ownershipTransferred: 'Besitz übertragen', noMembersOnline: 'Keine Mitglieder online',
+        youAreOwner: 'Du bist der Besitzer dieses Raums.', youAreManager: 'Du bist Manager in diesem Raum.',
+        settingsApplied: '✅ Einstellungen übernommen', nameUpdated: 'Name aktualisiert', clearAllConfirm: 'Gesamtes Board löschen? Dies kann nicht rückgängig gemacht werden.',
+        clickGenLink: 'Erzeuge zuerst den Link.', apiUrlRequired: 'API-URL erforderlich', dbUrlRequired: 'Datenbank-URL erforderlich',
+        encryptedRoomNoKey: 'Verschlüsselter Raum — kein Schlüssel gefunden', importBoardConfirm: 'Dieses Board in dein aktuelles Board importieren?',
+        toastDeleteCloudError: '❌ Cloud-Board konnte nicht gelöscht werden.', toastEncryptedRoomNoKey: '❌ Fehlender Entschlüsselungsschlüssel für Raum.',
+        toastInvalidIdentity: '❌ Ungültiger Identitätsstring.', toastReadOnlyMode: '👁 Nur-Lese-Modus aktiviert.',
+        toastRoleUpdated: '✅ Rolle aktualisiert', toastSavingStorage: 'Speichere Speichereinstellungen...',
+        updatePassword: '🔑 Passwort aktualisieren', settingsAccess: '🔐 Einstellungen entsperren',
+        settingsAccessMsg: 'Gib das Raum-Passwort ein, um auf die Raumeinstellungen zuzugreifen.',
+        enterRoomPassword: 'Raum-Passwort eingeben...', yourNamePlaceholder: 'Dein Name...',
+        cardTitlePlaceholder: 'Kartentitel...', addCard: '+ Karte hinzufügen', noChecklistItems: 'Noch keine Einträge — füge unten einen hinzu.',
+        clickToEdit: 'Zum Bearbeiten klicken', removeItem: 'Eintrag entfernen', movedToList: 'Verschoben nach',
+        deleteCardConfirm: 'Diese Karte löschen?', cardDeleted: 'Karte gelöscht', newCardMode: 'Neue Karte',
+        editingMode: 'Bearbeiten', noListsYetHtml: 'Noch keine Listen — klicke auf <strong>+ Neue Liste</strong>, um zu starten.',
+        addList: 'Liste hinzufügen', listOptions: 'Listenoptionen', renameList: 'Liste umbenennen', clearCards: 'Karten leeren',
+        deleteList: 'Liste löschen', duplicate: 'Duplizieren', delete: 'Löschen', doneBadge: '✓ Erledigt', unknown: 'Unbekannt',
+        myBoard: 'Mein Board', column: 'Spalte', closeEsc: 'Schließen (Esc)', clearDueDateTitle: 'Fälligkeitsdatum löschen',
+        // Toasts
+        toastRoomCreated: '✅ Raum erstellt!', toastLinkCopied: '🔗 Link kopiert — jetzt teilen!',
+        toastNameSaved: '👤 Name gespeichert: ', toastIdentityCopied: '✅ Identität in die Zwischenablage kopiert!',
+        toastIdentityImported: '⚡ Identität importiert! Neu laden...',
+        toastBoardImported: 'Board importiert! Willkommen 👋',
+        toastBoardDeleted: '🗑 Board gelöscht.',
+        toastClearConfirm: 'Gesamtes Board löschen? Dies kann nicht rückgängig gemacht werden.',
+        noLabelsYet: 'Noch keine Labels — erstelle unten ein neues.',
+        dueToday: 'Heute fällig!', dueTomorrow: 'Morgen fällig',
+        dueInDays: 'In {{n}} Tagen', dueOverdue: 'Überfällig seit {{n}} Tag(en)',
+        toastLabelExists: 'Label existiert bereits', toastLabelCreated: '🏷 Label "',
+        // Storage config
+        storageConfigTitle: '🗄️ Speicherkonfiguration', storageConfigDesc: 'Überschreibe, wo die Karten und Daten dieses Raums gespeichert werden. Standard ist das eingebaute Firebase.',
+        storageBackend: 'Speicher-Backend', storageDefault: 'Standard (Index.html Konfiguration)',
+        storageFirebase: 'Eigene Firebase RTDB', storageSql: 'MySQL / REST API',
+        storageFbUrl: 'Datenbank-URL', storageFbKey: 'API-Schlüssel (optional)',
+        storageSqlUrl: 'API-Endpunkt-URL', storageSqlToken: 'Auth-Token (optionaler HTTP-Header)',
+        storageSqlHint: 'Der Endpunkt muss POST (JSON) zum Speichern und GET ?room=id zum Abrufen akzeptieren.',
+        storageApply: '💾 Speicher anwenden',
+        // Confirm dialog
+        confirmDelete: 'Löschen bestätigen', confirmDeleteList: 'Liste "{{name}}" löschen?',
+        confirmDeleteListCards: 'Damit werden auch {{n}} Karte(n) darin gelöscht.',
+        confirmDeleteCard: 'Karte "{{name}}" löschen?', confirmDeleteBoard: 'Board "{{name}}" löschen?',
+        confirmDeleteWorkspace: 'Arbeitsbereich "{{name}}" löschen?',
+        confirmClearList: 'Alle Karten in "{{name}}" leeren?',
+        confirmRemoveDev: 'Dev-Rechte für diesen Benutzer entfernen?',
+        confirmYes: 'Ja, löschen', confirmNo: 'Abbrechen',
+        // Board reappear / deleted room
+        toastRoomDeletedRemote: '🗑 Dieser Raum wurde aus der Datenbank gelöscht.',
+        // Dev lock
+        devLockTitle: 'Board-Erstellungssperre', devLockDesc: 'Wenn aktiviert, können nur registrierte Devs neue Boards in dieser Instanz erstellen.',
+        devLockEnabled: 'Gesperrt — nur Devs', devLockDisabled: 'Offen — jeder kann erstellen',
+        toastDevLockOn: '🔒 Board-Erstellung auf Devs beschränkt.',
+        toastDevLockOff: '🔓 Board-Erstellung entsperrt.',
+        toastNotDevLocked: '🔒 Die Board-Erstellung ist auf Devs dieser Instanz beschränkt.',
+        updatePassword: '🔑 Passwort aktualisieren',
+      },
+      fr: {
+        dbBtn: '🗄️ Base de données', setName: 'Définir le nom', collaborate: '👥 Collaborer',
+        share: '🔗 Partager', clearAll: 'Tout effacer', newList: '+ Nouvelle liste',
+        yourDisplayName: 'Votre nom', save: 'Enregistrer', deviceIdentity: 'Identité',
+        export: 'Exporter', import: 'Importer', copyUserId: 'Copier l\'ID utilisateur (rôle Dev)',
+        yourWorkspaces: 'Vos espaces', newWorkspace: '+ Nouvel espace', newBoard: 'Nouveau tableau',
+        cloudSync: 'Sync cloud', offlineLocal: 'Hors ligne', deleteWorkspace: 'Supprimer l\'espace',
+        description: 'Description', descPlaceholder: 'Ajouter des notes, liens...',
+        checklist: '☑ Liste de tâches', clPlaceholder: 'Ajouter et Entrée...', clAddBtn: 'Ajouter',
+        priority: '⚡ Priorité', prioNone: '— Aucune', prioLow: '🟢 Basse', prioMed: '🟡 Moyenne', prioHigh: '🔴 Haute',
+        dueDate: '📅 Échéance', moveToList: '📂 Déplacer vers', labels: '🏷 Étiquettes',
+        newLabel: '+ Nouvelle étiquette', labelPlaceholder: 'Nom...', assignedTo: '👥 Assigné à',
+        deleteCard: '🗑 Supprimer la carte', cancel: 'Annuler',
+        createCard: '✓ Créer la carte', saveCard: '✓ Enregistrer', saved: 'Enregistré',
+        newListTitle: 'Nouvelle liste', editListTitle: 'Modifier la liste',
+        listName: 'Nom de la liste *', listNamePlaceholder: 'ex. À faire, En cours...',
+        color: 'Couleur', saveList: 'Enregistrer la liste',
+        shareBoard: '🔗 Partager le tableau', close: 'Fermer',
+        generateLink: '⚡ Générer un lien', copyLink: '📋 Copier le lien',
+        roomSettings: '⚙️ Paramètres', membersRoles: '👥 Membres & Rôles',
+        rolesHint: 'Les managers peuvent modifier les cartes. Les membres doivent entrer le mot de passe.',
+        boardPerms: '🔒 Autorisations', publicReadOnly: 'Mode lecture seule',
+        readOnlyHint: 'Les membres peuvent seulement voir.', changeRoomPw: '🔑 Changer le mot de passe',
+        newPwPlaceholder: 'Nouveau mot de passe (vide = supprimer)', yourName: '👤 Votre nom',
+        yourNamePlaceholder: 'Votre nom...', advancedStorage: '🗄️ Stockage avancé',
+        configureDb: 'Configurer la base de données', updatePassword: '🔑 Mettre à jour le mot de passe',
+        addCard: '+ Ajouter une carte', addList: 'Ajouter une liste', cardTitlePlaceholder: 'Titre de la carte...',
+        noChecklistItems: 'Aucun élément — ajoutez-en un ci-dessous.', clickToEdit: 'Cliquer pour modifier',
+        removeItem: 'Supprimer l\'élément', movedToList: 'Déplacé vers', deleteCardConfirm: 'Supprimer cette carte ?',
+        cardDeleted: 'Carte supprimée', newCardMode: 'Nouvelle carte', editingMode: 'Modification',
+        noListsYetHtml: 'Aucune liste — cliquez sur <strong>+ Nouvelle liste</strong> pour commencer.',
+        listOptions: 'Options de liste', renameList: 'Renommer la liste', clearCards: 'Vider les cartes',
+        deleteList: 'Supprimer la liste', duplicate: 'Dupliquer', delete: 'Supprimer',
+        doneBadge: '✓ Fait', unknown: 'Inconnu', myBoard: 'Mon tableau', column: 'Colonne',
+        closeEsc: 'Fermer (Échap)', clearDueDateTitle: 'Supprimer la date',
+        noLabelsYet: 'Pas encore d\'étiquettes — créez-en une ci-dessous.',
+        dueToday: 'Échéance aujourd\'hui!', dueTomorrow: 'Demain',
+        dueInDays: 'Dans {{n}} jour(s)', dueOverdue: 'En retard de {{n}} jour(s)',
+        confirmDelete: 'Confirmer la suppression', confirmYes: 'Oui, supprimer', confirmNo: 'Annuler',
+        confirmDeleteCard: 'Supprimer "{{name}}" ?', confirmDeleteList: 'Supprimer la liste "{{name}}" ?',
+        confirmDeleteListCards: 'Cela supprimera aussi {{n}} carte(s).',
+        confirmDeleteBoard: 'Supprimer le tableau "{{name}}" ?',
+        confirmDeleteWorkspace: 'Supprimer l\'espace "{{name}}" ?',
+        confirmClearList: 'Vider toutes les cartes de "{{name}}" ?',
+        confirmRemoveDev: 'Retirer les droits dev de cet utilisateur ?',
+        toastRoomDeletedRemote: '🗑 Cette salle a été supprimée de la base de données.',
+        toastNotDevLocked: '🔒 La création de tableaux est réservée aux devs.',
+        storageApply: '💾 Appliquer', nameUpdated: 'Nom mis à jour',
+        toastNameSaved: '👤 Nom enregistré : ', clearAllConfirm: 'Effacer tout le tableau ? Action irréversible.',
+      },
+      es: {
+        dbBtn: '🗄️ Base de datos', setName: 'Establecer nombre', collaborate: '👥 Colaborar',
+        share: '🔗 Compartir', clearAll: 'Borrar todo', newList: '+ Nueva lista',
+        yourDisplayName: 'Tu nombre', save: 'Guardar', deviceIdentity: 'Identidad del dispositivo',
+        export: 'Exportar', import: 'Importar', copyUserId: 'Copiar ID de usuario (rol Dev)',
+        yourWorkspaces: 'Tus espacios', newWorkspace: '+ Nuevo espacio', newBoard: 'Nuevo tablero',
+        cloudSync: 'Sync en la nube', offlineLocal: 'Local sin conexión', deleteWorkspace: 'Eliminar espacio',
+        description: 'Descripción', descPlaceholder: 'Añadir notas, enlaces...',
+        checklist: '☑ Lista de verificación', clPlaceholder: 'Añadir y pulsar Intro...', clAddBtn: 'Añadir',
+        priority: '⚡ Prioridad', prioNone: '— Ninguna', prioLow: '🟢 Baja', prioMed: '🟡 Media', prioHigh: '🔴 Alta',
+        dueDate: '📅 Vencimiento', moveToList: '📂 Mover a', labels: '🏷 Etiquetas',
+        newLabel: '+ Nueva etiqueta', labelPlaceholder: 'Nombre...', assignedTo: '👥 Asignado a',
+        deleteCard: '🗑 Eliminar tarjeta', cancel: 'Cancelar',
+        createCard: '✓ Crear tarjeta', saveCard: '✓ Guardar', saved: 'Guardado',
+        newListTitle: 'Nueva lista', editListTitle: 'Editar lista',
+        listName: 'Nombre de la lista *', listNamePlaceholder: 'ej. Por hacer, En progreso...',
+        color: 'Color', saveList: 'Guardar lista',
+        shareBoard: '🔗 Compartir tablero', close: 'Cerrar',
+        generateLink: '⚡ Generar enlace', copyLink: '📋 Copiar enlace',
+        roomSettings: '⚙️ Ajustes de sala', membersRoles: '👥 Miembros y roles',
+        rolesHint: 'Los managers pueden editar tarjetas. Los miembros deben introducir contraseña.',
+        boardPerms: '🔒 Permisos', publicReadOnly: 'Modo solo lectura',
+        readOnlyHint: 'Los miembros solo pueden ver.', changeRoomPw: '🔑 Cambiar contraseña',
+        newPwPlaceholder: 'Nueva contraseña (vacío = eliminar)', yourName: '👤 Tu nombre',
+        yourNamePlaceholder: 'Tu nombre...', advancedStorage: '🗄️ Almacenamiento avanzado',
+        configureDb: 'Configurar base de datos', updatePassword: '🔑 Actualizar contraseña',
+        addCard: '+ Añadir tarjeta', addList: 'Añadir lista', cardTitlePlaceholder: 'Título de tarjeta...',
+        noChecklistItems: 'Sin elementos — añade uno abajo.', clickToEdit: 'Clic para editar',
+        removeItem: 'Eliminar elemento', movedToList: 'Movido a', cardDeleted: 'Tarjeta eliminada',
+        newCardMode: 'Nueva tarjeta', editingMode: 'Editando',
+        noListsYetHtml: 'Sin listas — haz clic en <strong>+ Nueva lista</strong> para empezar.',
+        listOptions: 'Opciones de lista', renameList: 'Renombrar lista', clearCards: 'Vaciar tarjetas',
+        deleteList: 'Eliminar lista', duplicate: 'Duplicar', delete: 'Eliminar',
+        doneBadge: '✓ Hecho', unknown: 'Desconocido', myBoard: 'Mi tablero', column: 'Columna',
+        closeEsc: 'Cerrar (Esc)', clearDueDateTitle: 'Borrar fecha',
+        noLabelsYet: 'Sin etiquetas aún — crea una abajo.',
+        dueToday: '¡Vence hoy!', dueTomorrow: 'Mañana',
+        dueInDays: 'En {{n}} día(s)', dueOverdue: 'Vencido hace {{n}} día(s)',
+        confirmDelete: 'Confirmar eliminación', confirmYes: 'Sí, eliminar', confirmNo: 'Cancelar',
+        confirmDeleteCard: '¿Eliminar "{{name}}"?', confirmDeleteList: '¿Eliminar lista "{{name}}"?',
+        confirmDeleteListCards: 'También se eliminarán {{n}} tarjeta(s).',
+        confirmDeleteBoard: '¿Eliminar tablero "{{name}}"?',
+        confirmDeleteWorkspace: '¿Eliminar espacio "{{name}}"?',
+        confirmClearList: '¿Vaciar todas las tarjetas de "{{name}}"?',
+        toastRoomDeletedRemote: '🗑 Esta sala fue eliminada de la base de datos.',
+        toastNotDevLocked: '🔒 La creación de tableros está restringida a devs.',
+        storageApply: '💾 Aplicar', nameUpdated: 'Nombre actualizado',
+        toastNameSaved: '👤 Nombre guardado: ', clearAllConfirm: '¿Borrar todo el tablero? No se puede deshacer.',
+      },
+      nl: {
+        dbBtn: '🗄️ Database', setName: 'Naam instellen', collaborate: '👥 Samenwerken',
+        share: '🔗 Delen', clearAll: 'Alles wissen', newList: '+ Nieuwe lijst',
+        yourDisplayName: 'Jouw naam', save: 'Opslaan', deviceIdentity: 'Apparaatidentiteit',
+        export: 'Exporteren', import: 'Importeren', copyUserId: 'Gebruikers-ID kopiëren (Dev-rol)',
+        yourWorkspaces: 'Jouw werkruimten', newWorkspace: '+ Nieuwe ruimte', newBoard: 'Nieuw bord',
+        description: 'Beschrijving', checklist: '☑ Checklist', clAddBtn: 'Toevoegen',
+        priority: '⚡ Prioriteit', prioNone: '— Geen', prioLow: '🟢 Laag', prioMed: '🟡 Gemiddeld', prioHigh: '🔴 Hoog',
+        dueDate: '📅 Vervaldatum', moveToList: '📂 Verplaats naar', labels: '🏷 Labels',
+        newLabel: '+ Nieuw label', assignedTo: '👥 Toegewezen aan',
+        deleteCard: '🗑 Kaart verwijderen', cancel: 'Annuleren',
+        createCard: '✓ Kaart maken', saveCard: '✓ Opslaan', saved: 'Opgeslagen',
+        newListTitle: 'Nieuwe lijst', listName: 'Lijstnaam *', color: 'Kleur', saveList: 'Lijst opslaan',
+        close: 'Sluiten', generateLink: '⚡ Link genereren', copyLink: '📋 Link kopiëren',
+        roomSettings: '⚙️ Kamerinstellingen', membersRoles: '👥 Leden & Rollen',
+        boardPerms: '🔒 Bordmachtigingen', publicReadOnly: 'Openbaar alleen-lezen',
+        readOnlyHint: 'Leden kunnen alleen bekijken.', changeRoomPw: '🔑 Wachtwoord wijzigen',
+        yourName: '👤 Jouw naam', advancedStorage: '🗄️ Geavanceerde opslag',
+        configureDb: 'Database configureren', updatePassword: '🔑 Wachtwoord bijwerken',
+        addCard: '+ Kaart toevoegen', addList: 'Lijst toevoegen', cardTitlePlaceholder: 'Kaarttitel...',
+        noChecklistItems: 'Geen items — voeg er een toe.', editingMode: 'Bewerken',
+        noListsYetHtml: 'Nog geen lijsten — klik op <strong>+ Nieuwe lijst</strong>.',
+        listOptions: 'Lijstopties', renameList: 'Lijst hernoemen', clearCards: 'Kaarten wissen',
+        deleteList: 'Lijst verwijderen', duplicate: 'Dupliceren', delete: 'Verwijderen',
+        doneBadge: '✓ Klaar', unknown: 'Onbekend', myBoard: 'Mijn bord', column: 'Kolom',
+        noLabelsYet: 'Nog geen labels — maak er een aan.',
+        dueToday: 'Vandaag!', dueTomorrow: 'Morgen', dueInDays: 'Over {{n}} dag(en)', dueOverdue: '{{n}} dag(en) te laat',
+        confirmYes: 'Ja, verwijderen', confirmNo: 'Annuleren', confirmDelete: 'Bevestig verwijdering',
+        toastRoomDeletedRemote: '🗑 Deze kamer is verwijderd uit de database.',
+        toastNotDevLocked: '🔒 Borden maken is beperkt tot devs.',
+        nameUpdated: 'Naam bijgewerkt', clearAllConfirm: 'Geheel bord wissen? Dit kan niet ongedaan worden gemaakt.',
+      },
+      it: {
+        dbBtn: '🗄️ Database', setName: 'Imposta nome', collaborate: '👥 Collabora',
+        share: '🔗 Condividi', clearAll: 'Cancella tutto', newList: '+ Nuova lista',
+        yourDisplayName: 'Il tuo nome', save: 'Salva', deviceIdentity: 'Identità dispositivo',
+        export: 'Esporta', import: 'Importa', copyUserId: 'Copia ID utente (ruolo Dev)',
+        yourWorkspaces: 'I tuoi spazi', newWorkspace: '+ Nuovo spazio', newBoard: 'Nuova bacheca',
+        description: 'Descrizione', checklist: '☑ Lista di controllo', clAddBtn: 'Aggiungi',
+        priority: '⚡ Priorità', prioNone: '— Nessuna', prioLow: '🟢 Bassa', prioMed: '🟡 Media', prioHigh: '🔴 Alta',
+        dueDate: '📅 Scadenza', moveToList: '📂 Sposta in', labels: '🏷 Etichette',
+        newLabel: '+ Nuova etichetta', assignedTo: '👥 Assegnato a',
+        deleteCard: '🗑 Elimina scheda', cancel: 'Annulla',
+        createCard: '✓ Crea scheda', saveCard: '✓ Salva', saved: 'Salvato',
+        newListTitle: 'Nuova lista', listName: 'Nome lista *', color: 'Colore', saveList: 'Salva lista',
+        close: 'Chiudi', generateLink: '⚡ Genera link', copyLink: '📋 Copia link',
+        roomSettings: '⚙️ Impostazioni sala', membersRoles: '👥 Membri & Ruoli',
+        boardPerms: '🔒 Permessi', publicReadOnly: 'Sola lettura pubblica',
+        readOnlyHint: 'I membri possono solo visualizzare.', changeRoomPw: '🔑 Cambia password',
+        yourName: '👤 Il tuo nome', advancedStorage: '🗄️ Archiviazione avanzata',
+        configureDb: 'Configura database', updatePassword: '🔑 Aggiorna password',
+        addCard: '+ Aggiungi scheda', addList: 'Aggiungi lista', cardTitlePlaceholder: 'Titolo scheda...',
+        noChecklistItems: 'Nessun elemento — aggiungine uno.', editingMode: 'Modifica',
+        noListsYetHtml: 'Nessuna lista — clicca su <strong>+ Nuova lista</strong>.',
+        listOptions: 'Opzioni lista', renameList: 'Rinomina lista', clearCards: 'Svuota schede',
+        deleteList: 'Elimina lista', duplicate: 'Duplica', delete: 'Elimina',
+        doneBadge: '✓ Fatto', unknown: 'Sconosciuto', myBoard: 'La mia bacheca', column: 'Colonna',
+        noLabelsYet: 'Nessuna etichetta — creane una.',
+        dueToday: 'Scade oggi!', dueTomorrow: 'Domani', dueInDays: 'Tra {{n}} giorno/i', dueOverdue: '{{n}} giorno/i di ritardo',
+        confirmYes: 'Sì, elimina', confirmNo: 'Annulla', confirmDelete: 'Conferma eliminazione',
+        toastRoomDeletedRemote: '🗑 Questa stanza è stata eliminata dal database.',
+        toastNotDevLocked: '🔒 La creazione di bacheche è riservata ai dev.',
+        nameUpdated: 'Nome aggiornato', clearAllConfirm: 'Cancellare tutta la bacheca? Azione irreversibile.',
+      },
+      pt: {
+        dbBtn: '🗄️ Banco de dados', setName: 'Definir nome', collaborate: '👥 Colaborar',
+        share: '🔗 Compartilhar', clearAll: 'Limpar tudo', newList: '+ Nova lista',
+        yourDisplayName: 'Seu nome', save: 'Salvar', deviceIdentity: 'Identidade do dispositivo',
+        export: 'Exportar', import: 'Importar', copyUserId: 'Copiar ID de usuário (função Dev)',
+        yourWorkspaces: 'Seus espaços', newWorkspace: '+ Novo espaço', newBoard: 'Novo quadro',
+        description: 'Descrição', checklist: '☑ Lista de verificação', clAddBtn: 'Adicionar',
+        priority: '⚡ Prioridade', prioNone: '— Nenhuma', prioLow: '🟢 Baixa', prioMed: '🟡 Média', prioHigh: '🔴 Alta',
+        dueDate: '📅 Vencimento', moveToList: '📂 Mover para', labels: '🏷 Rótulos',
+        newLabel: '+ Novo rótulo', assignedTo: '👥 Atribuído a',
+        deleteCard: '🗑 Excluir cartão', cancel: 'Cancelar',
+        createCard: '✓ Criar cartão', saveCard: '✓ Salvar', saved: 'Salvo',
+        newListTitle: 'Nova lista', listName: 'Nome da lista *', color: 'Cor', saveList: 'Salvar lista',
+        close: 'Fechar', generateLink: '⚡ Gerar link', copyLink: '📋 Copiar link',
+        roomSettings: '⚙️ Configurações da sala', membersRoles: '👥 Membros & Funções',
+        boardPerms: '🔒 Permissões', publicReadOnly: 'Modo somente leitura',
+        readOnlyHint: 'Membros só podem visualizar.', changeRoomPw: '🔑 Alterar senha',
+        yourName: '👤 Seu nome', advancedStorage: '🗄️ Armazenamento avançado',
+        configureDb: 'Configurar banco de dados', updatePassword: '🔑 Atualizar senha',
+        addCard: '+ Adicionar cartão', addList: 'Adicionar lista', cardTitlePlaceholder: 'Título do cartão...',
+        noChecklistItems: 'Sem itens — adicione um abaixo.', editingMode: 'Editando',
+        noListsYetHtml: 'Sem listas — clique em <strong>+ Nova lista</strong> para começar.',
+        listOptions: 'Opções de lista', renameList: 'Renomear lista', clearCards: 'Limpar cartões',
+        deleteList: 'Excluir lista', duplicate: 'Duplicar', delete: 'Excluir',
+        doneBadge: '✓ Concluído', unknown: 'Desconhecido', myBoard: 'Meu quadro', column: 'Coluna',
+        noLabelsYet: 'Sem rótulos ainda — crie um abaixo.',
+        dueToday: 'Vence hoje!', dueTomorrow: 'Amanhã', dueInDays: 'Em {{n}} dia(s)', dueOverdue: '{{n}} dia(s) atrasado',
+        confirmYes: 'Sim, excluir', confirmNo: 'Cancelar', confirmDelete: 'Confirmar exclusão',
+        toastRoomDeletedRemote: '🗑 Esta sala foi excluída do banco de dados.',
+        toastNotDevLocked: '🔒 Criação de quadros restrita a devs.',
+        nameUpdated: 'Nome atualizado', clearAllConfirm: 'Limpar todo o quadro? Esta ação não pode ser desfeita.',
+      },
+      pl: {
+        dbBtn: '🗄️ Baza danych', setName: 'Ustaw nazwę', collaborate: '👥 Współpracuj',
+        share: '🔗 Udostępnij', clearAll: 'Wyczyść wszystko', newList: '+ Nowa lista',
+        yourDisplayName: 'Twoja nazwa', save: 'Zapisz', deviceIdentity: 'Tożsamość urządzenia',
+        export: 'Eksportuj', import: 'Importuj', copyUserId: 'Kopiuj ID użytkownika (rola Dev)',
+        yourWorkspaces: 'Twoje przestrzenie', newWorkspace: '+ Nowa przestrzeń', newBoard: 'Nowa tablica',
+        description: 'Opis', checklist: '☑ Lista kontrolna', clAddBtn: 'Dodaj',
+        priority: '⚡ Priorytet', prioNone: '— Brak', prioLow: '🟢 Niski', prioMed: '🟡 Średni', prioHigh: '🔴 Wysoki',
+        dueDate: '📅 Termin', moveToList: '📂 Przenieś do', labels: '🏷 Etykiety',
+        newLabel: '+ Nowa etykieta', assignedTo: '👥 Przypisano do',
+        deleteCard: '🗑 Usuń kartę', cancel: 'Anuluj',
+        createCard: '✓ Utwórz kartę', saveCard: '✓ Zapisz', saved: 'Zapisano',
+        newListTitle: 'Nowa lista', listName: 'Nazwa listy *', color: 'Kolor', saveList: 'Zapisz listę',
+        close: 'Zamknij', generateLink: '⚡ Generuj link', copyLink: '📋 Kopiuj link',
+        roomSettings: '⚙️ Ustawienia pokoju', membersRoles: '👥 Członkowie i role',
+        boardPerms: '🔒 Uprawnienia', publicReadOnly: 'Tryb tylko do odczytu',
+        readOnlyHint: 'Członkowie mogą tylko przeglądać.', changeRoomPw: '🔑 Zmień hasło',
+        yourName: '👤 Twoja nazwa', advancedStorage: '🗄️ Zaawansowane przechowywanie',
+        configureDb: 'Konfiguruj bazę danych', updatePassword: '🔑 Zaktualizuj hasło',
+        addCard: '+ Dodaj kartę', addList: 'Dodaj listę', cardTitlePlaceholder: 'Tytuł karty...',
+        noChecklistItems: 'Brak elementów — dodaj poniżej.', editingMode: 'Edycja',
+        noListsYetHtml: 'Brak list — kliknij <strong>+ Nowa lista</strong>, aby zacząć.',
+        listOptions: 'Opcje listy', renameList: 'Zmień nazwę listy', clearCards: 'Wyczyść karty',
+        deleteList: 'Usuń listę', duplicate: 'Duplikuj', delete: 'Usuń',
+        doneBadge: '✓ Gotowe', unknown: 'Nieznany', myBoard: 'Moja tablica', column: 'Kolumna',
+        noLabelsYet: 'Brak etykiet — utwórz jedną poniżej.',
+        dueToday: 'Termin dzisiaj!', dueTomorrow: 'Jutro', dueInDays: 'Za {{n}} dzień/dni', dueOverdue: '{{n}} dzień/dni po terminie',
+        confirmYes: 'Tak, usuń', confirmNo: 'Anuluj', confirmDelete: 'Potwierdź usunięcie',
+        toastRoomDeletedRemote: '🗑 Ten pokój został usunięty z bazy danych.',
+        toastNotDevLocked: '🔒 Tworzenie tablic jest ograniczone do devów.',
+        nameUpdated: 'Nazwa zaktualizowana', clearAllConfirm: 'Wyczyścić całą tablicę? Tej operacji nie można cofnąć.',
+      },
+      tr: {
+        dbBtn: '🗄️ Veritabanı', setName: 'İsim ayarla', collaborate: '👥 İşbirliği yap',
+        share: '🔗 Paylaş', clearAll: 'Tümünü temizle', newList: '+ Yeni liste',
+        yourDisplayName: 'Görünen adın', save: 'Kaydet', deviceIdentity: 'Cihaz kimliği',
+        export: 'Dışa aktar', import: 'İçe aktar',
+        yourWorkspaces: 'Çalışma alanların', newWorkspace: '+ Yeni alan', newBoard: 'Yeni pano',
+        description: 'Açıklama', checklist: '☑ Kontrol listesi', clAddBtn: 'Ekle',
+        priority: '⚡ Öncelik', prioNone: '— Yok', prioLow: '🟢 Düşük', prioMed: '🟡 Orta', prioHigh: '🔴 Yüksek',
+        dueDate: '📅 Son tarih', moveToList: '📂 Listeye taşı', labels: '🏷 Etiketler',
+        newLabel: '+ Yeni etiket', assignedTo: '👥 Atanan',
+        deleteCard: '🗑 Kartı sil', cancel: 'İptal', createCard: '✓ Kart oluştur', saveCard: '✓ Kaydet', saved: 'Kaydedildi',
+        newListTitle: 'Yeni liste', listName: 'Liste adı *', color: 'Renk', saveList: 'Listeyi kaydet',
+        close: 'Kapat', generateLink: '⚡ Bağlantı oluştur', copyLink: '📋 Bağlantıyı kopyala',
+        roomSettings: '⚙️ Oda ayarları', boardPerms: '🔒 İzinler', changeRoomPw: '🔑 Şifreyi değiştir',
+        yourName: '👤 Adın', advancedStorage: '🗄️ Gelişmiş depolama', configureDb: 'Veritabanını yapılandır',
+        addCard: '+ Kart ekle', addList: 'Liste ekle', cardTitlePlaceholder: 'Kart başlığı...',
+        editingMode: 'Düzenleniyor', listOptions: 'Liste seçenekleri', renameList: 'Listeyi yeniden adlandır',
+        clearCards: 'Kartları temizle', deleteList: 'Listeyi sil', duplicate: 'Çoğalt', delete: 'Sil',
+        doneBadge: '✓ Bitti', myBoard: 'Panom', column: 'Sütun',
+        dueToday: 'Bugün son!', dueTomorrow: 'Yarın', dueInDays: '{{n}} gün sonra', dueOverdue: '{{n}} gün gecikti',
+        confirmYes: 'Evet, sil', confirmNo: 'İptal', confirmDelete: 'Silmeyi onayla',
+        toastRoomDeletedRemote: '🗑 Bu oda veritabanından silindi.',
+        nameUpdated: 'İsim güncellendi', clearAllConfirm: 'Tüm pano silinsin mi? Geri alınamaz.',
+      },
+      sv: {
+        dbBtn: '🗄️ Databas', setName: 'Ange namn', collaborate: '👥 Samarbeta',
+        share: '🔗 Dela', clearAll: 'Rensa allt', newList: '+ Ny lista',
+        yourDisplayName: 'Ditt namn', save: 'Spara', deviceIdentity: 'Enhetsidentitet',
+        export: 'Exportera', import: 'Importera',
+        yourWorkspaces: 'Dina arbetsytor', newWorkspace: '+ Ny yta', newBoard: 'Ny tavla',
+        description: 'Beskrivning', checklist: '☑ Checklista', clAddBtn: 'Lägg till',
+        priority: '⚡ Prioritet', prioNone: '— Ingen', prioLow: '🟢 Låg', prioMed: '🟡 Medel', prioHigh: '🔴 Hög',
+        dueDate: '📅 Förfallodatum', moveToList: '📂 Flytta till', labels: '🏷 Etiketter',
+        newLabel: '+ Ny etikett', assignedTo: '👥 Tilldelad',
+        deleteCard: '🗑 Ta bort kort', cancel: 'Avbryt', createCard: '✓ Skapa kort', saveCard: '✓ Spara', saved: 'Sparat',
+        newListTitle: 'Ny lista', listName: 'Listnamn *', color: 'Färg', saveList: 'Spara lista',
+        close: 'Stäng', generateLink: '⚡ Generera länk', copyLink: '📋 Kopiera länk',
+        roomSettings: '⚙️ Ruminställningar', boardPerms: '🔒 Behörigheter', changeRoomPw: '🔑 Byt lösenord',
+        yourName: '👤 Ditt namn', advancedStorage: '🗄️ Avancerad lagring', configureDb: 'Konfigurera databas',
+        addCard: '+ Lägg till kort', addList: 'Lägg till lista', cardTitlePlaceholder: 'Korttitel...',
+        editingMode: 'Redigerar', listOptions: 'Listalternativ', renameList: 'Byt namn på lista',
+        clearCards: 'Rensa kort', deleteList: 'Ta bort lista', duplicate: 'Duplicera', delete: 'Ta bort',
+        doneBadge: '✓ Klar', myBoard: 'Min tavla', column: 'Kolumn',
+        dueToday: 'Idag!', dueTomorrow: 'Imorgon', dueInDays: 'Om {{n}} dag(ar)', dueOverdue: '{{n}} dag(ar) försenad',
+        confirmYes: 'Ja, ta bort', confirmNo: 'Avbryt', confirmDelete: 'Bekräfta borttagning',
+        toastRoomDeletedRemote: '🗑 Det här rummet raderades från databasen.',
+        nameUpdated: 'Namn uppdaterat', clearAllConfirm: 'Rensa hela tavlan? Det går inte att ångra.',
+      },
+      no: {
+        dbBtn: '🗄️ Database', setName: 'Angi navn', collaborate: '👥 Samarbeid',
+        share: '🔗 Del', clearAll: 'Tøm alt', newList: '+ Ny liste',
+        yourDisplayName: 'Ditt navn', save: 'Lagre', export: 'Eksporter', import: 'Importer',
+        yourWorkspaces: 'Dine arbeidsområder', newWorkspace: '+ Nytt område', newBoard: 'Ny tavle',
+        description: 'Beskrivelse', clAddBtn: 'Legg til',
+        priority: '⚡ Prioritet', prioNone: '— Ingen', prioLow: '🟢 Lav', prioMed: '🟡 Middels', prioHigh: '🔴 Høy',
+        dueDate: '📅 Forfallsdato', labels: '🏷 Etiketter', newLabel: '+ Ny etikett', assignedTo: '👥 Tildelt',
+        deleteCard: '🗑 Slett kort', cancel: 'Avbryt', createCard: '✓ Opprett kort', saveCard: '✓ Lagre', saved: 'Lagret',
+        newListTitle: 'Ny liste', listName: 'Listenavn *', color: 'Farge', saveList: 'Lagre liste',
+        close: 'Lukk', addCard: '+ Legg til kort', addList: 'Legg til liste',
+        editingMode: 'Redigerer', renameList: 'Gi nytt navn', clearCards: 'Tøm kort',
+        deleteList: 'Slett liste', duplicate: 'Dupliser', delete: 'Slett',
+        doneBadge: '✓ Ferdig', myBoard: 'Min tavle', column: 'Kolonne',
+        dueToday: 'I dag!', dueTomorrow: 'I morgen', dueInDays: 'Om {{n}} dag(er)', dueOverdue: '{{n}} dag(er) forsinket',
+        confirmYes: 'Ja, slett', confirmNo: 'Avbryt',
+        toastRoomDeletedRemote: '🗑 Dette rommet ble slettet fra databasen.',
+        nameUpdated: 'Navn oppdatert',
+      },
+      da: {
+        dbBtn: '🗄️ Database', setName: 'Indstil navn', collaborate: '👥 Samarbejd',
+        share: '🔗 Del', clearAll: 'Ryd alt', newList: '+ Ny liste',
+        yourDisplayName: 'Dit navn', save: 'Gem', export: 'Eksporter', import: 'Importer',
+        yourWorkspaces: 'Dine arbejdsområder', newWorkspace: '+ Nyt område', newBoard: 'Nyt bræt',
+        description: 'Beskrivelse', clAddBtn: 'Tilføj',
+        priority: '⚡ Prioritet', prioNone: '— Ingen', prioLow: '🟢 Lav', prioMed: '🟡 Middel', prioHigh: '🔴 Høj',
+        dueDate: '📅 Forfaldsdato', labels: '🏷 Etiketter', newLabel: '+ Ny etiket', assignedTo: '👥 Tildelt',
+        deleteCard: '🗑 Slet kort', cancel: 'Annuller', createCard: '✓ Opret kort', saveCard: '✓ Gem', saved: 'Gemt',
+        newListTitle: 'Ny liste', listName: 'Listenavn *', color: 'Farve', saveList: 'Gem liste',
+        close: 'Luk', addCard: '+ Tilføj kort', addList: 'Tilføj liste',
+        editingMode: 'Redigerer', renameList: 'Omdøb liste', clearCards: 'Ryd kort',
+        deleteList: 'Slet liste', duplicate: 'Dupliker', delete: 'Slet',
+        doneBadge: '✓ Færdig', myBoard: 'Mit bræt', column: 'Kolonne',
+        dueToday: 'I dag!', dueTomorrow: 'I morgen', dueInDays: 'Om {{n}} dag(e)', dueOverdue: '{{n}} dag(e) forsinket',
+        confirmYes: 'Ja, slet', confirmNo: 'Annuller',
+        toastRoomDeletedRemote: '🗑 Dette rum blev slettet fra databasen.',
+        nameUpdated: 'Navn opdateret',
+      },
+      fi: {
+        dbBtn: '🗄️ Tietokanta', setName: 'Aseta nimi', collaborate: '👥 Tee yhteistyötä',
+        share: '🔗 Jaa', clearAll: 'Tyhjennä kaikki', newList: '+ Uusi lista',
+        yourDisplayName: 'Nimesi', save: 'Tallenna', export: 'Vie', import: 'Tuo',
+        yourWorkspaces: 'Työtilasi', newWorkspace: '+ Uusi tila', newBoard: 'Uusi taulu',
+        description: 'Kuvaus', clAddBtn: 'Lisää',
+        priority: '⚡ Prioriteetti', prioNone: '— Ei', prioLow: '🟢 Matala', prioMed: '🟡 Keski', prioHigh: '🔴 Korkea',
+        dueDate: '📅 Eräpäivä', labels: '🏷 Tunnisteet', newLabel: '+ Uusi tunniste', assignedTo: '👥 Osoitettu',
+        deleteCard: '🗑 Poista kortti', cancel: 'Peruuta', createCard: '✓ Luo kortti', saveCard: '✓ Tallenna', saved: 'Tallennettu',
+        newListTitle: 'Uusi lista', listName: 'Listan nimi *', color: 'Väri', saveList: 'Tallenna lista',
+        close: 'Sulje', addCard: '+ Lisää kortti', addList: 'Lisää lista',
+        editingMode: 'Muokataan', renameList: 'Nimeä lista uudelleen', clearCards: 'Tyhjennä kortit',
+        deleteList: 'Poista lista', duplicate: 'Kopioi', delete: 'Poista',
+        doneBadge: '✓ Valmis', myBoard: 'Oma tauluni', column: 'Sarake',
+        dueToday: 'Tänään!', dueTomorrow: 'Huomenna', dueInDays: '{{n}} päivässä', dueOverdue: '{{n}} päivää myöhässä',
+        confirmYes: 'Kyllä, poista', confirmNo: 'Peruuta',
+        toastRoomDeletedRemote: '🗑 Tämä huone poistettiin tietokannasta.',
+        nameUpdated: 'Nimi päivitetty',
+      },
+      ru: {
+        dbBtn: '🗄️ База данных', setName: 'Задать имя', collaborate: '👥 Совместная работа',
+        share: '🔗 Поделиться', clearAll: 'Очистить всё', newList: '+ Новый список',
+        yourDisplayName: 'Ваше имя', save: 'Сохранить', export: 'Экспорт', import: 'Импорт',
+        yourWorkspaces: 'Ваши пространства', newWorkspace: '+ Новое пространство', newBoard: 'Новая доска',
+        description: 'Описание', clAddBtn: 'Добавить',
+        priority: '⚡ Приоритет', prioNone: '— Нет', prioLow: '🟢 Низкий', prioMed: '🟡 Средний', prioHigh: '🔴 Высокий',
+        dueDate: '📅 Срок', labels: '🏷 Метки', newLabel: '+ Новая метка', assignedTo: '👥 Назначено',
+        deleteCard: '🗑 Удалить карточку', cancel: 'Отмена', createCard: '✓ Создать карточку', saveCard: '✓ Сохранить', saved: 'Сохранено',
+        newListTitle: 'Новый список', listName: 'Название списка *', color: 'Цвет', saveList: 'Сохранить список',
+        close: 'Закрыть', addCard: '+ Добавить карточку', addList: 'Добавить список',
+        editingMode: 'Редактирование', renameList: 'Переименовать список', clearCards: 'Очистить карточки',
+        deleteList: 'Удалить список', duplicate: 'Дублировать', delete: 'Удалить',
+        doneBadge: '✓ Готово', myBoard: 'Моя доска', column: 'Столбец',
+        dueToday: 'Сегодня!', dueTomorrow: 'Завтра', dueInDays: 'Через {{n}} дн.', dueOverdue: 'Просрочено на {{n}} дн.',
+        confirmYes: 'Да, удалить', confirmNo: 'Отмена',
+        toastRoomDeletedRemote: '🗑 Эта комната была удалена из базы данных.',
+        nameUpdated: 'Имя обновлено',
+      },
+      zh: {
+        dbBtn: '🗄️ 数据库', setName: '设置名称', collaborate: '👥 协作', share: '🔗 分享',
+        clearAll: '清除全部', newList: '+ 新列表',
+        yourDisplayName: '您的名称', save: '保存', export: '导出', import: '导入',
+        yourWorkspaces: '您的工作区', newWorkspace: '+ 新工作区', newBoard: '新看板',
+        description: '描述', clAddBtn: '添加',
+        priority: '⚡ 优先级', prioNone: '— 无', prioLow: '🟢 低', prioMed: '🟡 中', prioHigh: '🔴 高',
+        dueDate: '📅 截止日期', labels: '🏷 标签', newLabel: '+ 新标签', assignedTo: '👥 分配给',
+        deleteCard: '🗑 删除卡片', cancel: '取消', createCard: '✓ 创建卡片', saveCard: '✓ 保存', saved: '已保存',
+        newListTitle: '新列表', listName: '列表名称 *', color: '颜色', saveList: '保存列表',
+        close: '关闭', addCard: '+ 添加卡片', addList: '添加列表',
+        editingMode: '编辑中', renameList: '重命名列表', clearCards: '清除卡片',
+        deleteList: '删除列表', duplicate: '复制', delete: '删除',
+        doneBadge: '✓ 完成', myBoard: '我的看板', column: '列',
+        dueToday: '今天截止!', dueTomorrow: '明天', dueInDays: '{{n}}天后', dueOverdue: '已逾期{{n}}天',
+        confirmYes: '是，删除', confirmNo: '取消',
+        toastRoomDeletedRemote: '🗑 此房间已从数据库中删除。',
+        nameUpdated: '名称已更新',
+      },
+      ja: {
+        dbBtn: '🗄️ データベース', setName: '名前を設定', collaborate: '👥 コラボレーション',
+        share: '🔗 共有', clearAll: 'すべてクリア', newList: '+ 新しいリスト',
+        yourDisplayName: '表示名', save: '保存', export: 'エクスポート', import: 'インポート',
+        yourWorkspaces: 'ワークスペース', newWorkspace: '+ 新しいスペース', newBoard: '新しいボード',
+        description: '説明', clAddBtn: '追加',
+        priority: '⚡ 優先度', prioNone: '— なし', prioLow: '🟢 低', prioMed: '🟡 中', prioHigh: '🔴 高',
+        dueDate: '📅 期日', labels: '🏷 ラベル', newLabel: '+ 新ラベル', assignedTo: '👥 担当者',
+        deleteCard: '🗑 カードを削除', cancel: 'キャンセル', createCard: '✓ カードを作成', saveCard: '✓ 保存', saved: '保存済み',
+        newListTitle: '新しいリスト', listName: 'リスト名 *', color: '色', saveList: 'リストを保存',
+        close: '閉じる', addCard: '+ カードを追加', addList: 'リストを追加',
+        editingMode: '編集中', renameList: 'リストの名前を変更', clearCards: 'カードをクリア',
+        deleteList: 'リストを削除', duplicate: '複製', delete: '削除',
+        doneBadge: '✓ 完了', myBoard: 'マイボード', column: '列',
+        dueToday: '今日まで!', dueTomorrow: '明日', dueInDays: '{{n}}日後', dueOverdue: '{{n}}日超過',
+        confirmYes: 'はい、削除', confirmNo: 'キャンセル',
+        toastRoomDeletedRemote: '🗑 このルームはデータベースから削除されました。',
+        nameUpdated: '名前を更新しました',
+      },
+    };
+    function t(key, vars = null) {
+      let str = (TRANSLATIONS[_lang] && TRANSLATIONS[_lang][key]) || TRANSLATIONS.en[key] || key;
+      if (vars && typeof str === 'string') {
+        Object.keys(vars).forEach(k => {
+          str = str.replace(new RegExp('\\{\\{' + k + '\\}\\}', 'g'), vars[k]);
+        });
+      }
+      return str;
+    }
+    function setLang(lang) {
+      _lang = lang;
+      localStorage.setItem('pb_lang', lang);
+      applyTranslations();
+      updateUsernameChip();
+      updateLangPickerBtn();
+      if (_isDashboard) renderDashboard();
+      else render();
+    }
+
+    function toggleLangPicker(e) {
+      e && e.stopPropagation();
+      const wrap = document.getElementById('langPickerWrap');
+      const isOpen = wrap.classList.contains('open');
+      wrap.classList.toggle('open', !isOpen);
+      if (!isOpen) {
+        const search = document.getElementById('langPickerSearch');
+        search.value = '';
+        filterLangs('');
+        setTimeout(() => search.focus(), 60);
+      }
+    }
+
+    function filterLangs(query) {
+      const list = document.getElementById('langPickerList');
+      if (!list) return;
+      list.innerHTML = '';
+      const q = query.toLowerCase().trim();
+      const filtered = LANGUAGES.filter(l =>
+        !q || l.name.toLowerCase().includes(q) || l.code.includes(q)
+      );
+      filtered.forEach(l => {
+        const item = document.createElement('div');
+        item.className = 'lang-picker-item' + (l.code === _lang ? ' active' : '');
+        item.innerHTML = `<span class="lang-picker-flag">${l.flag}</span><span>${l.name}</span>`;
+        if (l.code === _lang) {
+          const check = document.createElement('span');
+          check.className = 'lp-check';
+          check.textContent = '✓';
+          item.appendChild(check);
+        }
+        item.addEventListener('click', () => {
+          setLang(l.code);
+          document.getElementById('langPickerWrap').classList.remove('open');
+        });
+        list.appendChild(item);
+      });
+      if (!filtered.length) {
+        list.innerHTML = '<div style="padding:8px 11px;font-size:0.78rem;color:var(--text-muted)">No results</div>';
+      }
+    }
+
+    function updateLangPickerBtn() {
+      const lang = LANGUAGES.find(l => l.code === _lang) || LANGUAGES[0];
+      const flagEl = document.getElementById('langPickerFlag');
+      const nameEl = document.getElementById('langPickerName');
+      if (flagEl) flagEl.textContent = lang.flag;
+      if (nameEl) nameEl.textContent = lang.name;
+    }
+
+    // Close lang picker on outside click
+    document.addEventListener('click', e => {
+      const wrap = document.getElementById('langPickerWrap');
+      if (wrap && !wrap.contains(e.target)) wrap.classList.remove('open');
+    });
+    function applyTranslations() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = t(key);
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+      });
+      document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        el.title = t(el.getAttribute('data-i18n-title'));
+      });
+    }
+
 
     // ── DASHBOARD WORKSPACES ──
     let _workspaces = [];
@@ -2832,6 +3705,27 @@
       el._t = setTimeout(() => el.classList.remove('show'), 2600);
     }
 
+    // ── CONFIRM DIALOG ──
+    let _confirmCallback = null;
+    function showConfirm({ icon = '🗑', title, message, subMessage = '', yesLabel, noLabel, onConfirm }) {
+      document.getElementById('confirmIconWrap').textContent = icon;
+      document.getElementById('confirmTitle').textContent = title || t('confirmDelete');
+      document.getElementById('confirmMsg').textContent = message || '';
+      document.getElementById('confirmSubMsg').textContent = subMessage || '';
+      document.getElementById('confirmYesBtn').textContent = yesLabel || t('confirmYes');
+      document.getElementById('confirmNoBtn').textContent = noLabel || t('confirmNo');
+      _confirmCallback = onConfirm;
+      document.getElementById('confirmOverlay').classList.add('open');
+    }
+    function confirmDialogOk() {
+      document.getElementById('confirmOverlay').classList.remove('open');
+      if (_confirmCallback) { _confirmCallback(); _confirmCallback = null; }
+    }
+    function confirmDialogCancel() {
+      document.getElementById('confirmOverlay').classList.remove('open');
+      _confirmCallback = null;
+    }
+
     // ── RENDER ──
     function render() {
       // Remove dropdowns for deleted columns
@@ -2851,7 +3745,7 @@
       if (state.columns.length === 0) {
         const empty = document.createElement('div');
         empty.className = 'empty-board';
-        empty.innerHTML = '<div class="empty-emoji">📋</div><p>No lists yet — hit <strong>+ New List</strong> to get started.</p>';;
+        empty.innerHTML = '<div class="empty-emoji">📋</div><p>' + t('noListsYetHtml') + '</p>';
         board.appendChild(empty);
       }
 
@@ -2859,11 +3753,11 @@
 
       const addBtn = document.createElement('button');
       addBtn.className = 'add-col-btn';
-      addBtn.innerHTML = '<span style="font-size:1.1rem">+</span> Add List';
+      addBtn.innerHTML = '<span style="font-size:1.1rem">+</span> ' + t('addList');
       addBtn.addEventListener('click', () => openAddColModal());
       board.appendChild(addBtn);
 
-      document.getElementById('boardTitle').value = state.boardTitle || 'My Board';
+      document.getElementById('boardTitle').value = state.boardTitle || t('myBoard');
 
       if (!_isDashboard) trackBoardInWorkspace(_currentBoardId, _currentBoardType, state.boardTitle);
     }
@@ -2968,7 +3862,7 @@
       addArea.className = 'add-card-area';
       const trigger = document.createElement('button');
       trigger.className = 'add-card-trigger';
-      trigger.textContent = '+ Add card';
+      trigger.textContent = t('addCard');
       trigger.addEventListener('click', () => openAddCardModal(col.id));
       addArea.appendChild(trigger);
       el.appendChild(addArea);
@@ -3196,11 +4090,11 @@
 
       if (editingColId) {
         const col = state.columns.find(c => c.id === editingColId);
-        document.getElementById('colModalTitle').textContent = 'Rename List';
+        document.getElementById('colModalTitle').textContent = t('renameList');
         document.getElementById('colNameInput').value = col ? col.name : '';
         selectedColColor = col ? col.color : COL_COLORS[0];
       } else {
-        document.getElementById('colModalTitle').textContent = 'New List';
+        document.getElementById('colModalTitle').textContent = t('newListTitle');
         document.getElementById('colNameInput').value = '';
         selectedColColor = COL_COLORS[Math.floor(Math.random() * COL_COLORS.length)];
       }
@@ -3244,19 +4138,38 @@
     }
 
     function deleteColumn(colId) {
-      if (!confirm('Delete this list and all its cards?')) return;
-      state.columns = state.columns.filter(c => c.id !== colId);
-      if (colDropdowns[colId]) { colDropdowns[colId].remove(); delete colDropdowns[colId]; }
-      save(); render();
-      toast('List deleted');
+      const col = state.columns.find(c => c.id === colId);
+      if (!col) return;
+      showConfirm({
+        icon: '🗂️',
+        title: t('confirmDelete'),
+        message: t('confirmDeleteList', { name: col.name }),
+        subMessage: col.cards.length > 0 ? t('confirmDeleteListCards', { n: col.cards.length }) : '',
+        onConfirm: () => {
+          state.columns = state.columns.filter(c => c.id !== colId);
+          if (colDropdowns[colId]) { colDropdowns[colId].remove(); delete colDropdowns[colId]; }
+          save(); render();
+          if (_roomId) fbSaveDebounced();
+          toast(t('deleteList'));
+        }
+      });
     }
 
     function clearColCards(colId) {
-      if (!confirm('Clear all cards in this list?')) return;
       const col = state.columns.find(c => c.id === colId);
-      if (col) col.cards = [];
-      save(); render();
-      toast('Cards cleared');
+      if (!col) return;
+      showConfirm({
+        icon: '🧹',
+        title: t('clearCards'),
+        message: t('confirmClearList', { name: col.name }),
+        yesLabel: t('clearCards'),
+        onConfirm: () => {
+          col.cards = [];
+          save(); render();
+          if (_roomId) fbSaveDebounced();
+          toast(t('clearCards'));
+        }
+      });
     }
 
     // ── LABEL MANAGEMENT ──
@@ -3264,10 +4177,13 @@
       const container = document.getElementById('existingLabels');
       container.innerHTML = '';
       if (state.labels.length === 0) {
-        container.innerHTML = '<span style="font-size:0.78rem;color:var(--text-muted)">No labels yet — create one below.</span>';
+        container.innerHTML = '<span style="font-size:0.78rem;color:var(--text-muted)">' + t('noLabelsYet') + '</span>';
         return;
       }
       state.labels.forEach(l => {
+        const row = document.createElement('div');
+        row.className = 'label-row';
+
         const btn = document.createElement('div');
         btn.className = 'label-option' + (selectedLabels.includes(l.name) ? ' selected' : '');
         btn.textContent = l.name;
@@ -3283,8 +4199,29 @@
           }
           autoSaveCard(true);
         });
-        container.appendChild(btn);
+
+        const del = document.createElement('button');
+        del.className = 'label-del-btn';
+        del.textContent = '✕';
+        del.title = t('delete');
+        del.addEventListener('click', e => { e.stopPropagation(); deleteGlobalLabel(l.name); });
+
+        row.appendChild(btn);
+        row.appendChild(del);
+        container.appendChild(row);
       });
+    }
+
+    function deleteGlobalLabel(name) {
+      state.labels = state.labels.filter(l => l.name !== name);
+      state.columns.forEach(col => col.cards.forEach(card => {
+        if (card.labels) card.labels = card.labels.filter(n => n !== name);
+      }));
+      selectedLabels = selectedLabels.filter(n => n !== name);
+      save();
+      if (_roomId) fbSaveDebounced();
+      buildLabelPicker();
+      render();
     }
 
     function buildNewLabelColorRow() {
@@ -3306,7 +4243,7 @@
     function addCustomLabel() {
       const name = document.getElementById('newLabelName').value.trim();
       if (!name) return;
-      if (state.labels.find(l => l.name.toLowerCase() === name.toLowerCase())) { toast('Label already exists'); return; }
+      if (state.labels.find(l => l.name.toLowerCase() === name.toLowerCase())) { toast(t('toastLabelExists')); return; }
       const pair = LABEL_COLOR_PAIRS[newLabelColorIndex];
       state.labels.push({ name, bg: pair.bg, color: pair.color });
       selectedLabels.push(name);
@@ -3315,7 +4252,7 @@
       updateLabelPreview();
       buildLabelPicker();
       autoSaveCard(true);
-      toast('Label "' + name + '" created');
+      toast(t('toastLabelCreated') + name + '"');
     }
 
     function updateLabelPreview() {
@@ -3350,7 +4287,7 @@
       if (editingChecklist.length === 0) {
         const empty = document.createElement('div');
         empty.style.cssText = 'font-size:0.78rem;color:var(--text-muted);padding:4px 2px;font-style:italic';
-        empty.textContent = 'No items yet — add one below.';
+        empty.textContent = t('noChecklistItems');
         items.appendChild(empty);
       }
 
@@ -3422,11 +4359,11 @@
       const today = new Date(); today.setHours(0, 0, 0, 0);
       const due = new Date(val + 'T00:00:00');
       const diff = Math.round((due - today) / 86400000);
-      if (diff < 0) { el.textContent = `Overdue by ${Math.abs(diff)} day${Math.abs(diff) === 1 ? '' : 's'}`; el.className = 'due-preview overdue'; }
-      else if (diff === 0) { el.textContent = 'Due today!'; el.className = 'due-preview soon'; }
-      else if (diff === 1) { el.textContent = 'Due tomorrow'; el.className = 'due-preview soon'; }
-      else if (diff <= 7) { el.textContent = `In ${diff} days`; el.className = 'due-preview ok'; }
-      else { el.textContent = due.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); el.className = 'due-preview ok'; }
+      if (diff < 0) { el.textContent = t('dueOverdue', { n: Math.abs(diff) }); el.className = 'due-preview overdue'; }
+      else if (diff === 0) { el.textContent = t('dueToday'); el.className = 'due-preview soon'; }
+      else if (diff === 1) { el.textContent = t('dueTomorrow'); el.className = 'due-preview soon'; }
+      else if (diff <= 7) { el.textContent = t('dueInDays', { n: diff }); el.className = 'due-preview ok'; }
+      else { el.textContent = due.toLocaleDateString(_lang === 'de' ? 'de-DE' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); el.className = 'due-preview ok'; }
     }
     function clearDueDate() {
       document.getElementById('cardDueInput').value = '';
@@ -3487,11 +4424,19 @@
     // ── DELETE CARD FROM MODAL ──
     function deleteCardFromModal() {
       if (!editingCardId || !editingColIdForCard) return;
-      if (!confirm('Delete this card?')) return;
       const col = state.columns.find(c => c.id === editingColIdForCard);
-      if (col) col.cards = col.cards.filter(c => c.id !== editingCardId);
-      save(); render(); closeCardModal();
-      toast('Card deleted');
+      const card = col && col.cards.find(c => c.id === editingCardId);
+      showConfirm({
+        icon: '🗑',
+        title: t('deleteCard').replace('🗑 ', ''),
+        message: t('confirmDeleteCard', { name: card ? card.title || t('unknown') : t('unknown') }),
+        onConfirm: () => {
+          if (col) col.cards = col.cards.filter(c => c.id !== editingCardId);
+          save(); render(); closeCardModal();
+          if (_roomId) fbSaveDebounced();
+          toast(t('cardDeleted'));
+        }
+      });
     }
 
     // ── CARD ACTIONS ──
@@ -3507,7 +4452,7 @@
       // Info bar
       document.getElementById('cardInfoColName').textContent = col ? col.name : '';
       document.getElementById('cardInfoDot').style.background = col ? (col.color || '#7c6af7') : '#7c6af7';
-      document.getElementById('cardInfoMode').textContent = 'New Card';
+      document.getElementById('cardInfoMode').textContent = t('newCardMode');
       document.getElementById('cardTitleInput').value = '';
       document.getElementById('cardDescInput').value = '';
       autoGrow(document.getElementById('cardDescInput'));
@@ -3543,7 +4488,7 @@
       // Info bar
       document.getElementById('cardInfoColName').textContent = col ? col.name : '';
       document.getElementById('cardInfoDot').style.background = col ? (col.color || '#7c6af7') : '#7c6af7';
-      document.getElementById('cardInfoMode').textContent = 'Editing';
+      document.getElementById('cardInfoMode').textContent = t('editingMode');
       document.getElementById('cardTitleInput').value = card.title;
       document.getElementById('cardDescInput').value = card.desc || '';
       autoGrow(document.getElementById('cardDescInput'));
@@ -3614,8 +4559,18 @@
     function deleteCard(colId, cardId) {
       const col = state.columns.find(c => c.id === colId);
       if (!col) return;
-      col.cards = col.cards.filter(c => c.id !== cardId);
-      save(); render();
+      const card = col.cards.find(c => c.id === cardId);
+      showConfirm({
+        icon: '🗑',
+        title: t('deleteCard').replace('🗑 ', ''),
+        message: t('confirmDeleteCard', { name: card ? card.title || t('unknown') : t('unknown') }),
+        onConfirm: () => {
+          col.cards = col.cards.filter(c => c.id !== cardId);
+          save(); render();
+          if (_roomId) fbSaveDebounced();
+          toast(t('cardDeleted'));
+        }
+      });
     }
 
     function duplicateCard(colId, cardId) {
@@ -3850,7 +4805,7 @@
       btn.textContent = '⏳ Decrypting...'; btn.disabled = true;
 
       const imported = await decryptBoard(_pendingEncoded, pw);
-      btn.textContent = 'Unlock & Import'; btn.disabled = false;
+      btn.textContent = t('unlockImport'); btn.disabled = false;
 
       if (!imported || !imported.columns) {
         errEl.textContent = '❌ Wrong password or corrupted link.';
@@ -3885,7 +4840,7 @@
 
         let headerActions = '';
         if (ws.id !== _workspaces[0].id) {
-          headerActions = `<button class="btn btn-danger" style="font-size:0.65rem;padding:4px 8px" onclick="deleteWorkspace('${ws.id}')">Delete Workspace</button>`;
+          headerActions = `<button class="btn btn-danger" style="font-size:0.65rem;padding:4px 8px" onclick="deleteWorkspace('${ws.id}')">${t('deleteWorkspace')}</button>`;
         }
 
         sec.innerHTML = `
@@ -3902,7 +4857,7 @@
         ws.boards.forEach(b => {
           const href = b.type === 'cloud' ? '?r=' + b.id : '?local=' + b.id;
           const bgType = b.type === 'cloud' ? 'linear-gradient(135deg, var(--accent2), var(--accent3))' : 'var(--text-muted)';
-          const typeName = b.type === 'cloud' ? 'Cloud Sync' : 'Offline Local';
+          const typeName = b.type === 'cloud' ? t('cloudSync') : t('offlineLocal');
 
           grid.innerHTML += `
             <div class="board-card" onclick="location.href='${href}'">
@@ -3911,7 +4866,7 @@
                 <div class="type-dot" style="background:${bgType}"></div>
                 ${typeName}
               </div>
-              <button class="delete-btn-corner" onclick="event.stopPropagation(); deleteBoard('${ws.id}', '${b.id}')" title="Remove Shortcut">✕</button>
+              <button class="delete-btn-corner" onclick="event.stopPropagation(); deleteBoard('${ws.id}', '${b.id}')" title="${t('Remove Shortcut')}">✕</button>
             </div>
           `;
         });
@@ -3919,7 +4874,7 @@
         // Add "Create new" card
         const createCard = document.createElement('div');
         createCard.className = 'board-card create-new';
-        createCard.innerHTML = `<span style="font-size:1.4rem;margin-bottom:4px">+</span> <span>New Board</span>`;
+        createCard.innerHTML = `<span style="font-size:1.4rem;margin-bottom:4px">+</span> <span>${t('newBoard')}</span>`;
         createCard.onclick = () => createBoardPrompt(ws.id);
         grid.appendChild(createCard);
       });
@@ -3929,18 +4884,20 @@
         devSec.className = 'workspace-section';
         devSec.innerHTML = `
           <div class="workspace-header" style="border-bottom:1px dashed rgba(247,106,138,0.5)">
-            <h3 style="color:var(--danger,#f76a8a)">🛠️ Dev Panel — All Users</h3>
+            <h3 style="color:var(--danger,#f76a8a)">🛠️ ${t('Dev Panel — All Users')}</h3>
             <div style="display:flex;gap:6px;align-items:center">
-              <button class="btn" style="font-size:0.65rem;padding:4px 10px;color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.35)" onclick="openDevAdmin()">🛠️ Dev DB</button>
-              <button class="btn" style="font-size:0.65rem;padding:4px 10px;color:var(--accent3);border-color:rgba(106,247,196,0.3)" onclick="devLoadUsers()">↻ Refresh Users</button>
+              <button class="btn" style="font-size:0.65rem;padding:4px 10px;color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.35)" onclick="openDevAdmin()">🛠️ ${t('Dev DB')}</button>
+              <button class="btn" style="font-size:0.65rem;padding:4px 10px;color:var(--accent3);border-color:rgba(106,247,196,0.3)" onclick="devLoadUsers()">↻ ${t('Refresh Users')}</button>
             </div>
           </div>
           <div id="dev-users-container" style="margin-top:4px">
-            <p style="color:var(--text-muted);font-size:0.82rem;padding:8px 0">Click <strong>↻ Refresh Users</strong> to load all users from the database.</p>
+            <p style="color:var(--text-muted);font-size:0.82rem;padding:8px 0">${t('Click <strong>↻ Refresh Users</strong> to load all users from the database.')}</p>
           </div>
         `;
         container.appendChild(devSec);
       }
+      applyTranslations();
+      updateUsernameChip();
     }
 
     async function devLoadUsers() {
@@ -4109,55 +5066,81 @@
     }
 
     function createWorkspacePrompt() {
-      const name = prompt('Workspace Name (e.g. Work, Personal):');
+      const name = prompt(t('workspaceNamePrompt'));
       if (!name) return;
       _workspaces.push({ id: uid(), name: name, boards: [] });
       saveWorkspaces();
       renderDashboard();
     }
 
-    function createBoardPrompt(wsId) {
+    async function createBoardPrompt(wsId) {
       const ws = _workspaces.find(w => w.id === wsId);
       if (!ws) return;
-      const type = confirm('Create a multi-player Collaborative Board?\\n(Click OK for Cloud Sync, Cancel for Offline Local)') ? 'cloud' : 'local';
+      // Check dev-lock: if creation is locked to devs only and this user is not a dev, block it
+      try {
+        const lockSnap = await db.ref('app_config/creation_locked').once('value');
+        if (lockSnap.val() && !_isDev) {
+          toast(t('toastNotDevLocked'));
+          return;
+        }
+      } catch (e) { /* if check fails, allow creation */ }
+      const type = confirm('Create a multi-player Collaborative Board?\n(Click OK for Cloud Sync, Cancel for Offline Local)') ? 'cloud' : 'local';
 
       const newId = type === 'cloud' ? generateRoomId() : uid();
       ws.boards.push({ id: newId, type: type, name: 'Untitled Board' });
       saveWorkspaces();
 
-      location.href = (type === 'cloud') ? '?r=' + newId : '?local=' + newId;
+      if (type === 'cloud') {
+        // Write ownership config BEFORE redirecting so joinRoom() finds us as owner
+        ensureUsername(async () => {
+          const configData = { locked: false, ownerId: _userId, ownerName: _username || 'Anonymous', roles: {} };
+          try { await db.ref('rooms/' + newId + '/config').set(configData); } catch (e) { /* will seed on joinRoom */ }
+          location.href = '?r=' + newId;
+        });
+      } else {
+        location.href = '?local=' + newId;
+      }
     }
 
     async function deleteBoard(wsId, boardId) {
       const ws = _workspaces.find(w => w.id === wsId);
       if (!ws) return;
       const board = ws.boards.find(b => b.id === boardId);
-      const isCloud = board && board.type === 'cloud';
-      const msg = isCloud
-        ? 'Delete this board?\n\nThis will permanently remove all data from the database and cannot be undone.'
-        : 'Delete this board?\n\nThis will remove the local board data and cannot be undone.';
-      if (!confirm(msg)) return;
-      // Remove from workspace list
-      ws.boards = ws.boards.filter(b => b.id !== boardId);
-      saveWorkspaces();
-      // Delete actual data
-      if (isCloud) {
-        try {
-          await db.ref('rooms/' + boardId).remove();
-        } catch (e) { toast('⚠️ Could not delete cloud data — check Firebase rules.'); }
-      } else {
-        localStorage.removeItem('pb_local_' + boardId);
-      }
-      localStorage.removeItem('pb_roomPw_' + boardId);
-      renderDashboard();
-      toast('🗑 Board deleted.');
+      if (!board) return;
+      const isCloud = board.type === 'cloud';
+      showConfirm({
+        icon: isCloud ? '☁️' : '🗑',
+        title: t('confirmDelete'),
+        message: t('confirmDeleteBoard', { name: board.name || t('untitledBoard') }),
+        onConfirm: async () => {
+          ws.boards = ws.boards.filter(b => b.id !== boardId);
+          saveWorkspaces();
+          if (isCloud) {
+            try { await db.ref('rooms/' + boardId).remove(); }
+            catch (e) { toast(t('toastDeleteCloudError')); }
+          } else {
+            localStorage.removeItem('pb_local_' + boardId);
+          }
+          localStorage.removeItem('pb_roomPw_' + boardId);
+          renderDashboard();
+          toast(t('toastBoardDeleted'));
+        }
+      });
     }
 
     function deleteWorkspace(wsId) {
-      if (!confirm('Delete this workspace and hide all boards inside it?')) return;
-      _workspaces = _workspaces.filter(w => w.id !== wsId);
-      saveWorkspaces();
-      renderDashboard();
+      const ws = _workspaces.find(w => w.id === wsId);
+      if (!ws) return;
+      showConfirm({
+        icon: '🏠',
+        title: t('confirmDelete'),
+        message: t('confirmDeleteWorkspace', { name: ws.name }),
+        onConfirm: () => {
+          _workspaces = _workspaces.filter(w => w.id !== wsId);
+          saveWorkspaces();
+          renderDashboard();
+        }
+      });
     }
 
     function checkUrlImport() {
@@ -4185,22 +5168,42 @@
       const imported = decodeBoard(encoded);
       if (!imported || !imported.columns) { history.replaceState(null, '', location.pathname); return; }
       const existing = localStorage.getItem(STORAGE_KEY);
-      if (existing && !confirm('Import this shared board? Your current board will be replaced.')) {
-        history.replaceState(null, '', location.pathname); return;
+      const doImport = () => {
+        state = imported;
+        if (!state.labels) state.labels = [];
+        save();
+        history.replaceState(null, '', location.pathname);
+        toast(t('toastBoardImported'));
+        render();
+      };
+      if (existing) {
+        showConfirm({
+          icon: '📥',
+          title: t('importBoardConfirm').replace('?',''),
+          message: t('importBoardConfirm'),
+          yesLabel: t('import'),
+          onConfirm: doImport
+        });
+        history.replaceState(null, '', location.pathname);
+        return;
       }
-      state = imported;
-      if (!state.labels) state.labels = [];
-      save();
-      history.replaceState(null, '', location.pathname);
-      toast('Board imported! Welcome 👋');
+      doImport();
     }
 
     // ── GLOBAL ──
     function clearAll() {
-      if (!confirm('Clear entire board? This cannot be undone.')) return;
-      Object.keys(colDropdowns).forEach(id => { colDropdowns[id].remove(); delete colDropdowns[id]; });
-      state.columns = [];
-      save(); render();
+      showConfirm({
+        icon: '⚠️',
+        title: t('clearAll').replace('Alles löschen', 'Clear All').replace('+ ', ''),
+        message: t('clearAllConfirm'),
+        yesLabel: t('clearAll'),
+        onConfirm: () => {
+          Object.keys(colDropdowns).forEach(id => { colDropdowns[id].remove(); delete colDropdowns[id]; });
+          state.columns = [];
+          save(); render();
+          if (_roomId) fbSaveDebounced();
+        }
+      });
     }
 
     document.getElementById('boardTitle').addEventListener('blur', e => {
@@ -4273,7 +5276,7 @@
         avatar.textContent = _username.charAt(0).toUpperCase();
         avatar.classList.remove('anon');
       } else {
-        label.textContent = 'Set name';
+        label.textContent = t('setName');
         avatar.textContent = '\ud83d\udc64';
         avatar.classList.add('anon');
       }
@@ -4296,7 +5299,7 @@
       updateUsernameChip();
       // Broadcast live to Firebase presence if in a room
       if (_presenceRef) _presenceRef.set({ name: val, isOwner: _isOwner });
-      toast('\ud83d\udc64 Name saved: ' + val);
+      toast(t('toastNameSaved') + val);
     }
     document.getElementById('usernamePopoverInput').addEventListener('keydown', e => {
       if (e.key === 'Enter') saveUsernameFromChip();
@@ -4337,14 +5340,14 @@
     function copyRawUserId() {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(_userId).then(() => {
-          toast('✅ User ID (' + _userId + ') copied!');
+          toast(t('toastUserIdCopied', { id: _userId }));
           document.getElementById('usernamePopover').classList.remove('open');
         });
       } else {
         const ta = document.createElement('textarea');
         ta.value = _userId; ta.style.position = 'fixed'; ta.style.opacity = '0';
         document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
-        toast('✅ User ID (' + _userId + ') copied!');
+        toast(t('toastUserIdCopied', { id: _userId }));
         document.getElementById('usernamePopover').classList.remove('open');
       }
     }
@@ -4362,14 +5365,14 @@
 
       if (navigator.clipboard) {
         navigator.clipboard.writeText(b64).then(() => {
-          toast('✅ Identity copied to clipboard!');
+          toast(t('toastIdentityCopied'));
           document.getElementById('usernamePopover').classList.remove('open');
         });
       } else {
         const ta = document.createElement('textarea');
         ta.value = b64; ta.style.position = 'fixed'; ta.style.opacity = '0';
         document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
-        toast('✅ Identity copied to clipboard!');
+        toast(t('toastIdentityCopied'));
         document.getElementById('usernamePopover').classList.remove('open');
       }
     }
@@ -4396,10 +5399,10 @@
         }
 
         document.getElementById('importIdentityOverlay').classList.remove('open');
-        toast('⚡ Identity Imported! Reloading...');
+        toast(t('toastIdentityImported'));
         setTimeout(() => location.reload(), 1200);
       } catch (e) {
-        toast('❌ Invalid Identity String');
+        toast(t('toastInvalidIdentity'));
         console.error(e);
       }
     }
@@ -4409,6 +5412,7 @@
     let _roomId = null;
     let _roomPassword = null;
     let _isOwner = false;
+    let _roomDeletedRemotely = false; // true when Firebase reports room no longer exists
     let _fbWriting = false;
     let _fbSaveTimer = null;
     let _myPresenceId = null;
@@ -4445,6 +5449,9 @@
       if (_unsubscribeData) { _unsubscribeData(); _unsubscribeData = null; }
       if (_sqlListenInterval) { clearInterval(_sqlListenInterval); _sqlListenInterval = null; }
 
+      // Clean up previous custom Firebase app before creating a new one
+      if (_customDb) { try { await _customDb.app.delete(); } catch (e) {} _customDb = null; }
+
       if (storageConfig.type === 'firebase') {
         const appName = 'app_' + Date.now();
         const app = firebase.initializeApp({
@@ -4455,17 +5462,26 @@
       }
     }
 
+    function sqlFetch(url, options = {}, timeoutMs = 8000) {
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), timeoutMs);
+      return fetch(url, { ...options, signal: ctrl.signal }).finally(() => clearTimeout(tid));
+    }
+
     async function getSyncStateOnce() {
       if (_currentStorage.type === 'firebase' && _customDb) {
         const s = await _customDb.ref('rooms/' + _roomId + '/state').once('value');
         return s.val();
       } else if (_currentStorage.type === 'sql') {
         try {
-          const res = await fetch(_currentStorage.url + '?room=' + _roomId, {
+          const res = await sqlFetch(_currentStorage.url + '?room=' + _roomId, {
             headers: _currentStorage.token ? { 'Authorization': _currentStorage.token } : {}
           });
-          return await res.json();
-        } catch (e) { return null; }
+          if (res.status === 404) return null;
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const body = await res.json();
+          return (body && Object.keys(body).length) ? body : null;
+        } catch (e) { console.warn('SQL fetch error:', e); return null; }
       }
       const s = await db.ref('rooms/' + _roomId + '/state').once('value');
       return s.val();
@@ -4475,14 +5491,17 @@
       if (_currentStorage.type === 'firebase' && _customDb) {
         await _customDb.ref('rooms/' + _roomId + '/state').set(payload);
       } else if (_currentStorage.type === 'sql') {
-        await fetch(_currentStorage.url + '?room=' + _roomId, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(_currentStorage.token ? { 'Authorization': _currentStorage.token } : {})
-          },
-          body: JSON.stringify(payload)
-        });
+        try {
+          const res = await sqlFetch(_currentStorage.url + '?room=' + _roomId, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(_currentStorage.token ? { 'Authorization': _currentStorage.token } : {})
+            },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+        } catch (e) { console.warn('SQL save error:', e); toast('❌ SQL save failed: ' + e.message); }
       } else {
         await db.ref('rooms/' + _roomId + '/state').set(payload);
       }
@@ -4490,8 +5509,9 @@
 
     async function fbSave() {
       if (!_roomId) return;
+      if (_roomDeletedRemotely) return; // room was deleted externally — do NOT re-create it
       if (_myRole === 'member' && _roomConfig && _roomConfig.readOnly) {
-        toast('This board is in Public Read-Only Mode!');
+        toast(t('toastReadOnlyMode'));
         return;
       }
       _fbWriting = true;
@@ -4538,18 +5558,25 @@
       const handleData = async (data) => {
         if (_fbWriting) return;
         if (!data) {
-          document.getElementById('boardVeil').classList.remove('show');
+          // Room was deleted from the database while we were connected — stop all writes
+          if (_roomId && !_roomDeletedRemotely) {
+            _roomDeletedRemotely = true;
+            if (_unsubscribeData) { _unsubscribeData(); _unsubscribeData = null; }
+            document.getElementById('boardVeil').classList.remove('show');
+            toast(t('toastRoomDeletedRemote'));
+          }
           return;
         }
+        _roomDeletedRemotely = false; // room exists, clear the flag
         let decoded;
         if (data.encrypted) {
           if (_isDev && !_roomPassword) {
             // Old room created before devKey system — no way to decrypt
-            state = { boardTitle: 'Encrypted Room (No Dev Key)', labels: [], columns: [] };
+            state = { boardTitle: t('encryptedRoomNoKey'), labels: [], columns: [] };
             render();
-            document.getElementById('boardTitle').value = 'Encrypted Room (No Dev Key)';
+            document.getElementById('boardTitle').value = t('encryptedRoomNoKey');
             document.getElementById('boardVeil').classList.remove('show');
-            toast('🔒 This room predates the dev key system — cannot decrypt.');
+            toast(t('toastEncryptedRoomNoKey'));
             return;
           }
           if (!_roomPassword) return; // wait for password
@@ -4563,7 +5590,7 @@
         if (!state.columns) state.columns = [];
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         render();
-        document.getElementById('boardTitle').value = state.boardTitle || 'My Board';
+        document.getElementById('boardTitle').value = state.boardTitle || t('myBoard');
         document.getElementById('boardVeil').classList.remove('show');
       };
 
@@ -4574,11 +5601,14 @@
       } else if (_currentStorage.type === 'sql') {
         const poll = async () => {
           try {
-            const res = await fetch(_currentStorage.url + '?room=' + _roomId, {
+            const res = await sqlFetch(_currentStorage.url + '?room=' + _roomId, {
               headers: _currentStorage.token ? { 'Authorization': _currentStorage.token } : {}
             });
-            handleData(await res.json());
-          } catch (e) { }
+            if (res.status === 404) { handleData(null); return; } // room deleted
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const body = await res.json();
+            handleData(body && Object.keys(body).length ? body : null);
+          } catch (e) { console.warn('SQL poll error:', e); }
         };
         poll();
         _sqlListenInterval = setInterval(poll, 5000);
@@ -4607,7 +5637,7 @@
         pulse.style.display = '';
         document.getElementById('collabBtn').classList.add('active');
         const names = Object.values(_membersCache).map(m => {
-          const n = (m && m.name) ? m.name : 'Anonymous';
+          const n = (m && m.name) ? m.name : t('anonymous');
           return (m && m.isOwner) ? '👑 ' + n : n;
         });
         document.getElementById('collabBtn').title = names.join('\n');
@@ -4635,9 +5665,9 @@
     }
     function _updateCollabBtnLabel() {
       const count = Object.keys(_membersCache).length;
-      if (_isOwner) document.getElementById('collabBtnText').textContent = '⚙️ ' + count + ' online';
-      else if (_myRole === 'manager') document.getElementById('collabBtnText').textContent = '⚡ ' + count + ' online';
-      else document.getElementById('collabBtnText').textContent = '👥 ' + count + ' online';
+      if (_isOwner) document.getElementById('collabBtnText').textContent = '⚙️ ' + count + ' ' + t('online');
+      else if (_myRole === 'manager') document.getElementById('collabBtnText').textContent = '⚡ ' + count + ' ' + t('online');
+      else document.getElementById('collabBtnText').textContent = '👥 ' + count + ' ' + t('online');
     }
 
     function getRoomIdFromUrl() {
@@ -4674,7 +5704,7 @@
       const errEl = document.getElementById('roomJoinError');
       const btn = document.getElementById('roomJoinBtn');
       errEl.textContent = '';
-      btn.textContent = '⏳ Verifying...'; btn.disabled = true;
+      btn.textContent = t('verifying'); btn.disabled = true;
 
       const config = _pendingJoinConfig || {};
       // Create a temporary storage instance to fetch the state
@@ -4684,10 +5714,10 @@
       if (data && data.encrypted) {
         const decoded = await decryptFromRoom(data.encrypted, pw);
         if (!decoded) {
-          errEl.textContent = '❌ Wrong password.';
+          errEl.textContent = t('wrongPassword');
           document.getElementById('roomJoinPwInput').value = '';
           document.getElementById('roomJoinPwInput').focus();
-          btn.textContent = 'Join Room'; btn.disabled = false;
+          btn.textContent = t('joinRoom'); btn.disabled = false;
           return;
         }
       }
@@ -4698,7 +5728,7 @@
       if (_pendingJoinConfig.ownerId === _userId) _myRole = 'owner';
 
       document.getElementById('roomJoinOverlay').classList.remove('open');
-      btn.textContent = 'Join Room'; btn.disabled = false;
+      btn.textContent = t('joinRoom'); btn.disabled = false;
       const rid = _pendingJoinRoomId;
       _pendingJoinRoomId = null; _pendingJoinConfig = null;
       await finishJoinRoom(rid);
@@ -4730,10 +5760,10 @@
       await fbSave(); // Uses _roomPassword to encrypt
       startDataListener();
       fbSetupPresence();
-      toast('✅ Room created!');
+      toast(t('toastRoomCreated'));
       setTimeout(() => {
         const url = getRoomShareUrl();
-        if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('🔗 Link copied — share it!'));
+        if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast(t('toastLinkCopied')));
       }, 400);
     }
     document.getElementById('roomCreatePwInput').addEventListener('keydown', e => {
@@ -4742,6 +5772,7 @@
 
     async function finishJoinRoom(roomId) {
       _roomId = roomId;
+      _roomDeletedRemotely = false;
       setRoomInUrl(roomId);
 
       const configSnap = await db.ref('rooms/' + roomId + '/config').once('value');
@@ -4767,10 +5798,10 @@
     }
 
     function _roleBadgeHTML(role, isDev) {
-      if (isDev) return '<span class="role-badge owner" style="background:var(--danger)">🛠️ Dev</span>';
-      if (role === 'owner') return '<span class="role-badge owner">👑 Owner</span>';
-      if (role === 'manager') return '<span class="role-badge manager">⚡ Manager</span>';
-      return '<span class="role-badge member">👤 Member</span>';
+      if (isDev) return '<span class="role-badge owner" style="background:var(--danger)">' + t('devBadge') + '</span>';
+      if (role === 'owner') return '<span class="role-badge owner">' + t('roleBadgeOwner') + '</span>';
+      if (role === 'manager') return '<span class="role-badge manager">' + t('roleBadgeManager') + '</span>';
+      return '<span class="role-badge member">' + t('roleBadgeMember') + '</span>';
     }
 
     async function openRoomSettingsWithAuth() {
@@ -4791,22 +5822,22 @@
       const errEl = document.getElementById('settingsAuthError');
       const btn = document.getElementById('settingsAuthBtn');
       errEl.textContent = '';
-      btn.textContent = '⏳ Verifying...'; btn.disabled = true;
+      btn.textContent = t('verifying'); btn.disabled = true;
 
       // Verify by attempting to decrypt the board state
       const data = await getSyncStateOnce();
       if (data && data.encrypted) {
         const decoded = await decryptFromRoom(data.encrypted, pw);
         if (!decoded) {
-          errEl.textContent = '❌ Wrong password.';
+          errEl.textContent = t('wrongPassword');
           document.getElementById('settingsAuthInput').value = '';
           document.getElementById('settingsAuthInput').focus();
-          btn.textContent = '🔓 Unlock Settings'; btn.disabled = false;
+          btn.textContent = t('unlockSettings'); btn.disabled = false;
           return;
         }
       }
 
-      btn.textContent = '🔓 Unlock Settings'; btn.disabled = false;
+      btn.textContent = t('unlockSettings'); btn.disabled = false;
       localStorage.setItem('pb_roomPw_' + _roomId, pw);
       document.getElementById('settingsAuthOverlay').classList.remove('open');
       openRoomSettings();
@@ -4835,7 +5866,7 @@
 
         const name = document.createElement('div');
         name.className = 'member-row-name';
-        name.textContent = (m.name || 'Anonymous') + (isMe ? ' (you)' : '');
+        name.textContent = (m.name || t('anonymous')) + (isMe ? ' (' + t('you') + ')' : '');
 
         if (m.isOwner) {
           row.append(av, name, document.createRange().createContextualFragment(_roleBadgeHTML('owner', m.isDev)));
@@ -4844,15 +5875,15 @@
           wrap.style.cssText = 'display:flex;gap:6px;align-items:center;flex-shrink:0';
           const sel = document.createElement('select');
           sel.innerHTML =
-            '<option value="member">👤 Member</option>' +
-            '<option value="manager">⚡ Manager</option>';
+            '<option value="member">' + t('roleBadgeMember') + '</option>' +
+            '<option value="manager">' + t('roleBadgeManager') + '</option>';
           sel.value = memberRole;
           sel.addEventListener('change', () => setMemberRole(m.userId, sel.value));
           const xferBtn = document.createElement('button');
           xferBtn.className = 'btn';
           xferBtn.style.cssText = 'font-size:0.68rem;padding:3px 8px;color:var(--accent3);border-color:rgba(106,247,196,0.3);white-space:nowrap';
-          xferBtn.textContent = '👑 Transfer';
-          xferBtn.title = 'Transfer ownership to ' + (m.name || 'this user');
+          xferBtn.textContent = t('transferOwnership');
+          xferBtn.title = t('transferTo') + ' ' + (m.name || t('thisUser'));
           xferBtn.addEventListener('click', () => transferOwnership(m.userId, m.name || 'Unknown'));
           wrap.append(sel, xferBtn);
           row.append(av, name, wrap);
@@ -4862,7 +5893,7 @@
         list.appendChild(row);
       });
       if (list.children.length === 0) {
-        list.innerHTML = '<span style="font-size:0.78rem;color:var(--text-muted)">No members online yet.</span>';
+        list.innerHTML = '<span style="font-size:0.78rem;color:var(--text-muted)">' + t('noMembersOnline') + '</span>';
       }
       document.getElementById('ownerNameInput').value = _username;
       document.getElementById('newRoomPwInput').value = '';
@@ -4885,8 +5916,8 @@
       if (storageSection) storageSection.style.display = _isOwner ? '' : 'none';
       const roleLabel = document.getElementById('settingsRoleLabel');
       if (roleLabel) roleLabel.innerHTML = _isOwner
-        ? 'You are the <span style="color:var(--accent3);font-weight:600">👑 owner</span> of this room.'
-        : 'You have <span style="color:#f7c26a;font-weight:600">⚡ Manager</span> access to this room.</span>';
+        ? t('youAreOwner')
+        : t('youAreManager');
       document.getElementById('roomSettingsOverlay').classList.add('open');
     }
     function closeRoomSettings() {
@@ -4894,19 +5925,26 @@
     }
     async function transferOwnership(newOwnerId, newOwnerName) {
       if (!_isOwner) return;
-      if (!confirm('Transfer ownership to ' + newOwnerName + '? You will become a Manager.')) return;
-      await fbConfigRef().update({
-        ownerId: newOwnerId,
-        ownerName: newOwnerName,
-        ['roles/' + _userId]: 'manager',
+      showConfirm({
+        icon: '👑',
+        title: t('transferOwnership'),
+        message: t('transferConfirm', { name: newOwnerName }),
+        yesLabel: t('transferOwnership'),
+        onConfirm: async () => {
+          await fbConfigRef().update({
+            ownerId: newOwnerId,
+            ownerName: newOwnerName,
+            ['roles/' + _userId]: 'manager',
+          });
+          toast('👑 ' + t('ownershipTransferred') + ' ' + newOwnerName);
+          closeRoomSettings();
+        }
       });
-      toast('👑 Ownership transferred to ' + newOwnerName);
-      closeRoomSettings();
     }
     async function setMemberRole(userId, role) {
       if (!_isOwner) return;
       await db.ref('rooms/' + _roomId + '/config/roles/' + userId).set(role);
-      toast('⚡ Role updated');
+      toast(t('toastRoleUpdated'));
     }
     function saveOwnerName() {
       const val = document.getElementById('ownerNameInput').value.trim();
@@ -4915,7 +5953,7 @@
       localStorage.setItem('pb_username', val);
       updateUsernameChip();
       if (_presenceRef) _presenceRef.set({ name: val, isOwner: _isOwner, userId: _userId });
-      toast('Name updated');
+      toast(t('nameUpdated'));
     }
     function toggleReadOnlyMode() {
       if (!_isOwner) return;
@@ -4942,7 +5980,7 @@
       await fbSave(); // Will re-encrypt the state using _roomPassword
 
       errEl.style.color = 'var(--accent3)';
-      errEl.textContent = '✅ Settings applied.';
+      errEl.textContent = t('settingsApplied');
       setTimeout(() => { errEl.textContent = ''; errEl.style.color = ''; }, 3500);
     }
     document.getElementById('newRoomPwInput').addEventListener('keydown', e => {
@@ -4974,18 +6012,18 @@
 
       if (type === 'firebase') {
         const url = document.getElementById('customFbUrl').value.trim();
-        if (!url) { toast('Database URL required'); return; }
+        if (!url) { toast(t('dbUrlRequired')); return; }
         newStorage.url = url;
         newStorage.apiKey = document.getElementById('customFbKey').value.trim();
       } else if (type === 'sql') {
         const url = document.getElementById('customSqlUrl').value.trim();
-        if (!url) { toast('API URL required'); return; }
+        if (!url) { toast(t('apiUrlRequired')); return; }
         newStorage.url = url;
         newStorage.token = document.getElementById('customSqlToken').value.trim();
       }
 
       document.getElementById('storageSettingsOverlay').classList.remove('open');
-      toast('💾 Saving storage config...');
+      toast(t('toastSavingStorage'));
 
       if (_roomId && _isOwner) {
         // We are inside a room and we are the owner, save it to the room's metadata so members get it
@@ -5018,7 +6056,7 @@
         }
         return;
       }
-      ensureUsername(() => {
+      ensureUsername(async () => {
         if (SITE_CREATION_PASSWORD && !localStorage.getItem('pb_has_created_board')) {
           document.getElementById('siteLockPwInput').value = '';
           document.getElementById('siteLockError').textContent = '';
@@ -5026,6 +6064,10 @@
           setTimeout(() => document.getElementById('siteLockPwInput').focus(), 100);
           return;
         }
+        try {
+          const lockSnap = await db.ref('app_config/creation_locked').once('value');
+          if (lockSnap.val() && !_isDev) { toast(t('toastNotDevLocked')); return; }
+        } catch (e) {}
         showRoomCreatePrompt();
       });
     }
@@ -5153,6 +6195,8 @@
     }
 
     // ── INIT ──
+    updateLangPickerBtn();
+    filterLangs('');
     initWorkspaces();
     try {
       const gs = localStorage.getItem('pb_globalStorage');
@@ -5181,6 +6225,30 @@
       document.getElementById('devAdminAddError').textContent = '';
       document.getElementById('devAdminOverlay').classList.add('open');
       devAdminRefresh();
+      devLockRefresh();
+    }
+
+    async function devLockRefresh() {
+      try {
+        const snap = await db.ref('app_config/creation_locked').once('value');
+        const locked = !!snap.val();
+        const cb = document.getElementById('devLockCheckbox');
+        const row = document.getElementById('devLockToggleRow');
+        const label = document.getElementById('devLockLabel');
+        if (cb) cb.checked = locked;
+        if (row) row.classList.toggle('active', locked);
+        if (label) label.textContent = locked ? t('devLockEnabled') : t('devLockDisabled');
+      } catch (e) {}
+    }
+
+    async function toggleDevLock() {
+      try {
+        const snap = await db.ref('app_config/creation_locked').once('value');
+        const newVal = !snap.val();
+        await db.ref('app_config/creation_locked').set(newVal);
+        toast(newVal ? t('toastDevLockOn') : t('toastDevLockOff'));
+        devLockRefresh();
+      } catch (e) { toast('❌ Failed to update lock. Check Firebase rules.'); }
     }
     function closeDevAdmin() {
       document.getElementById('devAdminOverlay').classList.remove('open');
@@ -5232,22 +6300,28 @@
       }
     }
     async function devAdminRemoveId(id) {
-      if (!confirm('Remove dev privileges for:\n' + id + '?')) return;
-      try {
-        // Firebase rules may block .remove() — use set(null) instead which is equivalent
-        await db.ref('app_admins/' + id).set(null);
-        toast('🗑 Dev removed');
-        devAdminRefresh();
-      } catch (e) {
-        // Fallback: try .remove()
-        try {
-          await db.ref('app_admins/' + id).remove();
-          toast('🗑 Dev removed');
-          devAdminRefresh();
-        } catch (e2) {
-          toast('❌ Failed to remove. Check Firebase rules.');
+      showConfirm({
+        icon: '🛠️',
+        title: t('confirmDelete'),
+        message: t('confirmRemoveDev'),
+        subMessage: id.slice(0, 20) + '…',
+        yesLabel: t('delete'),
+        onConfirm: async () => {
+          try {
+            await db.ref('app_admins/' + id).set(null);
+            toast('🗑 Dev removed');
+            devAdminRefresh();
+          } catch (e) {
+            try {
+              await db.ref('app_admins/' + id).remove();
+              toast('🗑 Dev removed');
+              devAdminRefresh();
+            } catch (e2) {
+              toast('❌ Failed to remove. Check Firebase rules.');
+            }
+          }
         }
-      }
+      });
     }
 
     if (_isDashboard) {
@@ -5255,15 +6329,19 @@
       document.getElementById('board').style.display = 'none';
       document.getElementById('boardTitle').style.display = 'none';
       const headerBtns = document.querySelectorAll('.header-actions .btn');
-      headerBtns.forEach(b => { if (!b.textContent.includes('Database')) b.style.display = 'none'; });
+      headerBtns.forEach(b => { if (!b.textContent.includes(t('dbBtn').replace(/🗄️ /, ''))) b.style.display = 'none'; });
       document.getElementById('collabBtn').style.display = 'none';
 
       document.getElementById('dashboardView').style.display = 'flex';
+      applyTranslations();
+      updateUsernameChip();
       renderDashboard();
       if (_isDev) setTimeout(devLoadUsers, 300);
     } else {
       load();
       checkUrlImport();
+      applyTranslations();
+      updateUsernameChip();
 
       if (state.columns.length === 0) {
         if (state.labels.length === 0) {
