@@ -5102,7 +5102,7 @@
               if (!room) return; // not in DB yet
               const cfg = room.config || {};
               // Only claim boards where we are the owner
-              if (cfg.ownerId === _userId || !cfg.ownerId) {
+              if (isRoomOwnerFromConfig(cfg) || (!cfg.ownerId && !cfg.ownerAuthUid)) {
                 usersMap[_userId].owned.push({
                   rId: b.id,
                   boardTitle: b.name || (room.state && room.state.boardTitle) || b.id.slice(0, 10) + '…',
@@ -5456,7 +5456,7 @@
       document.getElementById('usernamePopover').classList.remove('open');
       updateUsernameChip();
       // Broadcast live to Firebase presence if in a room
-      if (_presenceRef) _presenceRef.set({ name: val, isOwner: _isOwner });
+      if (_presenceRef) _presenceRef.set({ name: val, isOwner: _isOwner, isDev: _isDev, userId: _userId, authUid: _authUid || null });
       toast(t('toastNameSaved') + val);
     }
     document.getElementById('usernamePopoverInput').addEventListener('keydown', e => {
@@ -5480,7 +5480,7 @@
       updateUsernameChip();
       document.getElementById('usernameOverlay').classList.remove('open');
       // If already in a room, update presence
-      if (_presenceRef) _presenceRef.set({ name: _username, isOwner: _isOwner });
+      if (_presenceRef) _presenceRef.set({ name: _username, isOwner: _isOwner, isDev: _isDev, userId: _userId, authUid: _authUid || null });
       if (_afterUsernameCallback) { _afterUsernameCallback(); _afterUsernameCallback = null; }
     }
     document.getElementById('usernameInput').addEventListener('keydown', e => {
@@ -5500,6 +5500,26 @@
     }
     function getDevIdentityLabel() {
       return getDevIdentity() || _userId;
+    }
+    function getRoomIdentityKey() {
+      return _authUid || _userId;
+    }
+    function getRoomRolesMap(cfg) {
+      if (!cfg) return {};
+      return cfg.rolesByAuth || cfg.roles || {};
+    }
+    function isRoomOwnerFromConfig(cfg) {
+      if (_isDev) return true;
+      if (!cfg) return false;
+      if (cfg.ownerAuthUid && _authUid) return cfg.ownerAuthUid === _authUid;
+      return !!cfg.ownerId && cfg.ownerId === _userId;
+    }
+    function getMyRoomRoleFromConfig(cfg) {
+      if (_isDev) return 'owner';
+      if (isRoomOwnerFromConfig(cfg)) return 'owner';
+      const roles = getRoomRolesMap(cfg);
+      const idKey = getRoomIdentityKey();
+      return roles[idKey] || ((_authUid && roles[_userId]) ? roles[_userId] : 'member');
     }
     async function ensureFirebaseAuth() {
       if (_authInitPromise) return _authInitPromise;
@@ -5805,7 +5825,7 @@
       if (!_roomId) return;
       _myPresenceId = uid();
       _presenceRef = fbPresenceRef().child(_myPresenceId);
-      _presenceRef.set({ name: _username || 'Anonymous', isOwner: _isOwner, isDev: _isDev, userId: _userId });
+      _presenceRef.set({ name: _username || 'Anonymous', isOwner: _isOwner, isDev: _isDev, userId: _userId, authUid: _authUid || null });
       _presenceRef.onDisconnect().remove();
       fbPresenceRef().on('value', snap => {
         _membersCache = {};
@@ -5833,7 +5853,7 @@
         const newIsOwner = (cfg.ownerId === _userId || _isDev);
         if (newIsOwner !== _isOwner) {
           _isOwner = newIsOwner;
-          if (_presenceRef) _presenceRef.update({ isOwner: _isOwner, isDev: _isDev });
+          if (_presenceRef) _presenceRef.update({ isOwner: _isOwner, isDev: _isDev, authUid: _authUid || null });
         }
         _myRole = _isOwner ? 'owner' : (_rolesCache[_userId] || 'member');
         const newStorage = cfg.customStorage || { type: 'default' };
@@ -5905,8 +5925,7 @@
 
       _roomPassword = pw;
       localStorage.setItem('pb_roomPw_' + _pendingJoinRoomId, pw);
-      _myRole = (_pendingJoinConfig.roles && _pendingJoinConfig.roles[_userId]) ? _pendingJoinConfig.roles[_userId] : 'member';
-      if (_pendingJoinConfig.ownerId === _userId) _myRole = 'owner';
+      _myRole = getMyRoomRoleFromConfig(_pendingJoinConfig);
 
       document.getElementById('roomJoinOverlay').classList.remove('open');
       btn.textContent = t('joinRoom'); btn.disabled = false;
@@ -5924,6 +5943,7 @@
     }
     async function confirmRoomCreate() {
       const pw = document.getElementById('roomCreatePwInput').value.trim();
+      await ensureFirebaseAuth();
       _isOwner = true;
       _myRole = 'owner';
       _roomPassword = pw || null;
@@ -5931,7 +5951,7 @@
       const roomId = generateRoomId();
       _roomId = roomId;
       setRoomInUrl(roomId);
-      const configData = { locked: !!pw, ownerId: _userId, ownerName: _username, roles: {} };
+      const configData = { locked: !!pw, ownerId: _userId, ownerAuthUid: _authUid || null, ownerName: _username, rolesByAuth: {}, roles: {} };
       if (pw) {
         localStorage.setItem('pb_roomPw_' + roomId, pw);
         configData.devKey = await encryptStringForDev(pw);
@@ -6034,8 +6054,9 @@
       const currentRoles = _rolesCache || {};
       Object.values(_membersCache).forEach(m => {
         if (!m || !m.userId) return;
-        const isMe = m.userId === _userId;
-        const memberRole = m.isOwner ? 'owner' : (currentRoles[m.userId] || 'member');
+        const memberIdentity = m.authUid || m.userId;
+        const isMe = m.userId === _userId || (!!_authUid && m.authUid === _authUid);
+        const memberRole = m.isOwner ? 'owner' : (currentRoles[memberIdentity] || currentRoles[m.userId] || 'member');
         const row = document.createElement('div');
         row.className = 'member-row';
 
@@ -6059,13 +6080,13 @@
             '<option value="member">' + t('roleBadgeMember') + '</option>' +
             '<option value="manager">' + t('roleBadgeManager') + '</option>';
           sel.value = memberRole;
-          sel.addEventListener('change', () => setMemberRole(m.userId, sel.value));
+          sel.addEventListener('change', () => setMemberRole(m.userId, m.authUid || null, sel.value));
           const xferBtn = document.createElement('button');
           xferBtn.className = 'btn';
           xferBtn.style.cssText = 'font-size:0.68rem;padding:3px 8px;color:var(--accent3);border-color:rgba(106,247,196,0.3);white-space:nowrap';
           xferBtn.textContent = t('transferOwnership');
           xferBtn.title = t('transferTo') + ' ' + (m.name || t('thisUser'));
-          xferBtn.addEventListener('click', () => transferOwnership(m.userId, m.name || 'Unknown'));
+          xferBtn.addEventListener('click', () => transferOwnership(m.userId, m.authUid || null, m.name || 'Unknown'));
           wrap.append(sel, xferBtn);
           row.append(av, name, wrap);
         } else {
@@ -6118,7 +6139,7 @@
     function closeRoomSettings() {
       document.getElementById('roomSettingsOverlay').classList.remove('open');
     }
-    async function transferOwnership(newOwnerId, newOwnerName) {
+    async function transferOwnership(newOwnerId, newOwnerAuthUid, newOwnerName) {
       if (!_isOwner) return;
       showConfirm({
         icon: '👑',
@@ -6126,19 +6147,23 @@
         message: t('transferConfirm', { name: newOwnerName }),
         yesLabel: t('transferOwnership'),
         onConfirm: async () => {
-          await fbConfigRef().update({
+          const updates = {
             ownerId: newOwnerId,
+            ownerAuthUid: newOwnerAuthUid || null,
             ownerName: newOwnerName,
-            ['roles/' + _userId]: 'manager',
-          });
+          };
+          if (_authUid) updates['rolesByAuth/' + _authUid] = 'manager';
+          else updates['roles/' + _userId] = 'manager';
+          await fbConfigRef().update(updates);
           toast('👑 ' + t('ownershipTransferred') + ' ' + newOwnerName);
           closeRoomSettings();
         }
       });
     }
-    async function setMemberRole(userId, role) {
+    async function setMemberRole(userId, authUid, role) {
       if (!_isOwner) return;
-      await db.ref('rooms/' + _roomId + '/config/roles/' + userId).set(role);
+      if (authUid) await db.ref('rooms/' + _roomId + '/config/rolesByAuth/' + authUid).set(role);
+      else await db.ref('rooms/' + _roomId + '/config/roles/' + userId).set(role);
       toast(t('toastRoleUpdated'));
     }
     function saveOwnerName() {
@@ -6147,7 +6172,7 @@
       _username = val;
       localStorage.setItem('pb_username', val);
       updateUsernameChip();
-      if (_presenceRef) _presenceRef.set({ name: val, isOwner: _isOwner, userId: _userId });
+      if (_presenceRef) _presenceRef.set({ name: val, isOwner: _isOwner, isDev: _isDev, userId: _userId, authUid: _authUid || null });
       toast(t('nameUpdated'));
     }
     function toggleReadOnlyMode() {
@@ -6345,6 +6370,7 @@
     async function joinRoom(roomId) {
       document.getElementById('boardVeil').classList.add('show');
       ensureUsername(async () => {
+        await ensureFirebaseAuth().catch(() => { });
         const configSnap = await db.ref('rooms/' + roomId + '/config').once('value');
         const config = configSnap.val() || {};
 
@@ -6380,8 +6406,7 @@
               if (decoded) {
                 // Cache works! Auto-join
                 _roomPassword = cachedPw;
-                _myRole = (config.roles && config.roles[_userId]) ? config.roles[_userId] : 'member';
-                if (config.ownerId === _userId) _myRole = 'owner';
+                _myRole = getMyRoomRoleFromConfig(config);
                 await finishJoinRoom(roomId);
                 return;
               }
@@ -6396,8 +6421,7 @@
           setTimeout(() => document.getElementById('roomJoinPwInput').focus(), 100);
         } else {
           _roomPassword = null;
-          _myRole = (config.roles && config.roles[_userId]) ? config.roles[_userId] : 'member';
-          if (config.ownerId === _userId) _myRole = 'owner';
+          _myRole = getMyRoomRoleFromConfig(config);
           await finishJoinRoom(roomId);
         }
       });
