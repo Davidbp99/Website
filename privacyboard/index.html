@@ -1981,7 +1981,7 @@
       border-radius: var(--radius-sm);
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
       padding: 14px;
-      width: 220px;
+      width: 270px;
       z-index: 10001;
       display: none;
       flex-direction: column;
@@ -2262,6 +2262,22 @@
     .board-card:hover .delete-btn-corner {
       opacity: 1;
     }
+
+    .dev-tab {
+      flex: 1;
+      padding: 9px 6px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      font-size: 0.71rem;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+    .dev-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .dev-tab.active { color: var(--danger, #f76a8a); border-bottom-color: var(--danger, #f76a8a); font-weight: 600; }
   </style>
 
   <!-- Firebase Realtime Database (compat CDN) -->
@@ -2295,22 +2311,15 @@
             maxlength="24" autocomplete="off" />
           <button class="btn btn-primary" style="font-size:0.78rem;padding:6px 14px" onclick="saveUsernameFromChip()"
             data-i18n="save">Save</button>
-          <div
-            style="margin-top:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;gap:6px">
+          <div style="margin-top:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;gap:8px">
             <label data-i18n="deviceIdentity">Device Identity</label>
-            <div style="display:flex;gap:6px">
-              <button class="btn" style="flex:1;font-size:0.7rem;padding:4px" onclick="exportIdentity()"
-                data-i18n="export">Export</button>
-              <button class="btn" style="flex:1;font-size:0.7rem;padding:4px" onclick="openImportIdentity()"
-                data-i18n="import">Import</button>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <button class="btn" style="font-size:0.72rem;padding:6px 4px;text-align:center" onclick="exportIdentity()" data-i18n="export">📤 Export</button>
+              <button class="btn" style="font-size:0.72rem;padding:6px 4px;text-align:center" onclick="openImportIdentity()" data-i18n="import">📥 Import</button>
+              <button class="btn" style="font-size:0.72rem;padding:6px 4px;text-align:center;border-color:rgba(106,180,247,0.35);color:#6ab4f7" onclick="openRecoverySetup()">🔐 Recovery Q&amp;A</button>
+              <button class="btn" style="font-size:0.72rem;padding:6px 4px;text-align:center;border-color:rgba(106,247,196,0.3);color:var(--accent3)" onclick="openSelfRecovery()">🔑 Recover Account</button>
             </div>
-            <button class="btn"
-              style="margin-top:4px;font-size:0.7rem;padding:4px;border-color:rgba(255,100,100,0.3);color:var(--danger)"
-              onclick="copyRawUserId()" data-i18n="copyUserId">Copy Firebase Auth UID (For Dev Role)</button>
-            <div style="display:flex;gap:6px;margin-top:2px">
-              <button class="btn" style="flex:1;font-size:0.7rem;padding:4px;border-color:rgba(106,180,247,0.35);color:#6ab4f7" onclick="openRecoverySetup()">🔐 Recovery Q&amp;A</button>
-              <button class="btn" style="flex:1;font-size:0.7rem;padding:4px;border-color:rgba(106,247,196,0.3);color:var(--accent3)" onclick="openSelfRecovery()">🔑 Recover Account</button>
-            </div>
+            <button class="btn" style="font-size:0.7rem;padding:5px 4px;border-color:rgba(255,100,100,0.3);color:var(--danger);width:100%" onclick="copyRawUserId()" data-i18n="copyUserId">📋 Copy Firebase Auth UID</button>
             <div class="lang-picker" id="langPickerWrap">
               <button class="lang-picker-btn" onclick="toggleLangPicker(event)">
                 <span class="lang-picker-flag" id="langPickerFlag">🇬🇧</span>
@@ -2588,7 +2597,7 @@
   </div>
 
   <!-- ROOM JOIN OVERLAY (password-protected rooms) -->
-  <div class="room-overlay" id="roomJoinOverlay">
+  <div class="room-overlay" id="roomJoinOverlay" data-closeable>
     <div class="room-box">
       <h2 data-i18n="passwordRequired">🔐 Password Required</h2>
       <p data-i18n="roomPasswordProtected">This collaboration room is password protected. Enter the password to join.
@@ -2611,7 +2620,7 @@
   </div>
 
   <!-- ROOM CREATE OVERLAY (set optional password) -->
-  <div class="room-overlay" id="roomCreateOverlay">
+  <div class="room-overlay" id="roomCreateOverlay" data-closeable>
     <div class="room-box">
       <h2 data-i18n="startCollab">👥 Start Collaboration</h2>
       <p data-i18n="collabOptional">Optionally protect this room with a password. Anyone joining will need to enter it.
@@ -2632,7 +2641,7 @@
   </div>
 
   <!-- USERNAME PROMPT -->
-  <div class="room-overlay" id="usernameOverlay">
+  <div class="room-overlay" id="usernameOverlay" data-closeable>
     <div class="room-box">
       <h2 data-i18n="usernameTitle">👤 Your Display Name</h2>
       <p data-i18n="usernameSubtitle">Set a name so your teammates can see who you are in the room.</p>
@@ -2649,7 +2658,7 @@
   </div>
 
   <!-- IMPORT IDENTITY OVERLAY -->
-  <div class="room-overlay" id="importIdentityOverlay">
+  <div class="room-overlay" id="importIdentityOverlay" data-closeable>
     <div class="room-box">
       <h2 data-i18n="importIdentity">🔄 Import Identity</h2>
       <p style="color:var(--accent2);font-weight:600;font-size:0.85rem" data-i18n="importWarning">WARNING: This will
@@ -2669,7 +2678,7 @@
   </div>
 
   <!-- SITE CREATION LOCK -->
-  <div class="room-overlay" id="siteLockOverlay">
+  <div class="room-overlay" id="siteLockOverlay" data-closeable>
     <div class="room-box">
       <h2>🔒 Site Protected</h2>
       <p>This instance of PrivacyBoard requires the site password to create new boards.</p>
@@ -2690,7 +2699,7 @@
   </div>
 
   <!-- ROOM SETTINGS (owner only) -->
-  <div class="room-overlay" id="roomSettingsOverlay">
+  <div class="room-overlay" id="roomSettingsOverlay" data-closeable>
     <div class="room-box" style="width:440px;max-height:85vh;overflow-y:auto">
       <h2 data-i18n="roomSettings">⚙️ Room Settings</h2>
       <div style="font-size:0.8rem;color:var(--text-muted)" id="settingsRoleLabel">You are the <span
@@ -2772,7 +2781,7 @@
   </div>
 
   <!-- SETTINGS AUTH (password gate for Room Settings) -->
-  <div class="room-overlay" id="settingsAuthOverlay">
+  <div class="room-overlay" id="settingsAuthOverlay" data-closeable>
     <div class="room-box">
       <h2>🔐 Settings Access</h2>
       <p>Enter the room password to access Room Settings.</p>
@@ -2794,110 +2803,128 @@
   </div>
 
   <!-- DEV ADMIN PANEL -->
-  <div class="room-overlay" id="devAdminOverlay">
-    <div class="room-box" style="width:520px;max-width:96vw;gap:16px">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <h2 style="color:var(--danger,#f76a8a)">🛠️ Dev Admin Panel</h2>
-        <button class="col-menu-btn" onclick="closeDevAdmin()" style="font-size:1rem">✕</button>
+  <div class="room-overlay" id="devAdminOverlay" data-closeable>
+    <div class="room-box" style="width:600px;max-width:96vw;gap:0;padding:0;overflow:hidden;max-height:90vh;display:flex;flex-direction:column">
+      <!-- Header -->
+      <div style="padding:14px 18px 12px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+        <div style="min-width:0">
+          <h2 style="color:var(--danger,#f76a8a);margin-bottom:3px">🛠️ Dev Admin Panel</h2>
+          <div id="devAdminMyId" style="font-family:monospace;font-size:0.68rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:340px"></div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
+          <button class="btn btn-danger" onclick="devAdminAddSelf()" style="font-size:0.72rem;padding:4px 10px;white-space:nowrap">+ Add Me</button>
+          <button class="col-menu-btn" onclick="closeDevAdmin()" style="font-size:1rem">✕</button>
+        </div>
       </div>
-      <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.5">
-        Manage <code
-          style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:0.75rem">app_admins</code> in
-        the global Firebase database.
-        Users listed here receive dev (🛠️) privileges across all rooms.
-      </p>
+      <!-- Tabs -->
+      <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.1);background:var(--surface2);flex-shrink:0;overflow-x:auto">
+        <button class="dev-tab active" onclick="switchDevTab('admins')" id="devTab-admins">🛡️ Admins</button>
+        <button class="dev-tab" onclick="switchDevTab('rooms')" id="devTab-rooms">🏠 Rooms</button>
+        <button class="dev-tab" onclick="switchDevTab('recovery')" id="devTab-recovery">🔑 Recovery<span id="devRecoveryTabBadge" style="display:none;background:var(--accent2);color:#fff;border-radius:8px;padding:0 5px;font-size:0.6rem;margin-left:5px;font-weight:700;vertical-align:middle"></span></button>
+        <button class="dev-tab" onclick="switchDevTab('logs')" id="devTab-logs">📋 Logs</button>
+        <button class="dev-tab" onclick="switchDevTab('config')" id="devTab-config">⚙️ Config</button>
+      </div>
+      <!-- Scrollable content area -->
+      <div style="overflow-y:auto;flex:1;padding:16px 18px;display:flex;flex-direction:column;gap:14px">
 
-      <!-- Your own ID quick-add -->
-      <div
-        style="background:rgba(247,106,138,0.07);border:1px dashed rgba(247,106,138,0.3);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
-        <div>
-          <div
-            style="font-size:0.68rem;font-weight:600;color:var(--danger,#f76a8a);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px">
-            Your User ID</div>
-          <div id="devAdminMyId" style="font-family:monospace;font-size:0.78rem;color:var(--text);word-break:break-all">
+        <!-- ADMINS TAB -->
+        <div id="devPanel-admins">
+          <div class="form-group">
+            <label>Add Dev by User ID</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="devAdminAddInput" placeholder="Paste a Firebase Auth UID here..."
+                style="flex:1;font-family:monospace;font-size:0.82rem" />
+              <button class="btn btn-primary" onclick="devAdminAddId()" style="white-space:nowrap">+ Add</button>
+            </div>
+            <div id="devAdminAddError" style="font-size:0.75rem;color:var(--accent2);min-height:16px;margin-top:4px"></div>
+          </div>
+          <div>
+            <div style="font-size:0.68rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Current Devs in DB</div>
+            <div id="devAdminList" style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto"></div>
           </div>
         </div>
-        <button class="btn btn-danger" onclick="devAdminAddSelf()" style="flex-shrink:0;white-space:nowrap">+ Add
-          Me</button>
-      </div>
 
-      <!-- Add arbitrary ID -->
-      <div class="form-group">
-        <label>Add Dev by User ID</label>
-        <div style="display:flex;gap:8px">
-          <input type="text" id="devAdminAddInput" placeholder="Paste a Firebase Auth UID here..."
-            style="flex:1;font-family:monospace;font-size:0.82rem" />
-          <button class="btn btn-primary" onclick="devAdminAddId()" style="white-space:nowrap">+ Add</button>
-        </div>
-        <div id="devAdminAddError" style="font-size:0.75rem;color:var(--accent2);min-height:16px;margin-top:4px"></div>
-      </div>
-
-      <!-- Board creation lock -->
-      <div
-        style="background:rgba(247,106,138,0.05);border:1px solid rgba(247,106,138,0.2);border-radius:10px;padding:12px 14px">
-        <div
-          style="font-size:0.68rem;font-weight:600;color:var(--danger,#f76a8a);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px"
-          data-i18n="devLockTitle">Board Creation Lock</div>
-        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px" data-i18n="devLockDesc">When enabled,
-          only registered devs can create new boards on this instance.</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="pw-toggle-row" id="devLockToggleRow" onclick="toggleDevLock()" style="flex:1">
-            <input type="checkbox" id="devLockCheckbox" />
-            <div class="pw-toggle-knob"></div>
-            <div class="pw-toggle-label" id="devLockLabel" data-i18n="devLockDisabled">Open — anyone can create</div>
+        <!-- ROOMS TAB -->
+        <div id="devPanel-rooms" style="display:none">
+          <div style="display:flex;gap:8px;margin-bottom:10px">
+            <input type="text" id="devRoomsSearch" placeholder="Filter by room ID or owner name…" style="flex:1;font-size:0.8rem" oninput="devFilterRooms(this.value)" />
+            <button class="btn" style="font-size:0.75rem;white-space:nowrap" onclick="devLoadRooms()">↻ Load Rooms</button>
+          </div>
+          <div id="devRoomsList" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto">
+            <p style="font-size:0.78rem;color:var(--text-muted)">Click "Load Rooms" to fetch all boards.</p>
+          </div>
+          <div id="devRoomTransferWrap" style="display:none;margin-top:12px;background:var(--surface2);border:1px solid rgba(106,180,247,0.25);border-radius:10px;padding:12px 14px">
+            <div style="font-size:0.72rem;font-weight:600;color:#6ab4f7;margin-bottom:8px">Transfer Ownership — <span id="devTransferRoomIdLabel" style="font-family:monospace;color:var(--text)"></span></div>
+            <input type="hidden" id="devTransferRoomId" />
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <input type="text" id="devTransferNewUid" placeholder="New Firebase Auth UID" style="font-family:monospace;font-size:0.78rem" />
+              <input type="text" id="devTransferNewName" placeholder="New owner display name (optional)" style="font-size:0.78rem" />
+              <div style="display:flex;gap:8px;align-items:center">
+                <button class="btn" style="color:#6ab4f7;border-color:rgba(106,180,247,0.35);font-size:0.78rem" onclick="devConfirmTransfer()">✅ Transfer</button>
+                <button class="btn" style="font-size:0.78rem" onclick="document.getElementById('devRoomTransferWrap').style.display='none'">Cancel</button>
+                <div id="devTransferStatus" style="font-size:0.75rem;color:var(--accent2);flex:1;min-height:16px"></div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Room Recovery -->
-      <div style="background:rgba(106,180,247,0.05);border:1px solid rgba(106,180,247,0.2);border-radius:10px;padding:12px 14px">
-        <div style="font-size:0.68rem;font-weight:600;color:#6ab4f7;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">🔑 Room Owner Recovery</div>
-        <div style="font-size:0.76rem;color:var(--text-muted);margin-bottom:10px;line-height:1.5">Reassign room ownership to a new Firebase Auth UID. The user must share their room ID and their new Auth UID (from the "Copy Firebase Auth UID" button in their account popover).</div>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <input type="text" id="devRecoverRoomId" placeholder="Room ID (from ?r=XXXXX in the URL)"
-            style="font-family:monospace;font-size:0.8rem" />
-          <input type="text" id="devRecoverNewUid" placeholder="New Firebase Auth UID"
-            style="font-family:monospace;font-size:0.8rem" />
-          <input type="text" id="devRecoverOwnerName" placeholder="New owner display name (optional)"
-            style="font-size:0.8rem" />
-          <div style="display:flex;gap:8px;align-items:center">
-            <button class="btn" style="color:#6ab4f7;border-color:rgba(106,180,247,0.35);font-size:0.78rem" onclick="devRecoverRoom()">🔑 Reassign Owner</button>
-            <div id="devRecoverStatus" style="font-size:0.75rem;color:var(--accent2);flex:1"></div>
+        <!-- RECOVERY TAB -->
+        <div id="devPanel-recovery" style="display:none">
+          <div style="font-size:0.68rem;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">⚠️ Manual Review Required</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:8px">Verified requests are auto-approved. Only failed verifications appear here.</div>
+          <div id="recoveryRequestsList" style="display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto;margin-bottom:16px">
+            <p style="font-size:0.78rem;color:var(--text-muted)">No pending requests.</p>
+          </div>
+          <div style="background:rgba(106,180,247,0.05);border:1px solid rgba(106,180,247,0.2);border-radius:10px;padding:12px 14px">
+            <div style="font-size:0.68rem;font-weight:600;color:#6ab4f7;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">🔑 Manual Room Recovery</div>
+            <div style="font-size:0.76rem;color:var(--text-muted);margin-bottom:8px;line-height:1.5">Direct reassignment — user shares their room ID + new Auth UID.</div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <input type="text" id="devRecoverRoomId" placeholder="Room ID (from ?r=XXXXX in the URL)" style="font-family:monospace;font-size:0.8rem" />
+              <input type="text" id="devRecoverNewUid" placeholder="New Firebase Auth UID" style="font-family:monospace;font-size:0.8rem" />
+              <input type="text" id="devRecoverOwnerName" placeholder="New owner display name (optional)" style="font-size:0.8rem" />
+              <div style="display:flex;gap:8px;align-items:center">
+                <button class="btn" style="color:#6ab4f7;border-color:rgba(106,180,247,0.35);font-size:0.78rem" onclick="devRecoverRoom()">🔑 Reassign</button>
+                <div id="devRecoverStatus" style="font-size:0.75rem;color:var(--accent2);flex:1"></div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Recovery Requests -->
-      <div style="background:rgba(106,247,196,0.05);border:1px solid rgba(106,247,196,0.2);border-radius:10px;padding:12px 14px">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-          <div style="font-size:0.68rem;font-weight:600;color:var(--accent3);text-transform:uppercase;letter-spacing:0.06em">📥 Recovery Requests</div>
-          <span id="recoveryRequestBadge" style="display:none;background:var(--accent2);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.65rem;font-weight:700"></span>
+        <!-- LOGS TAB -->
+        <div id="devPanel-logs" style="display:none">
+          <div style="display:flex;gap:8px;margin-bottom:10px">
+            <input type="text" id="devLogsUidInput" placeholder="Firebase Auth UID to look up…" style="flex:1;font-family:monospace;font-size:0.78rem" />
+            <button class="btn" style="font-size:0.75rem;white-space:nowrap" onclick="devLoadLogs()">🔍 Load</button>
+          </div>
+          <div id="devLogsList" style="display:flex;flex-direction:column;gap:5px;max-height:380px;overflow-y:auto">
+            <p style="font-size:0.78rem;color:var(--text-muted)">Enter a Firebase Auth UID above to view account history.</p>
+          </div>
         </div>
-        <div style="font-size:0.76rem;color:var(--text-muted);margin-bottom:8px;line-height:1.5">Users who lost their account and submitted a recovery request. Approve to transfer all their rooms to the new Auth UID.</div>
-        <div id="recoveryRequestsList" style="display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto">
-          <p style="font-size:0.78rem;color:var(--text-muted)">No pending requests.</p>
-        </div>
-      </div>
 
-      <!-- Current dev list -->
-      <div>
-        <div
-          style="font-size:0.68rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">
-          Current Devs in DB</div>
-        <div id="devAdminList" style="display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto">
+        <!-- CONFIG TAB -->
+        <div id="devPanel-config" style="display:none">
+          <div style="background:rgba(247,106,138,0.05);border:1px solid rgba(247,106,138,0.2);border-radius:10px;padding:12px 14px">
+            <div style="font-size:0.68rem;font-weight:600;color:var(--danger,#f76a8a);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px" data-i18n="devLockTitle">Board Creation Lock</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px" data-i18n="devLockDesc">When enabled, only registered devs can create new boards on this instance.</div>
+            <div class="pw-toggle-row" id="devLockToggleRow" onclick="toggleDevLock()">
+              <input type="checkbox" id="devLockCheckbox" />
+              <div class="pw-toggle-knob"></div>
+              <div class="pw-toggle-label" id="devLockLabel" data-i18n="devLockDisabled">Open — anyone can create</div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="modal-actions" style="padding-top:4px">
+      </div><!-- end scrollable -->
+      <!-- Footer -->
+      <div style="padding:10px 18px;border-top:1px solid rgba(255,255,255,0.08);display:flex;gap:8px;flex-shrink:0">
         <button class="btn" onclick="closeDevAdmin()">Close</button>
-        <button class="btn" onclick="devAdminRefresh()"
-          style="color:var(--accent3);border-color:rgba(106,247,196,0.3)">↻ Refresh</button>
+        <button class="btn" onclick="devRefreshCurrentTab()" style="color:var(--accent3);border-color:rgba(106,247,196,0.3)">↻ Refresh</button>
       </div>
     </div>
   </div>
 
   <!-- RECOVERY SETUP MODAL -->
-  <div class="room-overlay" id="recoverySetupOverlay">
+  <div class="room-overlay" id="recoverySetupOverlay" data-closeable>
     <div class="room-box" style="width:420px">
       <h2>🔐 Account Recovery Question</h2>
       <div style="background:rgba(247,106,138,0.07);border:1px solid rgba(247,106,138,0.25);border-radius:10px;padding:10px 14px;font-size:0.8rem;color:var(--text);line-height:1.6;margin-bottom:4px">
@@ -2914,13 +2941,14 @@
       <div id="recoverySetupStatus" style="font-size:0.75rem;min-height:18px;margin-top:-4px"></div>
       <div class="modal-actions">
         <button class="btn" onclick="closeRecoverySetup()">Cancel</button>
+        <button class="btn" style="color:var(--accent3);border-color:rgba(106,247,196,0.3)" onclick="testRecoveryAnswer()">🧪 Test Answer</button>
         <button class="btn btn-primary" onclick="saveRecoveryQuestion()">🔐 Save</button>
       </div>
     </div>
   </div>
 
   <!-- SELF-RECOVERY MODAL -->
-  <div class="room-overlay" id="selfRecoveryOverlay">
+  <div class="room-overlay" id="selfRecoveryOverlay" data-closeable>
     <div class="room-box" style="width:440px">
       <h2>🔑 Recover Account</h2>
       <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.6;margin-bottom:2px">Use this if you lost your identity backup. Enter your old Firebase Auth UID (you should have noted it down), answer your recovery question, then submit — an admin will review and transfer your rooms to your current account.</p>
@@ -2964,7 +2992,7 @@
   </div>
 
   <!-- STORAGE SETTINGS -->
-  <div class="room-overlay" id="storageSettingsOverlay">
+  <div class="room-overlay" id="storageSettingsOverlay" data-closeable>
     <div class="room-box">
       <h2 data-i18n="storageConfigTitle">🗄️ Storage Configuration</h2>
       <p style="font-size:0.8rem;color:var(--text-muted)" data-i18n="storageConfigDesc">Override where this room's cards
@@ -5057,10 +5085,12 @@
         <div class="workspace-header">
           <h3>👤 User Identity &amp; Data</h3>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:4px">
-          <button class="btn" style="flex:1;min-width:140px;font-size:0.8rem;padding:10px" onclick="exportIdentity()" data-i18n="export">📤 Export Identity</button>
-          <button class="btn" style="flex:1;min-width:140px;font-size:0.8rem;padding:10px" onclick="openImportIdentity()" data-i18n="import">📥 Import Identity</button>
-          <button class="btn" style="flex:1;min-width:140px;font-size:0.8rem;padding:10px;border-color:rgba(255,100,100,0.3);color:var(--danger)" onclick="copyRawUserId()" data-i18n="copyUserId">📋 Copy Firebase Auth UID (Dev Role)</button>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:4px">
+          <button class="btn" style="font-size:0.8rem;padding:10px;text-align:center" onclick="exportIdentity()" data-i18n="export">📤 Export Identity</button>
+          <button class="btn" style="font-size:0.8rem;padding:10px;text-align:center" onclick="openImportIdentity()" data-i18n="import">📥 Import Identity</button>
+          <button class="btn" style="font-size:0.8rem;padding:10px;text-align:center;border-color:rgba(106,180,247,0.35);color:#6ab4f7" onclick="openRecoverySetup()">🔐 Recovery Q&amp;A</button>
+          <button class="btn" style="font-size:0.8rem;padding:10px;text-align:center;border-color:rgba(106,247,196,0.3);color:var(--accent3)" onclick="openSelfRecovery()">🔑 Recover Account</button>
+          <button class="btn" style="font-size:0.8rem;padding:10px;text-align:center;border-color:rgba(255,100,100,0.3);color:var(--danger)" onclick="copyRawUserId()" data-i18n="copyUserId">📋 Copy Auth UID</button>
         </div>
       `;
       container.appendChild(identitySec);
@@ -6586,8 +6616,13 @@
       document.getElementById('devAdminAddInput').value = '';
       document.getElementById('devAdminAddError').textContent = '';
       const recoverStatus = document.getElementById('devRecoverStatus');
-      recoverStatus.textContent = '';
-      recoverStatus.style.color = 'var(--accent2)';
+      if (recoverStatus) { recoverStatus.textContent = ''; recoverStatus.style.color = 'var(--accent2)'; }
+      // Reset to admins tab
+      _devCurrentTab = 'admins';
+      ['admins','rooms','recovery','logs','config'].forEach(t => {
+        document.getElementById('devPanel-' + t).style.display = (t === 'admins') ? '' : 'none';
+        document.getElementById('devTab-' + t).classList.toggle('active', t === 'admins');
+      });
       document.getElementById('devAdminOverlay').classList.add('open');
       devAdminRefresh();
       devLockRefresh();
@@ -6729,6 +6764,30 @@
     function closeRecoverySetup() {
       document.getElementById('recoverySetupOverlay').classList.remove('open');
     }
+    async function testRecoveryAnswer() {
+      const answer = document.getElementById('recoveryAnswerInput').value.trim();
+      const statusEl = document.getElementById('recoverySetupStatus');
+      if (!answer) { statusEl.style.color = 'var(--accent2)'; statusEl.textContent = '⚠️ Enter your answer to test it.'; return; }
+      if (!_authUid) { statusEl.style.color = 'var(--accent2)'; statusEl.textContent = '⚠️ Not authenticated yet.'; return; }
+      statusEl.style.color = 'var(--text-muted)'; statusEl.textContent = '⏳ Testing…';
+      try {
+        const snap = await db.ref('user_profiles/' + _authUid + '/verification').once('value');
+        const data = snap.val();
+        if (!data || !data.answerHash) { statusEl.style.color = 'var(--accent2)'; statusEl.textContent = '⚠️ No saved question found yet.'; return; }
+        const hash = await sha256(answer);
+        console.log('[Recovery Test] computed:', hash, '| stored:', data.answerHash, '| match:', hash === data.answerHash);
+        if (hash === data.answerHash) {
+          statusEl.style.color = 'var(--accent3)';
+          statusEl.textContent = '✅ Answer matches! Your recovery question is working correctly.';
+        } else {
+          statusEl.style.color = 'var(--accent2)';
+          statusEl.textContent = '❌ Answer does not match the stored hash. Update and re-save with the correct answer.';
+        }
+      } catch (e) {
+        statusEl.style.color = 'var(--accent2)';
+        statusEl.textContent = '❌ Test failed. Check Firebase rules.';
+      }
+    }
     async function saveRecoveryQuestion() {
       const question = document.getElementById('recoveryQuestionInput').value.trim();
       const answer = document.getElementById('recoveryAnswerInput').value.trim();
@@ -6743,6 +6802,7 @@
         statusEl.textContent = '✅ Saved! Remember your answer — it cannot be recovered.';
         document.getElementById('recoveryAnswerInput').value = '';
         toast('🔐 Recovery question saved.');
+        await logAccountEvent(_authUid, 'recovery_qa_set', { updatedAt: Date.now() });
       } catch (e) {
         statusEl.style.color = 'var(--accent2)';
         statusEl.textContent = '❌ Failed to save. Check Firebase rules (user_profiles path).';
@@ -6801,6 +6861,7 @@
         const data = snap.val();
         if (!data) { statusEl.style.color = 'var(--accent2)'; statusEl.textContent = '❌ Recovery data not found.'; return; }
         const hash = await sha256(answer);
+        console.log('[Recovery Verify] computed:', hash, '| stored:', data.answerHash, '| match:', hash === data.answerHash);
         const verified = (hash === data.answerHash);
         await db.ref('recovery_requests/' + uid()).set({
           oldAuthUid: oldUid,
@@ -6819,6 +6880,7 @@
           statusEl.textContent = '⚠️ Answer did not match, but request submitted. The admin will review it manually.';
         }
         toast('📤 Recovery request submitted.');
+        await logAccountEvent(_authUid, 'recovery_request_submitted', { oldAuthUid: oldUid, verified });
       } catch (e) {
         statusEl.style.color = 'var(--accent2)';
         statusEl.textContent = '❌ Failed to submit. Check your connection.';
@@ -6828,7 +6890,7 @@
     // ── DEV: Recovery Requests ──
     async function devLoadRecoveryRequests() {
       const list = document.getElementById('recoveryRequestsList');
-      const badge = document.getElementById('recoveryRequestBadge');
+      const badge = document.getElementById('devRecoveryTabBadge');
       if (!list) return;
       list.innerHTML = '<p style="font-size:0.78rem;color:var(--text-muted)">⏳ Loading…</p>';
       try {
@@ -6836,19 +6898,46 @@
         const requests = snap.val();
         if (!requests || Object.keys(requests).length === 0) {
           list.innerHTML = '<p style="font-size:0.78rem;color:var(--text-muted)">No pending requests.</p>';
-          badge.style.display = 'none';
+          if (badge) badge.style.display = 'none';
           return;
         }
         const entries = Object.entries(requests).sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
-        badge.textContent = entries.length;
-        badge.style.display = '';
+        // Auto-approve verified requests
+        const autoApprove = entries.filter(([, req]) => req.verified === true);
+        for (const [reqId, req] of autoApprove) {
+          try {
+            const roomsSnap = await db.ref('rooms').once('value');
+            const rooms = roomsSnap.val() || {};
+            const updates = {};
+            let count = 0;
+            for (const [roomId, roomData] of Object.entries(rooms)) {
+              if (roomData && roomData.config && roomData.config.ownerAuthUid === req.oldAuthUid) {
+                updates['rooms/' + roomId + '/config/ownerAuthUid'] = req.newAuthUid;
+                if (req.newUserName) updates['rooms/' + roomId + '/config/ownerName'] = req.newUserName;
+                count++;
+              }
+            }
+            if (count > 0) await db.ref().update(updates);
+            await db.ref('recovery_requests/' + reqId).remove();
+            await logAccountEvent(req.oldAuthUid, 'recovery_approved', { newAuthUid: req.newAuthUid, roomsTransferred: count, autoApproved: true });
+            toast('✅ Auto-approved recovery for ' + (req.newUserName || req.newAuthUid.slice(0,8)) + '… (' + count + ' room(s))');
+          } catch (e) { /* skip failed auto-approve */ }
+        }
+        // Show only unverified requests for manual review
+        const manual = entries.filter(([, req]) => req.verified !== true);
+        if (manual.length === 0) {
+          list.innerHTML = '<p style="font-size:0.78rem;color:var(--text-muted)">No pending requests.</p>';
+          if (badge) badge.style.display = 'none';
+          return;
+        }
+        if (badge) { badge.textContent = manual.length; badge.style.display = ''; }
         list.innerHTML = '';
-        entries.forEach(([reqId, req]) => {
+        manual.forEach(([reqId, req]) => {
           const row = document.createElement('div');
           row.style.cssText = 'background:var(--surface2);border-radius:10px;padding:10px 14px;display:flex;flex-direction:column;gap:5px;font-size:0.78rem';
           row.innerHTML =
             '<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap">' +
-              '<span style="font-weight:600;color:' + (req.verified ? 'var(--accent3)' : 'var(--accent2)') + '">' + (req.verified ? '✅ Answer verified' : '⚠️ Answer not verified') + '</span>' +
+              '<span style="font-weight:600;color:var(--accent2)">⚠️ Answer not verified — manual review needed</span>' +
               '<span style="color:var(--text-muted);font-size:0.7rem">' + escHtml(new Date(req.timestamp || 0).toLocaleString()) + '</span>' +
             '</div>' +
             '<div><span style="color:var(--text-muted)">Requester: </span>' + escHtml(req.newUserName || 'Unknown') + '</div>' +
@@ -6857,7 +6946,7 @@
             '<div><span style="color:var(--text-muted)">Question: </span>' + escHtml(req.question || '—') + '</div>' +
             '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">' +
               '<button class="btn" style="color:var(--accent3);border-color:rgba(106,247,196,0.35);font-size:0.72rem;padding:3px 10px" ' +
-                'onclick="devApproveRecovery(\'' + escHtml(reqId) + '\',\'' + escHtml(req.oldAuthUid||'') + '\',\'' + escHtml(req.newAuthUid||'') + '\',\'' + escHtml(req.newUserName||'') + '\')">✅ Approve &amp; Transfer</button>' +
+                'onclick="devApproveRecovery(\'' + escHtml(reqId) + '\',\'' + escHtml(req.oldAuthUid||'') + '\',\'' + escHtml(req.newAuthUid||'') + '\',\'' + escHtml(req.newUserName||'') + '\')">✅ Approve Anyway</button>' +
               '<button class="btn" style="color:var(--accent2);border-color:rgba(247,106,138,0.3);font-size:0.72rem;padding:3px 10px" ' +
                 'onclick="devDismissRecovery(\'' + escHtml(reqId) + '\')">🗑 Dismiss</button>' +
             '</div>';
@@ -6865,6 +6954,7 @@
         });
       } catch (e) {
         list.innerHTML = '<p style="color:var(--danger,#f76a8a);font-size:0.78rem">Failed to load. Check Firebase rules.</p>';
+        if (badge) badge.style.display = 'none';
       }
     }
     async function devApproveRecovery(reqId, oldAuthUid, newAuthUid, newName) {
@@ -6905,6 +6995,135 @@
       } catch (e) { toast('❌ Failed to dismiss.'); }
     }
 
+    // ── DEV PANEL TABS ──
+    let _devCurrentTab = 'admins';
+    function switchDevTab(tab) {
+      _devCurrentTab = tab;
+      ['admins','rooms','recovery','logs','config'].forEach(t => {
+        document.getElementById('devPanel-' + t).style.display = (t === tab) ? '' : 'none';
+        document.getElementById('devTab-' + t).classList.toggle('active', t === tab);
+      });
+      if (tab === 'admins') devAdminRefresh();
+      if (tab === 'rooms' && document.getElementById('devRoomsList').children.length <= 1) devLoadRooms();
+      if (tab === 'recovery') devLoadRecoveryRequests();
+      if (tab === 'config') devLockRefresh();
+    }
+    function devRefreshCurrentTab() { switchDevTab(_devCurrentTab); }
+
+    // ── DEV ROOMS TAB ──
+    let _devRoomsCache = [];
+    async function devLoadRooms() {
+      const list = document.getElementById('devRoomsList');
+      list.innerHTML = '<p style="font-size:0.78rem;color:var(--text-muted)">⏳ Loading rooms…</p>';
+      try {
+        const snap = await db.ref('rooms').once('value');
+        const rooms = snap.val() || {};
+        _devRoomsCache = Object.entries(rooms).map(([id, data]) => ({
+          id,
+          ownerName: (data.config && data.config.ownerName) || '—',
+          ownerUid: (data.config && data.config.ownerAuthUid) || '—',
+          locked: !!(data.config && data.config.locked),
+        }));
+        devRenderRooms(_devRoomsCache);
+      } catch (e) {
+        list.innerHTML = '<p style="color:var(--danger,#f76a8a);font-size:0.78rem">Failed to load rooms. Check Firebase rules.</p>';
+      }
+    }
+    function devFilterRooms(q) {
+      if (!q.trim()) { devRenderRooms(_devRoomsCache); return; }
+      const lq = q.toLowerCase();
+      devRenderRooms(_devRoomsCache.filter(r => r.id.toLowerCase().includes(lq) || r.ownerName.toLowerCase().includes(lq) || r.ownerUid.toLowerCase().includes(lq)));
+    }
+    function devRenderRooms(rooms) {
+      const list = document.getElementById('devRoomsList');
+      if (!rooms.length) { list.innerHTML = '<p style="font-size:0.78rem;color:var(--text-muted)">No rooms found.</p>'; return; }
+      list.innerHTML = '';
+      rooms.forEach(r => {
+        const row = document.createElement('div');
+        row.style.cssText = 'background:var(--surface2);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:0.78rem';
+        row.innerHTML =
+          '<div style="flex:1;min-width:0">' +
+            '<div style="font-family:monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:2px">' + escHtml(r.id) + '</div>' +
+            '<div style="font-weight:600;color:var(--text)">' + escHtml(r.ownerName) + '</div>' +
+            '<div style="font-family:monospace;font-size:0.7rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px">' + escHtml(r.ownerUid) + '</div>' +
+          '</div>' +
+          '<button class="btn" style="font-size:0.7rem;padding:4px 10px;color:#6ab4f7;border-color:rgba(106,180,247,0.35);white-space:nowrap;flex-shrink:0" ' +
+            'onclick="devShowTransferForm(\'' + escHtml(r.id) + '\',\'' + escHtml(r.ownerName) + '\')">⇄ Transfer</button>';
+        list.appendChild(row);
+      });
+    }
+    function devShowTransferForm(roomId, currentOwnerName) {
+      document.getElementById('devTransferRoomId').value = roomId;
+      document.getElementById('devTransferRoomIdLabel').textContent = roomId;
+      document.getElementById('devTransferNewUid').value = '';
+      document.getElementById('devTransferNewName').value = '';
+      document.getElementById('devTransferStatus').textContent = '';
+      const wrap = document.getElementById('devRoomTransferWrap');
+      wrap.style.display = 'flex';
+      wrap.style.flexDirection = 'column';
+      wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    async function devConfirmTransfer() {
+      const roomId = document.getElementById('devTransferRoomId').value;
+      const newUid = document.getElementById('devTransferNewUid').value.trim();
+      const newName = document.getElementById('devTransferNewName').value.trim();
+      const statusEl = document.getElementById('devTransferStatus');
+      if (!newUid) { statusEl.style.color = 'var(--accent2)'; statusEl.textContent = '⚠️ UID required.'; return; }
+      statusEl.style.color = 'var(--text-muted)'; statusEl.textContent = '⏳ Transferring…';
+      try {
+        const updates = { ownerAuthUid: newUid };
+        if (newName) updates.ownerName = newName;
+        await db.ref('rooms/' + roomId + '/config').update(updates);
+        await logAccountEvent(newUid, 'ownership_received', { roomId, by: _authUid });
+        statusEl.style.color = 'var(--accent3)';
+        statusEl.textContent = '✅ Transferred.';
+        document.getElementById('devRoomTransferWrap').style.display = 'none';
+        devLoadRooms();
+        toast('✅ Room ' + roomId.slice(0,10) + '… transferred.');
+      } catch (e) {
+        statusEl.style.color = 'var(--accent2)';
+        statusEl.textContent = '❌ Failed: ' + (e.message || 'Check rules.');
+      }
+    }
+
+    // ── ACCOUNT LOGS ──
+    async function logAccountEvent(authUid, event, details) {
+      if (!authUid) return;
+      try {
+        await db.ref('user_logs/' + authUid + '/' + uid()).set({ event, timestamp: Date.now(), details: details || {} });
+      } catch (e) { /* non-critical */ }
+    }
+    async function devLoadLogs() {
+      const uidVal = document.getElementById('devLogsUidInput').value.trim();
+      const logsList = document.getElementById('devLogsList');
+      if (!uidVal) { logsList.innerHTML = '<p style="font-size:0.78rem;color:var(--accent2)">⚠️ Enter a Firebase Auth UID.</p>'; return; }
+      logsList.innerHTML = '<p style="font-size:0.78rem;color:var(--text-muted)">⏳ Loading…</p>';
+      try {
+        const snap = await db.ref('user_logs/' + uidVal).orderByChild('timestamp').once('value');
+        const logs = snap.val();
+        if (!logs) { logsList.innerHTML = '<p style="font-size:0.78rem;color:var(--text-muted)">No logs found for this UID.</p>'; return; }
+        const entries = Object.values(logs).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        logsList.innerHTML = '';
+        const eventIcons = { recovery_qa_set: '🔐', recovery_request_submitted: '📤', recovery_approved: '✅', ownership_received: '🔑', username_changed: '✏️' };
+        entries.forEach(entry => {
+          const row = document.createElement('div');
+          row.style.cssText = 'background:var(--surface2);border-radius:7px;padding:8px 12px;font-size:0.76rem;display:flex;align-items:flex-start;gap:10px';
+          const icon = eventIcons[entry.event] || '📋';
+          const details = entry.details ? Object.entries(entry.details).map(([k,v]) => escHtml(k) + ': ' + escHtml(String(v))).join(' · ') : '';
+          row.innerHTML =
+            '<span style="font-size:1rem;line-height:1">' + icon + '</span>' +
+            '<div style="flex:1;min-width:0">' +
+              '<div style="font-weight:600;color:var(--text)">' + escHtml(entry.event || 'unknown') + '</div>' +
+              (details ? '<div style="color:var(--text-muted);font-size:0.7rem;margin-top:2px;word-break:break-all">' + details + '</div>' : '') +
+              '<div style="color:var(--text-muted);font-size:0.68rem;margin-top:3px">' + new Date(entry.timestamp || 0).toLocaleString() + '</div>' +
+            '</div>';
+          logsList.appendChild(row);
+        });
+      } catch (e) {
+        logsList.innerHTML = '<p style="color:var(--danger,#f76a8a);font-size:0.78rem">Failed to load logs. Check Firebase rules (user_logs path).</p>';
+      }
+    }
+
     async function devRecoverRoom() {
       const roomId = document.getElementById('devRecoverRoomId').value.trim();
       const newUid = document.getElementById('devRecoverNewUid').value.trim();
@@ -6932,6 +7151,13 @@
         statusEl.textContent = '❌ Failed: ' + (e.message || 'Check Firebase rules.');
       }
     }
+
+    // ── CLICK OUTSIDE TO CLOSE OVERLAYS ──
+    document.querySelectorAll('.room-overlay[data-closeable]').forEach(overlay => {
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) overlay.classList.remove('open');
+      });
+    });
 
     if (_isDashboard) {
       // Hide board UI, show dashboard UI
