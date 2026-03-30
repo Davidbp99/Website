@@ -2335,6 +2335,7 @@
           </div>
         </div>
       </div>
+      <button class="btn" id="devPanelBtn" onclick="openDevAdmin()" style="display:none;font-size:0.72rem;padding:4px 10px;border-color:rgba(247,106,138,0.4);color:var(--danger,#f76a8a)" title="Dev Admin Panel">🛠️ Dev</button>
       <button class="collab-btn" id="collabBtn" onclick="collabAction()" data-i18n-title="collaborate"
         title="Start or copy collaboration link">
         <span class="collab-pulse" id="collabPulse" style="display:none"></span>
@@ -6210,7 +6211,9 @@
         const memberKey = getRoomMemberKey(m);
         if (!m || !memberKey) return;
         const isMe = memberKey === getRoomIdentity();
-        const memberRole = m.isOwner ? 'owner' : (currentRoles[memberKey] || 'member');
+        // Derive ownership from the authoritative config, not stale presence flag
+        const isActualOwner = memberKey && memberKey === _roomConfig.ownerAuthUid;
+        const memberRole = isActualOwner ? 'owner' : (currentRoles[memberKey] || 'member');
         const row = document.createElement('div');
         row.className = 'member-row';
 
@@ -6220,11 +6223,26 @@
         if (memberRole === 'owner') av.style.background = 'linear-gradient(135deg,#6af7c4,#3abf90)';
         av.textContent = (m.name || '?').charAt(0).toUpperCase();
 
-        const name = document.createElement('div');
-        name.className = 'member-row-name';
-        name.textContent = (m.name || t('anonymous')) + (isMe ? ' (' + t('you') + ')' : '');
+        const nameWrap = document.createElement('div');
+        nameWrap.style.cssText = 'display:flex;flex-direction:column;flex:1;min-width:0';
+        const nameEl = document.createElement('div');
+        nameEl.className = 'member-row-name';
+        nameEl.textContent = (m.name || t('anonymous')) + (isMe ? ' (' + t('you') + ')' : '');
+        nameWrap.appendChild(nameEl);
+        if (_isDev && memberKey) {
+          const uidEl = document.createElement('div');
+          uidEl.style.cssText = 'font-family:monospace;font-size:0.62rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px;cursor:pointer';
+          uidEl.title = 'Click to copy UID';
+          uidEl.textContent = memberKey;
+          uidEl.addEventListener('click', e => {
+            e.stopPropagation();
+            navigator.clipboard ? navigator.clipboard.writeText(memberKey).then(() => toast('📋 UID copied')) : (() => { const ta = document.createElement('textarea'); ta.value = memberKey; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('📋 UID copied'); })();
+          });
+          nameWrap.appendChild(uidEl);
+        }
+        const name = nameWrap; // keep variable name for compatibility below
 
-        if (m.isOwner) {
+        if (isActualOwner) {
           row.append(av, name, document.createRange().createContextualFragment(_roleBadgeHTML('owner', m.isDev)));
         } else if (_isOwner) {
           const wrap = document.createElement('div');
@@ -6595,6 +6613,8 @@
         if (!devId) throw new Error('No Firebase Auth UID available');
         const snap = await db.ref('app_admins/' + devId).once('value');
         _isDev = !!snap.val();
+        const devBtn = document.getElementById('devPanelBtn');
+        if (devBtn) devBtn.style.display = _isDev ? '' : 'none';
         if (_isDev) {
           if (_isDashboard) { renderDashboard(); setTimeout(devLoadUsers, 100); }
           else if (_roomId) fbSetupPresence();
