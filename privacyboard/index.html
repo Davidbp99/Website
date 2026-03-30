@@ -2267,12 +2267,14 @@
   <!-- Firebase Realtime Database (compat CDN) -->
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
 </head>
 
 <body>
 
   <header>
-    <a href="?" id="boardLogoContainer" class="logo" style="text-decoration:none;display:flex;align-items:center;gap:8px">PrivacyBoard</a>
+    <a href="?" id="boardLogoContainer" class="logo"
+      style="text-decoration:none;display:flex;align-items:center;gap:8px">PrivacyBoard</a>
     <input id="boardTitle" type="text" value="My Board" spellcheck="false" data-i18n-title="clickToEdit"
       title="Click to rename" />
     <div class="header-actions">
@@ -2304,7 +2306,7 @@
             </div>
             <button class="btn"
               style="margin-top:4px;font-size:0.7rem;padding:4px;border-color:rgba(255,100,100,0.3);color:var(--danger)"
-              onclick="copyRawUserId()" data-i18n="copyUserId">Copy Raw User ID (For Dev Role)</button>
+              onclick="copyRawUserId()" data-i18n="copyUserId">Copy Firebase Auth UID (For Dev Role)</button>
             <div class="lang-picker" id="langPickerWrap">
               <button class="lang-picker-btn" onclick="toggleLangPicker(event)">
                 <span class="lang-picker-flag" id="langPickerFlag">🇬🇧</span>
@@ -2729,17 +2731,23 @@
         </div>
       </div>
 
-      <div class="form-group" style="padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);margin-top:10px" id="settingsBrandingSection">
+      <div class="form-group" style="padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);margin-top:10px"
+        id="settingsBrandingSection">
         <label>🎨 Branding / Logo</label>
         <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px">
-          <input type="text" id="logoUrlInput" placeholder="Image URL (e.g. https://.../logo.png)" style="font-size:0.75rem" />
-          <input type="text" id="logoTextInput" placeholder="Logo Text (default: PrivacyBoard)" style="font-size:0.75rem" />
+          <input type="text" id="logoUrlInput" placeholder="Image URL (e.g. https://.../logo.png)"
+            style="font-size:0.75rem" />
+          <input type="text" id="logoTextInput" placeholder="Logo Text (default: PrivacyBoard)"
+            style="font-size:0.75rem" />
           <div style="display:flex;align-items:center;gap:8px">
             <span style="font-size:0.7rem;color:var(--text-muted)">Size:</span>
-            <input type="range" id="logoSizeSlider" min="12" max="64" value="22" style="flex:1" oninput="document.getElementById('logoSizePreview').textContent=this.value+'px'" />
-            <span id="logoSizePreview" style="font-size:0.7rem;color:var(--text-muted);width:35px;text-align:right">22px</span>
+            <input type="range" id="logoSizeSlider" min="12" max="64" value="22" style="flex:1"
+              oninput="document.getElementById('logoSizePreview').textContent=this.value+'px'" />
+            <span id="logoSizePreview"
+              style="font-size:0.7rem;color:var(--text-muted);width:35px;text-align:right">22px</span>
           </div>
-          <button class="btn" style="align-self:flex-end;font-size:0.75rem" onclick="saveRoomBranding()">Apply Branding</button>
+          <button class="btn" style="align-self:flex-end;font-size:0.75rem" onclick="saveRoomBranding()">Apply
+            Branding</button>
         </div>
       </div>
 
@@ -2813,7 +2821,7 @@
       <div class="form-group">
         <label>Add Dev by User ID</label>
         <div style="display:flex;gap:8px">
-          <input type="text" id="devAdminAddInput" placeholder="Paste a pb_userId here..."
+          <input type="text" id="devAdminAddInput" placeholder="Paste a Firebase Auth UID here..."
             style="flex:1;font-family:monospace;font-size:0.82rem" />
           <button class="btn btn-primary" onclick="devAdminAddId()" style="white-space:nowrap">+ Add</button>
         </div>
@@ -2944,6 +2952,7 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    const auth = firebase.auth();
 
     const urlParams = new URLSearchParams(window.location.search);
     const _boardParamCloud = urlParams.get('r');
@@ -2982,7 +2991,7 @@
         // Username popover
         yourDisplayName: 'Your display name', save: 'Save',
         deviceIdentity: 'Device Identity', export: 'Export', import: 'Import',
-        copyUserId: 'Copy Raw User ID (For Dev Role)',
+        copyUserId: 'Copy Firebase Auth UID (For Dev Role)',
         langToggle: '🌐 Deutsch', // button label (switches to German)
         // Veil
         joiningRoom: 'Joining Room...', syncData: 'Synchronizing secure data',
@@ -4966,7 +4975,7 @@
         <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:4px">
           <button class="btn" style="flex:1;min-width:140px;font-size:0.8rem;padding:10px" onclick="exportIdentity()" data-i18n="export">📤 Export Identity</button>
           <button class="btn" style="flex:1;min-width:140px;font-size:0.8rem;padding:10px" onclick="openImportIdentity()" data-i18n="import">📥 Import Identity</button>
-          <button class="btn" style="flex:1;min-width:140px;font-size:0.8rem;padding:10px;border-color:rgba(255,100,100,0.3);color:var(--danger)" onclick="copyRawUserId()" data-i18n="copyUserId">📋 Copy User ID (Dev Role)</button>
+          <button class="btn" style="flex:1;min-width:140px;font-size:0.8rem;padding:10px;border-color:rgba(255,100,100,0.3);color:var(--danger)" onclick="copyRawUserId()" data-i18n="copyUserId">📋 Copy Firebase Auth UID (Dev Role)</button>
         </div>
       `;
       container.appendChild(identitySec);
@@ -5410,6 +5419,9 @@
     let _username = localStorage.getItem('pb_username') || '';
     let _myRole = 'member'; // 'owner' | 'manager' | 'member'
     let _isDev = false;
+    let _authUid = null;
+    let _authReady = false;
+    let _authInitPromise = null;
     let _rolesCache = {}; // { userId: role }
     let _selectedAssignees = []; // working copy while modal open [{userId, name}]
 
@@ -5483,17 +5495,40 @@
       setTimeout(() => document.getElementById('usernameInput').focus(), 100);
     }
 
+    function getDevIdentity() {
+      return _authUid || '';
+    }
+    function getDevIdentityLabel() {
+      return getDevIdentity() || _userId;
+    }
+    async function ensureFirebaseAuth() {
+      if (_authInitPromise) return _authInitPromise;
+      _authInitPromise = (async () => {
+        if (!auth.currentUser) await auth.signInAnonymously();
+        _authUid = auth.currentUser ? auth.currentUser.uid : null;
+        _authReady = !!_authUid;
+        return _authUid;
+      })().catch(err => {
+        console.error('Firebase Auth init failed', err);
+        _authUid = null;
+        _authReady = false;
+        throw err;
+      });
+      return _authInitPromise;
+    }
+
     function copyRawUserId() {
+      const devId = getDevIdentityLabel();
       if (navigator.clipboard) {
-        navigator.clipboard.writeText(_userId).then(() => {
-          toast(t('toastUserIdCopied', { id: _userId }));
+        navigator.clipboard.writeText(devId).then(() => {
+          toast(t('toastUserIdCopied', { id: devId }));
           document.getElementById('usernamePopover').classList.remove('open');
         });
       } else {
         const ta = document.createElement('textarea');
-        ta.value = _userId; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        ta.value = devId; ta.style.position = 'fixed'; ta.style.opacity = '0';
         document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
-        toast(t('toastUserIdCopied', { id: _userId }));
+        toast(t('toastUserIdCopied', { id: devId }));
         document.getElementById('usernamePopover').classList.remove('open');
       }
     }
@@ -6131,7 +6166,7 @@
       state.roomLogo = { url, text, size };
       save(); // Save to local storage over FB debounced save
       if (_roomId) fbSaveDebounced();
-      
+
       render(); // Instantly update header
       toast('🎨 Branding updated!');
     }
@@ -6378,23 +6413,32 @@
     } catch (e) { }
 
     let _adminCheckDone = false;
-    async function checkDevStatus() {
-      if (!_userId || _adminCheckDone) return;
+    async function checkDevStatus(force = false) {
+      if ((!_authUid && !_userId) || (_adminCheckDone && !force)) return;
       try {
-        const snap = await db.ref('app_admins/' + _userId).once('value');
-        if (snap.val()) {
-          _isDev = true;
+        if (!_authReady) await ensureFirebaseAuth();
+        const devId = getDevIdentity();
+        if (!devId) throw new Error('No Firebase Auth UID available');
+        const snap = await db.ref('app_admins/' + devId).once('value');
+        _isDev = !!snap.val();
+        if (_isDev) {
           if (_isDashboard) { renderDashboard(); setTimeout(devLoadUsers, 100); }
           else if (_roomId) fbSetupPresence();
+        } else if (_isDashboard) {
+          renderDashboard();
         }
         _adminCheckDone = true;
-      } catch (e) { }
+      } catch (e) {
+        console.error('Dev status check failed', e);
+        _isDev = false;
+        if (_isDashboard) renderDashboard();
+      }
     }
-    checkDevStatus();
+    ensureFirebaseAuth().then(() => checkDevStatus(true)).catch(() => checkDevStatus(true));
 
     // ── DEV ADMIN PANEL ──
     function openDevAdmin() {
-      document.getElementById('devAdminMyId').textContent = _userId;
+      document.getElementById('devAdminMyId').textContent = getDevIdentityLabel();
       document.getElementById('devAdminAddInput').value = '';
       document.getElementById('devAdminAddError').textContent = '';
       document.getElementById('devAdminOverlay').classList.add('open');
@@ -6442,7 +6486,7 @@
         ids.forEach(id => {
           const row = document.createElement('div');
           row.style.cssText = 'display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px';
-          const isSelf = (id === _userId);
+          const isSelf = (id === getDevIdentity());
           row.innerHTML = `
             <div style="font-family:monospace;font-size:0.77rem;color:${isSelf ? 'var(--accent3)' : 'var(--text)'};flex:1;word-break:break-all;min-width:0">${id}${isSelf ? ' <span style="font-family:\'DM Sans\',sans-serif;font-size:0.65rem;background:rgba(106,247,196,0.15);color:var(--accent3);border-radius:100px;padding:1px 7px;font-weight:600">you</span>' : ''}</div>
             <button onclick="devAdminRemoveId('${id}')" style="background:rgba(247,106,138,0.08);border:1px solid rgba(247,106,138,0.25);color:var(--accent2);border-radius:6px;padding:3px 8px;font-size:0.7rem;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;flex-shrink:0" title="Remove dev">✕ Remove</button>
@@ -6454,12 +6498,14 @@
       }
     }
     async function devAdminAddSelf() {
-      await devAdminWriteId(_userId);
+      const devId = getDevIdentity();
+      if (!devId) { toast('❌ Firebase Auth UID not ready yet. Reload and try again.'); return; }
+      await devAdminWriteId(devId);
     }
     async function devAdminAddId() {
       const val = document.getElementById('devAdminAddInput').value.trim();
       const err = document.getElementById('devAdminAddError');
-      if (!val) { err.textContent = 'Please enter a User ID.'; return; }
+      if (!val) { err.textContent = 'Please enter a Firebase Auth UID.'; return; }
       err.textContent = '';
       await devAdminWriteId(val);
       document.getElementById('devAdminAddInput').value = '';
@@ -6467,9 +6513,15 @@
     async function devAdminWriteId(id) {
       try {
         await db.ref('app_admins/' + id).set(true);
+        if (id === getDevIdentity()) {
+          _isDev = true;
+          _adminCheckDone = true;
+          if (_isDashboard) renderDashboard();
+        }
         toast('✅ Dev added: ' + id.slice(0, 12) + '…');
         devAdminRefresh();
       } catch (e) {
+        console.error('Failed to write dev admin ID', e);
         toast('❌ Failed to write. Check Firebase rules.');
       }
     }
