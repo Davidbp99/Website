@@ -5842,18 +5842,20 @@
       _presenceRef.onDisconnect().remove();
 
       const refreshPresenceUi = () => {
-        const count = Object.keys(_membersCache).length;
+        const members = getUniqueRoomMembers();
+        const count = members.length;
         const badge = document.getElementById('collabCount');
         const pulse = document.getElementById('collabPulse');
+        const btn = document.getElementById('collabBtn');
         badge.style.display = count > 0 ? '' : 'none';
         badge.textContent = count;
-        pulse.style.display = '';
-        document.getElementById('collabBtn').classList.add('active');
-        const names = Object.values(_membersCache).map(m => {
+        pulse.style.display = count > 0 ? '' : 'none';
+        btn.classList.toggle('active', count > 0);
+        const names = members.map(m => {
           const n = (m && m.name) ? m.name : t('anonymous');
           return (m && m.isOwner) ? '👑 ' + n : n;
         });
-        document.getElementById('collabBtn').title = names.join('\n');
+        btn.title = names.join('\n');
         _updateCollabBtnLabel();
       };
 
@@ -5882,7 +5884,7 @@
       });
     }
     function _updateCollabBtnLabel() {
-      const count = Object.keys(_membersCache).length;
+      const count = getUniqueRoomMembers().length;
       if (_isOwner) document.getElementById('collabBtnText').textContent = '⚙️ ' + count + ' ' + t('online');
       else if (_myRole === 'manager') document.getElementById('collabBtnText').textContent = '⚡ ' + count + ' ' + t('online');
       else document.getElementById('collabBtnText').textContent = '👥 ' + count + ' ' + t('online');
