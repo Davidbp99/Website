@@ -2307,6 +2307,10 @@
             <button class="btn"
               style="margin-top:4px;font-size:0.7rem;padding:4px;border-color:rgba(255,100,100,0.3);color:var(--danger)"
               onclick="copyRawUserId()" data-i18n="copyUserId">Copy Firebase Auth UID (For Dev Role)</button>
+            <div style="display:flex;gap:6px;margin-top:2px">
+              <button class="btn" style="flex:1;font-size:0.7rem;padding:4px;border-color:rgba(106,180,247,0.35);color:#6ab4f7" onclick="openRecoverySetup()">🔐 Recovery Q&amp;A</button>
+              <button class="btn" style="flex:1;font-size:0.7rem;padding:4px;border-color:rgba(106,247,196,0.3);color:var(--accent3)" onclick="openSelfRecovery()">🔑 Recover Account</button>
+            </div>
             <div class="lang-picker" id="langPickerWrap">
               <button class="lang-picker-btn" onclick="toggleLangPicker(event)">
                 <span class="lang-picker-flag" id="langPickerFlag">🇬🇧</span>
@@ -2845,6 +2849,36 @@
         </div>
       </div>
 
+      <!-- Room Recovery -->
+      <div style="background:rgba(106,180,247,0.05);border:1px solid rgba(106,180,247,0.2);border-radius:10px;padding:12px 14px">
+        <div style="font-size:0.68rem;font-weight:600;color:#6ab4f7;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">🔑 Room Owner Recovery</div>
+        <div style="font-size:0.76rem;color:var(--text-muted);margin-bottom:10px;line-height:1.5">Reassign room ownership to a new Firebase Auth UID. The user must share their room ID and their new Auth UID (from the "Copy Firebase Auth UID" button in their account popover).</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input type="text" id="devRecoverRoomId" placeholder="Room ID (from ?r=XXXXX in the URL)"
+            style="font-family:monospace;font-size:0.8rem" />
+          <input type="text" id="devRecoverNewUid" placeholder="New Firebase Auth UID"
+            style="font-family:monospace;font-size:0.8rem" />
+          <input type="text" id="devRecoverOwnerName" placeholder="New owner display name (optional)"
+            style="font-size:0.8rem" />
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn" style="color:#6ab4f7;border-color:rgba(106,180,247,0.35);font-size:0.78rem" onclick="devRecoverRoom()">🔑 Reassign Owner</button>
+            <div id="devRecoverStatus" style="font-size:0.75rem;color:var(--accent2);flex:1"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recovery Requests -->
+      <div style="background:rgba(106,247,196,0.05);border:1px solid rgba(106,247,196,0.2);border-radius:10px;padding:12px 14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div style="font-size:0.68rem;font-weight:600;color:var(--accent3);text-transform:uppercase;letter-spacing:0.06em">📥 Recovery Requests</div>
+          <span id="recoveryRequestBadge" style="display:none;background:var(--accent2);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.65rem;font-weight:700"></span>
+        </div>
+        <div style="font-size:0.76rem;color:var(--text-muted);margin-bottom:8px;line-height:1.5">Users who lost their account and submitted a recovery request. Approve to transfer all their rooms to the new Auth UID.</div>
+        <div id="recoveryRequestsList" style="display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto">
+          <p style="font-size:0.78rem;color:var(--text-muted)">No pending requests.</p>
+        </div>
+      </div>
+
       <!-- Current dev list -->
       <div>
         <div
@@ -2858,6 +2892,57 @@
         <button class="btn" onclick="closeDevAdmin()">Close</button>
         <button class="btn" onclick="devAdminRefresh()"
           style="color:var(--accent3);border-color:rgba(106,247,196,0.3)">↻ Refresh</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECOVERY SETUP MODAL -->
+  <div class="room-overlay" id="recoverySetupOverlay">
+    <div class="room-box" style="width:420px">
+      <h2>🔐 Account Recovery Question</h2>
+      <div style="background:rgba(247,106,138,0.07);border:1px solid rgba(247,106,138,0.25);border-radius:10px;padding:10px 14px;font-size:0.8rem;color:var(--text);line-height:1.6;margin-bottom:4px">
+        ⚠️ <strong>Important:</strong> If you ever lose your device or browser data and don't have an identity export, this question and answer are your only way to request account recovery. <strong>Write your answer down somewhere safe — it cannot be recovered if forgotten.</strong>
+      </div>
+      <div class="form-group">
+        <label>Your Secret Question</label>
+        <input type="text" id="recoveryQuestionInput" placeholder="e.g. What was my first pet's name?" maxlength="120" />
+      </div>
+      <div class="form-group">
+        <label>Your Answer <span style="font-size:0.72rem;color:var(--text-muted)">(case-insensitive, stored as a hash)</span></label>
+        <input type="text" id="recoveryAnswerInput" placeholder="Your answer" maxlength="120" autocomplete="off" />
+      </div>
+      <div id="recoverySetupStatus" style="font-size:0.75rem;min-height:18px;margin-top:-4px"></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeRecoverySetup()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveRecoveryQuestion()">🔐 Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SELF-RECOVERY MODAL -->
+  <div class="room-overlay" id="selfRecoveryOverlay">
+    <div class="room-box" style="width:440px">
+      <h2>🔑 Recover Account</h2>
+      <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.6;margin-bottom:2px">Use this if you lost your identity backup. Enter your old Firebase Auth UID (you should have noted it down), answer your recovery question, then submit — an admin will review and transfer your rooms to your current account.</p>
+      <div class="form-group">
+        <label>Your Old Firebase Auth UID</label>
+        <input type="text" id="selfRecoveryUid" placeholder="Paste your old Auth UID…" style="font-family:monospace;font-size:0.8rem" />
+      </div>
+      <div id="selfRecoveryQuestionWrap" style="display:none">
+        <div class="form-group">
+          <label>Recovery Question</label>
+          <div id="selfRecoveryQuestionText" style="font-size:0.85rem;padding:8px 12px;background:var(--surface2);border-radius:8px;margin-top:4px;line-height:1.5"></div>
+        </div>
+        <div class="form-group">
+          <label>Your Answer</label>
+          <input type="text" id="selfRecoveryAnswer" placeholder="Your answer (case-insensitive)" maxlength="120" autocomplete="off" />
+        </div>
+      </div>
+      <div id="selfRecoveryStatus" style="font-size:0.78rem;min-height:20px;line-height:1.5"></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeSelfRecovery()">Cancel</button>
+        <button class="btn btn-primary" id="selfRecoveryLookupBtn" onclick="selfRecoveryLookup()">🔍 Look Up Question</button>
+        <button class="btn btn-primary" id="selfRecoverySubmitBtn" style="display:none" onclick="submitSelfRecovery()">📤 Submit Request</button>
       </div>
     </div>
   </div>
@@ -6500,9 +6585,13 @@
       document.getElementById('devAdminMyId').textContent = getDevIdentityLabel();
       document.getElementById('devAdminAddInput').value = '';
       document.getElementById('devAdminAddError').textContent = '';
+      const recoverStatus = document.getElementById('devRecoverStatus');
+      recoverStatus.textContent = '';
+      recoverStatus.style.color = 'var(--accent2)';
       document.getElementById('devAdminOverlay').classList.add('open');
       devAdminRefresh();
       devLockRefresh();
+      devLoadRecoveryRequests();
     }
 
     async function devLockRefresh() {
@@ -6609,11 +6698,246 @@
       });
     }
 
+    // ── SHA-256 helper ──
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str.toLowerCase().trim()));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // ── HTML escape helper ──
+    function escHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── RECOVERY SETUP ──
+    function openRecoverySetup() {
+      document.getElementById('usernamePopover').classList.remove('open');
+      if (!_authUid) { toast('⚠️ Not authenticated yet. Try again in a moment.'); return; }
+      const statusEl = document.getElementById('recoverySetupStatus');
+      statusEl.textContent = '';
+      document.getElementById('recoveryAnswerInput').value = '';
+      db.ref('user_profiles/' + _authUid + '/verification').once('value').then(snap => {
+        const data = snap.val() || {};
+        document.getElementById('recoveryQuestionInput').value = data.question || '';
+        if (data.question) {
+          statusEl.style.color = 'var(--accent3)';
+          statusEl.textContent = '✅ A recovery question is already set. Enter a new answer to update it.';
+        }
+      }).catch(() => {});
+      document.getElementById('recoverySetupOverlay').classList.add('open');
+    }
+    function closeRecoverySetup() {
+      document.getElementById('recoverySetupOverlay').classList.remove('open');
+    }
+    async function saveRecoveryQuestion() {
+      const question = document.getElementById('recoveryQuestionInput').value.trim();
+      const answer = document.getElementById('recoveryAnswerInput').value.trim();
+      const statusEl = document.getElementById('recoverySetupStatus');
+      if (!question) { statusEl.style.color = 'var(--accent2)'; statusEl.textContent = '⚠️ Please enter a question.'; return; }
+      if (!answer) { statusEl.style.color = 'var(--accent2)'; statusEl.textContent = '⚠️ Please enter an answer.'; return; }
+      statusEl.style.color = 'var(--text-muted)'; statusEl.textContent = '⏳ Saving…';
+      try {
+        const hash = await sha256(answer);
+        await db.ref('user_profiles/' + _authUid + '/verification').set({ question, answerHash: hash, updatedAt: Date.now() });
+        statusEl.style.color = 'var(--accent3)';
+        statusEl.textContent = '✅ Saved! Remember your answer — it cannot be recovered.';
+        document.getElementById('recoveryAnswerInput').value = '';
+        toast('🔐 Recovery question saved.');
+      } catch (e) {
+        statusEl.style.color = 'var(--accent2)';
+        statusEl.textContent = '❌ Failed to save. Check Firebase rules (user_profiles path).';
+      }
+    }
+
+    // ── SELF-RECOVERY ──
+    function openSelfRecovery() {
+      document.getElementById('usernamePopover').classList.remove('open');
+      document.getElementById('selfRecoveryUid').value = '';
+      document.getElementById('selfRecoveryAnswer') && (document.getElementById('selfRecoveryAnswer').value = '');
+      document.getElementById('selfRecoveryQuestionWrap').style.display = 'none';
+      const statusEl = document.getElementById('selfRecoveryStatus');
+      statusEl.textContent = '';
+      statusEl.style.color = 'var(--accent2)';
+      document.getElementById('selfRecoveryLookupBtn').style.display = '';
+      document.getElementById('selfRecoverySubmitBtn').style.display = 'none';
+      document.getElementById('selfRecoverySubmitBtn').disabled = false;
+      document.getElementById('selfRecoveryOverlay').classList.add('open');
+    }
+    function closeSelfRecovery() {
+      document.getElementById('selfRecoveryOverlay').classList.remove('open');
+    }
+    async function selfRecoveryLookup() {
+      const oldUid = document.getElementById('selfRecoveryUid').value.trim();
+      const statusEl = document.getElementById('selfRecoveryStatus');
+      if (!oldUid) { statusEl.style.color = 'var(--accent2)'; statusEl.textContent = '⚠️ Enter your old Auth UID first.'; return; }
+      statusEl.style.color = 'var(--text-muted)'; statusEl.textContent = '⏳ Looking up…';
+      try {
+        const snap = await db.ref('user_profiles/' + oldUid + '/verification').once('value');
+        const data = snap.val();
+        if (!data || !data.question) {
+          statusEl.style.color = 'var(--accent2)';
+          statusEl.textContent = '❌ No recovery question found for that UID. Contact the admin for manual recovery.';
+          return;
+        }
+        document.getElementById('selfRecoveryQuestionText').textContent = data.question;
+        document.getElementById('selfRecoveryQuestionWrap').style.display = '';
+        document.getElementById('selfRecoveryLookupBtn').style.display = 'none';
+        document.getElementById('selfRecoverySubmitBtn').style.display = '';
+        statusEl.style.color = 'var(--accent3)';
+        statusEl.textContent = '✅ Question found. Enter your answer and submit.';
+      } catch (e) {
+        statusEl.style.color = 'var(--accent2)';
+        statusEl.textContent = '❌ Failed to look up. Check your connection or Firebase rules.';
+      }
+    }
+    async function submitSelfRecovery() {
+      const oldUid = document.getElementById('selfRecoveryUid').value.trim();
+      const answer = document.getElementById('selfRecoveryAnswer').value.trim();
+      const statusEl = document.getElementById('selfRecoveryStatus');
+      if (!answer) { statusEl.style.color = 'var(--accent2)'; statusEl.textContent = '⚠️ Enter your answer.'; return; }
+      statusEl.style.color = 'var(--text-muted)'; statusEl.textContent = '⏳ Verifying…';
+      try {
+        const snap = await db.ref('user_profiles/' + oldUid + '/verification').once('value');
+        const data = snap.val();
+        if (!data) { statusEl.style.color = 'var(--accent2)'; statusEl.textContent = '❌ Recovery data not found.'; return; }
+        const hash = await sha256(answer);
+        const verified = (hash === data.answerHash);
+        await db.ref('recovery_requests/' + uid()).set({
+          oldAuthUid: oldUid,
+          newAuthUid: _authUid,
+          newUserName: _username || 'Unknown',
+          question: data.question,
+          verified,
+          timestamp: Date.now(),
+        });
+        document.getElementById('selfRecoverySubmitBtn').disabled = true;
+        if (verified) {
+          statusEl.style.color = 'var(--accent3)';
+          statusEl.textContent = '✅ Answer correct! Request submitted — an admin will approve the transfer.';
+        } else {
+          statusEl.style.color = 'var(--accent2)';
+          statusEl.textContent = '⚠️ Answer did not match, but request submitted. The admin will review it manually.';
+        }
+        toast('📤 Recovery request submitted.');
+      } catch (e) {
+        statusEl.style.color = 'var(--accent2)';
+        statusEl.textContent = '❌ Failed to submit. Check your connection.';
+      }
+    }
+
+    // ── DEV: Recovery Requests ──
+    async function devLoadRecoveryRequests() {
+      const list = document.getElementById('recoveryRequestsList');
+      const badge = document.getElementById('recoveryRequestBadge');
+      if (!list) return;
+      list.innerHTML = '<p style="font-size:0.78rem;color:var(--text-muted)">⏳ Loading…</p>';
+      try {
+        const snap = await db.ref('recovery_requests').once('value');
+        const requests = snap.val();
+        if (!requests || Object.keys(requests).length === 0) {
+          list.innerHTML = '<p style="font-size:0.78rem;color:var(--text-muted)">No pending requests.</p>';
+          badge.style.display = 'none';
+          return;
+        }
+        const entries = Object.entries(requests).sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
+        badge.textContent = entries.length;
+        badge.style.display = '';
+        list.innerHTML = '';
+        entries.forEach(([reqId, req]) => {
+          const row = document.createElement('div');
+          row.style.cssText = 'background:var(--surface2);border-radius:10px;padding:10px 14px;display:flex;flex-direction:column;gap:5px;font-size:0.78rem';
+          row.innerHTML =
+            '<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap">' +
+              '<span style="font-weight:600;color:' + (req.verified ? 'var(--accent3)' : 'var(--accent2)') + '">' + (req.verified ? '✅ Answer verified' : '⚠️ Answer not verified') + '</span>' +
+              '<span style="color:var(--text-muted);font-size:0.7rem">' + escHtml(new Date(req.timestamp || 0).toLocaleString()) + '</span>' +
+            '</div>' +
+            '<div><span style="color:var(--text-muted)">Requester: </span>' + escHtml(req.newUserName || 'Unknown') + '</div>' +
+            '<div style="font-family:monospace;font-size:0.72rem;word-break:break-all"><span style="color:var(--text-muted)">Old UID: </span>' + escHtml(req.oldAuthUid || '') + '</div>' +
+            '<div style="font-family:monospace;font-size:0.72rem;word-break:break-all"><span style="color:var(--text-muted)">New UID: </span>' + escHtml(req.newAuthUid || '') + '</div>' +
+            '<div><span style="color:var(--text-muted)">Question: </span>' + escHtml(req.question || '—') + '</div>' +
+            '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">' +
+              '<button class="btn" style="color:var(--accent3);border-color:rgba(106,247,196,0.35);font-size:0.72rem;padding:3px 10px" ' +
+                'onclick="devApproveRecovery(\'' + escHtml(reqId) + '\',\'' + escHtml(req.oldAuthUid||'') + '\',\'' + escHtml(req.newAuthUid||'') + '\',\'' + escHtml(req.newUserName||'') + '\')">✅ Approve &amp; Transfer</button>' +
+              '<button class="btn" style="color:var(--accent2);border-color:rgba(247,106,138,0.3);font-size:0.72rem;padding:3px 10px" ' +
+                'onclick="devDismissRecovery(\'' + escHtml(reqId) + '\')">🗑 Dismiss</button>' +
+            '</div>';
+          list.appendChild(row);
+        });
+      } catch (e) {
+        list.innerHTML = '<p style="color:var(--danger,#f76a8a);font-size:0.78rem">Failed to load. Check Firebase rules.</p>';
+      }
+    }
+    async function devApproveRecovery(reqId, oldAuthUid, newAuthUid, newName) {
+      showConfirm({
+        icon: '🔑',
+        title: 'Approve Recovery',
+        message: 'Transfer all rooms owned by the old UID to the new UID?',
+        subMessage: (newName || 'User') + ' → ' + newAuthUid.slice(0, 16) + '…',
+        yesLabel: '✅ Approve',
+        onConfirm: async () => {
+          try {
+            const roomsSnap = await db.ref('rooms').once('value');
+            const rooms = roomsSnap.val() || {};
+            const updates = {};
+            let count = 0;
+            for (const [roomId, roomData] of Object.entries(rooms)) {
+              if (roomData && roomData.config && roomData.config.ownerAuthUid === oldAuthUid) {
+                updates['rooms/' + roomId + '/config/ownerAuthUid'] = newAuthUid;
+                if (newName) updates['rooms/' + roomId + '/config/ownerName'] = newName;
+                count++;
+              }
+            }
+            if (count > 0) await db.ref().update(updates);
+            await db.ref('recovery_requests/' + reqId).remove();
+            devLoadRecoveryRequests();
+            toast('✅ Transferred ' + count + ' room(s) to new owner.');
+          } catch (e) {
+            toast('❌ Approval failed: ' + (e.message || 'Check Firebase rules.'));
+          }
+        }
+      });
+    }
+    async function devDismissRecovery(reqId) {
+      try {
+        await db.ref('recovery_requests/' + reqId).remove();
+        devLoadRecoveryRequests();
+        toast('🗑 Recovery request dismissed.');
+      } catch (e) { toast('❌ Failed to dismiss.'); }
+    }
+
+    async function devRecoverRoom() {
+      const roomId = document.getElementById('devRecoverRoomId').value.trim();
+      const newUid = document.getElementById('devRecoverNewUid').value.trim();
+      const newName = document.getElementById('devRecoverOwnerName').value.trim();
+      const statusEl = document.getElementById('devRecoverStatus');
+      statusEl.textContent = '';
+      if (!roomId) { statusEl.textContent = '⚠️ Room ID is required.'; return; }
+      if (!newUid) { statusEl.textContent = '⚠️ New Auth UID is required.'; return; }
+      statusEl.textContent = '⏳ Checking room…';
+      try {
+        const snap = await db.ref('rooms/' + roomId + '/config').once('value');
+        if (!snap.exists()) { statusEl.textContent = '❌ Room not found in database.'; return; }
+        const updates = { ownerAuthUid: newUid };
+        if (newName) updates.ownerName = newName;
+        await db.ref('rooms/' + roomId + '/config').update(updates);
+        statusEl.style.color = 'var(--accent3)';
+        statusEl.textContent = '✅ Owner reassigned successfully.';
+        document.getElementById('devRecoverRoomId').value = '';
+        document.getElementById('devRecoverNewUid').value = '';
+        document.getElementById('devRecoverOwnerName').value = '';
+        toast('✅ Room ' + roomId.slice(0, 10) + '… reassigned to ' + newUid.slice(0, 12) + '…');
+      } catch (e) {
+        console.error('devRecoverRoom failed', e);
+        statusEl.style.color = 'var(--accent2)';
+        statusEl.textContent = '❌ Failed: ' + (e.message || 'Check Firebase rules.');
+      }
+    }
+
     if (_isDashboard) {
       // Hide board UI, show dashboard UI
       document.getElementById('board').style.display = 'none';
       document.getElementById('boardTitle').style.display = 'none';
-      const headerBtns = document.querySelectorAll('.header-actions .btn');
+      const headerBtns = document.querySelectorAll('.header-actions .btn:not(#usernamePopover .btn)');
       headerBtns.forEach(b => { if (!b.textContent.includes(t('dbBtn').replace(/🗄️ /, ''))) b.style.display = 'none'; });
       document.getElementById('collabBtn').style.display = 'none';
 
