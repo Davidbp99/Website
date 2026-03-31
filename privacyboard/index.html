@@ -32,6 +32,14 @@
       --radius: 14px;
       --radius-sm: 8px;
     }
+    body.theme-light {
+      --bg: #f4f4f8; --surface: #ffffff; --surface2: #eeeef5;
+      --border: rgba(0,0,0,0.08); --text: #1a1a2e; --text-muted: #6b6b82; --card-bg: #f8f8fc;
+    }
+    body.theme-amoled {
+      --bg: #000000; --surface: #0a0a0a; --surface2: #111111;
+      --border: rgba(255,255,255,0.05); --text: #e8e8f0; --text-muted: #505070; --card-bg: #0d0d0d;
+    }
 
     body {
       font-family: 'DM Sans', sans-serif;
@@ -2276,8 +2284,52 @@
       transition: color 0.15s, border-color 0.15s, background 0.15s;
       white-space: nowrap;
     }
-    .dev-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
-    .dev-tab.active { color: var(--danger, #f76a8a); border-bottom-color: var(--danger, #f76a8a); font-weight: 600; }
+
+    .dev-tab:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .dev-tab.active {
+      color: var(--danger, #f76a8a);
+      border-bottom-color: var(--danger, #f76a8a);
+      font-weight: 600;
+    }
+    /* Calendar */
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+    .cal-day-name { text-align:center; font-size:0.7rem; color:var(--text-muted); padding:4px; font-weight:600; text-transform:uppercase; }
+    .cal-cell { min-height:80px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:6px; }
+    .cal-cell.other-month { opacity:0.35; }
+    .cal-cell.today { border-color:var(--accent); }
+    .cal-day-num { font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; font-weight:600; }
+    .cal-card-chip { background:var(--card-bg); border-radius:4px; padding:2px 5px; font-size:0.65rem; color:var(--text); margin-bottom:2px; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-left:3px solid var(--accent); display:block; }
+    .cal-card-chip:hover { background:var(--surface2); }
+    .cal-nav { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+    .cal-nav h3 { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; flex:1; text-align:center; }
+    /* Timeline */
+    .timeline-wrap { min-width:700px; }
+    .timeline-row { display:flex; align-items:center; margin-bottom:6px; min-height:32px; }
+    .timeline-card-label { width:180px; flex-shrink:0; font-size:0.75rem; color:var(--text); padding-right:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+    .timeline-card-label:hover { color:var(--accent); }
+    .timeline-bar-area { flex:1; position:relative; height:24px; background:var(--surface2); border-radius:4px; }
+    .timeline-bar { position:absolute; height:20px; border-radius:4px; top:2px; display:flex; align-items:center; padding:0 6px; font-size:0.65rem; color:#fff; white-space:nowrap; overflow:hidden; cursor:pointer; transition:filter 0.15s; min-width:6px; }
+    .timeline-bar:hover { filter:brightness(1.2); }
+    .timeline-today-line { position:absolute; top:0; bottom:0; width:2px; background:var(--accent2); opacity:0.8; border-radius:2px; pointer-events:none; }
+    /* Activity sidebar */
+    .activity-item { display:flex; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); font-size:0.78rem; }
+    .activity-item:last-child { border-bottom:none; }
+    .activity-icon { font-size:1rem; line-height:1.4; flex-shrink:0; width:20px; text-align:center; }
+    .activity-who { font-weight:600; color:var(--text); }
+    .activity-what { color:var(--text-muted); }
+    .activity-when { font-size:0.65rem; color:var(--text-muted); margin-top:2px; }
+    /* Comments */
+    .comment-item { background:var(--surface2); border-radius:var(--radius-sm); padding:8px 10px; display:flex; flex-direction:column; gap:3px; }
+    .comment-author { font-size:0.72rem; font-weight:600; color:var(--accent); }
+    .comment-text { font-size:0.82rem; color:var(--text); line-height:1.5; white-space:pre-wrap; word-break:break-word; }
+    .comment-time { font-size:0.65rem; color:var(--text-muted); }
+    .comment-delete-btn { margin-left:auto; background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.72rem; padding:0 4px; line-height:1; }
+    .comment-delete-btn:hover { color:var(--accent2); }
+    @keyframes typingPulse { 0%,100% { box-shadow:0 0 0 2px var(--accent); } 50% { box-shadow:0 0 0 3px var(--accent); } }
   </style>
 
   <!-- Firebase Realtime Database (compat CDN) -->
@@ -2294,6 +2346,12 @@
     <input id="boardTitle" type="text" value="My Board" spellcheck="false" data-i18n-title="clickToEdit"
       title="Click to rename" />
     <div class="header-actions">
+      <!-- View / Filter Buttons -->
+      <button class="btn" id="filterToggleBtn" onclick="toggleFilterBar()" style="font-size:0.75rem;padding:4px 10px" title="Filter &amp; Search">🔍 Filter</button>
+      <button class="btn" id="calendarViewBtn" onclick="toggleCalendarView()" style="font-size:0.75rem;padding:4px 10px" title="Calendar View">📅 Calendar</button>
+      <button class="btn" id="timelineViewBtn" onclick="toggleTimelineView()" style="font-size:0.75rem;padding:4px 10px" title="Timeline View">📊 Timeline</button>
+      <button class="btn" id="activityBtn" onclick="toggleActivitySidebar()" style="font-size:0.75rem;padding:4px 10px;display:none" title="Board Activity">📋 Activity</button>
+
       <!-- Database Settings Button -->
       <button class="btn"
         style="font-size:0.75rem;padding:4px 8px;background:var(--bg-lighter);border-color:rgba(255,255,255,0.1);color:var(--text-muted)"
@@ -2311,15 +2369,24 @@
             maxlength="24" autocomplete="off" />
           <button class="btn btn-primary" style="font-size:0.78rem;padding:6px 14px" onclick="saveUsernameFromChip()"
             data-i18n="save">Save</button>
-          <div style="margin-top:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;gap:8px">
+          <div
+            style="margin-top:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;gap:8px">
             <label data-i18n="deviceIdentity">Device Identity</label>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-              <button class="btn" style="font-size:0.72rem;padding:6px 4px;text-align:center" onclick="exportIdentity()" data-i18n="export">📤 Export</button>
-              <button class="btn" style="font-size:0.72rem;padding:6px 4px;text-align:center" onclick="openImportIdentity()" data-i18n="import">📥 Import</button>
-              <button class="btn" style="font-size:0.72rem;padding:6px 4px;text-align:center;border-color:rgba(106,180,247,0.35);color:#6ab4f7" onclick="openRecoverySetup()">🔐 Recovery Q&amp;A</button>
-              <button class="btn" style="font-size:0.72rem;padding:6px 4px;text-align:center;border-color:rgba(106,247,196,0.3);color:var(--accent3)" onclick="openSelfRecovery()">🔑 Recover Account</button>
+              <button class="btn" style="font-size:0.72rem;padding:6px 4px;text-align:center" onclick="exportIdentity()"
+                data-i18n="export">📤 Export</button>
+              <button class="btn" style="font-size:0.72rem;padding:6px 4px;text-align:center"
+                onclick="openImportIdentity()" data-i18n="import">📥 Import</button>
+              <button class="btn"
+                style="font-size:0.72rem;padding:6px 4px;text-align:center;border-color:rgba(106,180,247,0.35);color:#6ab4f7"
+                onclick="openRecoverySetup()">🔐 Recovery Q&amp;A</button>
+              <button class="btn"
+                style="font-size:0.72rem;padding:6px 4px;text-align:center;border-color:rgba(106,247,196,0.3);color:var(--accent3)"
+                onclick="openSelfRecovery()">🔑 Recover Account</button>
             </div>
-            <button class="btn" style="font-size:0.7rem;padding:5px 4px;border-color:rgba(255,100,100,0.3);color:var(--danger);width:100%" onclick="copyRawUserId()" data-i18n="copyUserId">📋 Copy Firebase Auth UID</button>
+            <button class="btn"
+              style="font-size:0.7rem;padding:5px 4px;border-color:rgba(255,100,100,0.3);color:var(--danger);width:100%"
+              onclick="copyRawUserId()" data-i18n="copyUserId">📋 Copy Firebase Auth UID</button>
             <div class="lang-picker" id="langPickerWrap">
               <button class="lang-picker-btn" onclick="toggleLangPicker(event)">
                 <span class="lang-picker-flag" id="langPickerFlag">🇬🇧</span>
@@ -2332,10 +2399,20 @@
                 <div class="lang-picker-list" id="langPickerList"></div>
               </div>
             </div>
+            <div style="padding-top:8px;border-top:1px solid rgba(255,255,255,0.06)">
+              <label style="font-size:0.72rem;color:var(--text-muted);display:block;margin-bottom:4px">🎨 Theme</label>
+              <div style="display:flex;gap:4px">
+                <button class="btn" style="flex:1;font-size:0.66rem;padding:3px 4px" onclick="setTheme('')">🌑 Dark</button>
+                <button class="btn" style="flex:1;font-size:0.66rem;padding:3px 4px" onclick="setTheme('light')">☀️ Light</button>
+                <button class="btn" style="flex:1;font-size:0.66rem;padding:3px 4px" onclick="setTheme('amoled')">⚫ AMOLED</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <button class="btn" id="devPanelBtn" onclick="openDevAdmin()" style="display:none;font-size:0.72rem;padding:4px 10px;border-color:rgba(247,106,138,0.4);color:var(--danger,#f76a8a)" title="Dev Admin Panel">🛠️ Dev</button>
+      <button class="btn" id="devPanelBtn" onclick="openDevAdmin()"
+        style="display:none;font-size:0.72rem;padding:4px 10px;border-color:rgba(247,106,138,0.4);color:var(--danger,#f76a8a)"
+        title="Dev Admin Panel">🛠️ Dev</button>
       <button class="collab-btn" id="collabBtn" onclick="collabAction()" data-i18n-title="collaborate"
         title="Start or copy collaboration link">
         <span class="collab-pulse" id="collabPulse" style="display:none"></span>
@@ -2348,6 +2425,25 @@
     </div>
   </header>
 
+  <!-- FILTER/SEARCH BAR -->
+  <div id="filterBar" style="display:none;padding:8px 28px;background:var(--surface);border-bottom:1px solid var(--border);align-items:center;gap:10px;flex-wrap:wrap">
+    <input type="text" id="filterSearch" placeholder="🔍 Search cards..." style="padding:5px 12px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.8rem;width:190px;outline:none" oninput="applyFilters()" />
+    <select id="filterPriority" style="padding:5px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem" onchange="applyFilters()">
+      <option value="">⚡ All Priorities</option>
+      <option value="high">🔴 High</option>
+      <option value="medium">🟡 Medium</option>
+      <option value="low">🟢 Low</option>
+    </select>
+    <select id="filterLabel" style="padding:5px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem" onchange="applyFilters()">
+      <option value="">🏷 All Labels</option>
+    </select>
+    <select id="filterAssignee" style="padding:5px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem" onchange="applyFilters()">
+      <option value="">👤 All Assignees</option>
+    </select>
+    <button class="btn" style="font-size:0.75rem;padding:4px 12px" onclick="clearFilters()">✕ Clear</button>
+    <span id="filterCount" style="font-size:0.75rem;color:var(--text-muted);margin-left:auto"></span>
+  </div>
+
   <!-- DASHBOARD VIEW -->
   <div id="dashboardView">
     <div class="dashboard-header">
@@ -2359,7 +2455,18 @@
   </div>
 
   <div id="board"></div>
+  <div id="calendarView" style="display:none;padding:24px 28px;flex:1;overflow-x:hidden"></div>
+  <div id="timelineView" style="display:none;padding:24px 28px;flex:1;overflow-x:auto"></div>
   <div id="toast"></div>
+
+  <!-- ACTIVITY SIDEBAR -->
+  <div id="activitySidebar" style="position:fixed;right:0;top:58px;width:300px;height:calc(100vh - 58px);background:var(--surface);border-left:1px solid var(--border);z-index:90;display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.25s ease">
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <strong style="font-size:0.9rem">📋 Activity</strong>
+      <button style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;line-height:1" onclick="toggleActivitySidebar()">✕</button>
+    </div>
+    <div id="activityList" style="flex:1;overflow-y:auto;padding:12px"></div>
+  </div>
 
   <div id="boardVeil">
     <div style="text-align:center">
@@ -2404,9 +2511,16 @@
         <!-- Left: description + checklist -->
         <div class="card-modal-main">
           <div class="form-group">
-            <label data-i18n="description">Description</label>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <label data-i18n="description" style="margin-bottom:0">Description</label>
+              <div style="display:flex;gap:4px">
+                <button id="mdTabEdit" class="btn" style="font-size:0.68rem;padding:3px 10px;border-radius:100px;background:var(--accent);color:#fff;border-color:var(--accent)" onclick="switchMdTab('edit')">✏️ Edit</button>
+                <button id="mdTabPreview" class="btn" style="font-size:0.68rem;padding:3px 10px;border-radius:100px;opacity:0.5" onclick="switchMdTab('preview')">👁 Preview</button>
+              </div>
+            </div>
             <textarea id="cardDescInput" class="auto-grow" data-i18n-placeholder="descPlaceholder"
-              placeholder="Add notes, links, or context..."></textarea>
+              placeholder="Add notes, links, or context... (Markdown supported)"></textarea>
+            <div id="mdPreviewPane" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;min-height:80px;font-size:0.85rem;line-height:1.6;color:var(--text)"></div>
           </div>
           <div class="form-group">
             <label data-i18n="checklist">☑ Checklist</label>
@@ -2420,6 +2534,15 @@
                   placeholder="Add an item and press Enter..." />
                 <button class="btn btn-primary" onclick="addChecklistItem()" data-i18n="clAddBtn">Add</button>
               </div>
+            </div>
+          </div>
+          <!-- Comments -->
+          <div class="form-group" id="commentsSection" style="display:none">
+            <label>💬 Comments</label>
+            <div id="commentsList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;max-height:200px;overflow-y:auto"></div>
+            <div style="display:flex;gap:8px;align-items:flex-end">
+              <textarea id="commentInput" placeholder="Add a comment..." style="flex:1;padding:8px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.82rem;resize:none;min-height:40px;font-family:inherit" rows="2"></textarea>
+              <button class="btn btn-primary" style="font-size:0.78rem;padding:6px 12px;white-space:nowrap" onclick="addComment()">Post</button>
             </div>
           </div>
         </div>
@@ -2456,6 +2579,30 @@
                 title="Clear due date">✕</button>
             </div>
             <div class="due-preview" id="duePreview"></div>
+          </div>
+
+          <!-- Story Points -->
+          <div class="sidebar-section">
+            <div class="sidebar-label">🎯 Story Points</div>
+            <input type="number" id="cardPointsInput" min="0" max="999" placeholder="0" style="width:80px;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.85rem" />
+          </div>
+
+          <!-- Start Date -->
+          <div class="sidebar-section">
+            <div class="sidebar-label">🗓 Start Date</div>
+            <div class="due-row">
+              <input type="date" id="cardStartInput" />
+              <button class="due-clear-btn" onclick="clearStartDate()" title="Clear start date">✕</button>
+            </div>
+          </div>
+
+          <!-- Card Cover Image -->
+          <div class="sidebar-section">
+            <div class="sidebar-label">🖼 Cover Image</div>
+            <input type="text" id="cardCoverInput" placeholder="https://..." style="width:100%;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem" />
+            <div id="cardCoverPreview" style="margin-top:6px;border-radius:6px;overflow:hidden;display:none">
+              <img id="cardCoverPreviewImg" style="width:100%;height:80px;object-fit:cover;border-radius:6px" />
+            </div>
           </div>
 
           <!-- Move to list -->
@@ -2726,6 +2873,16 @@
         </div>
       </div>
 
+      <div class="form-group" id="settingsAutoDeleteSection">
+        <label style="color:var(--text-muted);font-size:0.78rem">⏱ Auto-Delete After Inactivity</label>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+          <input type="number" id="selfDestructDays" min="0" max="365" placeholder="0" style="width:80px;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.85rem" />
+          <span style="font-size:0.75rem;color:var(--text-muted)">days (0 = never)</span>
+          <button class="btn" style="font-size:0.75rem;padding:4px 10px" onclick="saveSelfDestruct()">Save</button>
+        </div>
+        <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px">Room auto-deletes after this many days with no card edits.</div>
+      </div>
+
       <div class="form-group" id="settingsPwSection">
         <label data-i18n="changeRoomPw">🔑 Change Room Password</label>
         <div class="pw-input-inner">
@@ -2774,27 +2931,36 @@
       </div>
 
       <!-- DEV CONTROLS (only visible to devs) -->
-      <div class="form-group" id="settingsDevSection" style="display:none;padding-top:12px;border-top:1px solid rgba(247,106,138,0.25);margin-top:10px">
+      <div class="form-group" id="settingsDevSection"
+        style="display:none;padding-top:12px;border-top:1px solid rgba(247,106,138,0.25);margin-top:10px">
         <label style="color:var(--danger,#f76a8a)">🛠️ Dev Controls</label>
         <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;font-size:0.76rem">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--surface2);border-radius:7px;padding:7px 10px">
+          <div
+            style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--surface2);border-radius:7px;padding:7px 10px">
             <div>
               <span style="color:var(--text-muted);font-size:0.68rem;display:block;margin-bottom:1px">ROOM ID</span>
               <span id="settingsDevRoomId" style="font-family:monospace;font-size:0.75rem;color:var(--text)">—</span>
             </div>
             <button class="btn" style="font-size:0.68rem;padding:3px 8px" onclick="devCopyRoomId()">📋 Copy</button>
           </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--surface2);border-radius:7px;padding:7px 10px">
+          <div
+            style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--surface2);border-radius:7px;padding:7px 10px">
             <div style="min-width:0;flex:1">
               <span style="color:var(--text-muted);font-size:0.68rem;display:block;margin-bottom:1px">OWNER</span>
               <span id="settingsDevOwnerName" style="font-size:0.75rem;color:var(--text)">—</span>
-              <span id="settingsDevOwnerUid" style="font-family:monospace;font-size:0.68rem;color:var(--text-muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+              <span id="settingsDevOwnerUid"
+                style="font-family:monospace;font-size:0.68rem;color:var(--text-muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
             </div>
-            <button class="btn" style="font-size:0.68rem;padding:3px 8px;flex-shrink:0" onclick="devCopyOwnerUid()">📋 Copy UID</button>
+            <button class="btn" style="font-size:0.68rem;padding:3px 8px;flex-shrink:0" onclick="devCopyOwnerUid()">📋
+              Copy UID</button>
           </div>
           <div style="display:flex;gap:6px">
-            <button class="btn" style="flex:1;font-size:0.72rem;padding:6px;color:#6ab4f7;border-color:rgba(106,180,247,0.35)" onclick="devForceTransferToMe()">🔑 Force Transfer to Me</button>
-            <button class="btn" style="flex:1;font-size:0.72rem;padding:6px;color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.3)" onclick="closeRoomSettings();openDevAdmin()">🛠️ Open Dev Panel</button>
+            <button class="btn"
+              style="flex:1;font-size:0.72rem;padding:6px;color:#6ab4f7;border-color:rgba(106,180,247,0.35)"
+              onclick="devForceTransferToMe()">🔑 Force Transfer to Me</button>
+            <button class="btn"
+              style="flex:1;font-size:0.72rem;padding:6px;color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.3)"
+              onclick="closeRoomSettings();openDevAdmin()">🛠️ Open Dev Panel</button>
           </div>
         </div>
       </div>
@@ -2831,23 +2997,31 @@
 
   <!-- DEV ADMIN PANEL -->
   <div class="room-overlay" id="devAdminOverlay" data-closeable>
-    <div class="room-box" style="width:600px;max-width:96vw;gap:0;padding:0;overflow:hidden;max-height:90vh;display:flex;flex-direction:column">
+    <div class="room-box"
+      style="width:600px;max-width:96vw;gap:0;padding:0;overflow:hidden;max-height:90vh;display:flex;flex-direction:column">
       <!-- Header -->
-      <div style="padding:14px 18px 12px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <div
+        style="padding:14px 18px 12px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
         <div style="min-width:0">
           <h2 style="color:var(--danger,#f76a8a);margin-bottom:3px">🛠️ Dev Admin Panel</h2>
-          <div id="devAdminMyId" style="font-family:monospace;font-size:0.68rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:340px"></div>
+          <div id="devAdminMyId"
+            style="font-family:monospace;font-size:0.68rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:340px">
+          </div>
         </div>
         <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
-          <button class="btn btn-danger" onclick="devAdminAddSelf()" style="font-size:0.72rem;padding:4px 10px;white-space:nowrap">+ Add Me</button>
+          <button class="btn btn-danger" onclick="devAdminAddSelf()"
+            style="font-size:0.72rem;padding:4px 10px;white-space:nowrap">+ Add Me</button>
           <button class="col-menu-btn" onclick="closeDevAdmin()" style="font-size:1rem">✕</button>
         </div>
       </div>
       <!-- Tabs -->
-      <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.1);background:var(--surface2);flex-shrink:0;overflow-x:auto">
+      <div
+        style="display:flex;border-bottom:1px solid rgba(255,255,255,0.1);background:var(--surface2);flex-shrink:0;overflow-x:auto">
         <button class="dev-tab active" onclick="switchDevTab('admins')" id="devTab-admins">🛡️ Admins</button>
         <button class="dev-tab" onclick="switchDevTab('rooms')" id="devTab-rooms">🏠 Rooms</button>
-        <button class="dev-tab" onclick="switchDevTab('recovery')" id="devTab-recovery">🔑 Recovery<span id="devRecoveryTabBadge" style="display:none;background:var(--accent2);color:#fff;border-radius:8px;padding:0 5px;font-size:0.6rem;margin-left:5px;font-weight:700;vertical-align:middle"></span></button>
+        <button class="dev-tab" onclick="switchDevTab('recovery')" id="devTab-recovery">🔑 Recovery<span
+            id="devRecoveryTabBadge"
+            style="display:none;background:var(--accent2);color:#fff;border-radius:8px;padding:0 5px;font-size:0.6rem;margin-left:5px;font-weight:700;vertical-align:middle"></span></button>
         <button class="dev-tab" onclick="switchDevTab('logs')" id="devTab-logs">📋 Logs</button>
         <button class="dev-tab" onclick="switchDevTab('config')" id="devTab-config">⚙️ Config</button>
       </div>
@@ -2863,32 +3037,52 @@
                 style="flex:1;font-family:monospace;font-size:0.82rem" />
               <button class="btn btn-primary" onclick="devAdminAddId()" style="white-space:nowrap">+ Add</button>
             </div>
-            <div id="devAdminAddError" style="font-size:0.75rem;color:var(--accent2);min-height:16px;margin-top:4px"></div>
+            <div id="devAdminAddError" style="font-size:0.75rem;color:var(--accent2);min-height:16px;margin-top:4px">
+            </div>
           </div>
           <div>
-            <div style="font-size:0.68rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Current Devs in DB</div>
-            <div id="devAdminList" style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto"></div>
+            <div
+              style="font-size:0.68rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">
+              Current Devs in DB</div>
+            <div id="devAdminList" style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto">
+            </div>
           </div>
         </div>
 
         <!-- ROOMS TAB -->
         <div id="devPanel-rooms" style="display:none">
           <div style="display:flex;gap:8px;margin-bottom:10px">
-            <input type="text" id="devRoomsSearch" placeholder="Filter by room ID or owner name…" style="flex:1;font-size:0.8rem" oninput="devFilterRooms(this.value)" />
-            <button class="btn" style="font-size:0.75rem;white-space:nowrap" onclick="devLoadRooms()">↻ Load Rooms</button>
+            <input type="text" id="devRoomsSearch" placeholder="Filter by room ID or owner name…"
+              style="flex:1;font-size:0.8rem" oninput="devFilterRooms(this.value)" />
+            <button class="btn" style="font-size:0.75rem;white-space:nowrap" onclick="devLoadRooms()">↻ Load
+              Rooms</button>
           </div>
           <div id="devRoomsList" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto">
             <p style="font-size:0.78rem;color:var(--text-muted)">Click "Load Rooms" to fetch all boards.</p>
           </div>
-          <div id="devRoomTransferWrap" style="display:none;margin-top:12px;background:var(--surface2);border:1px solid rgba(106,180,247,0.25);border-radius:10px;padding:12px 14px">
-            <div style="font-size:0.72rem;font-weight:600;color:#6ab4f7;margin-bottom:8px">Transfer Ownership — <span id="devTransferRoomIdLabel" style="font-family:monospace;color:var(--text)"></span></div>
+          <!-- Stale Room Cleanup -->
+          <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+            <div style="font-size:0.8rem;font-weight:600;margin-bottom:4px;color:var(--text-muted)">🗑 Stale Room Cleanup</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:8px">Rooms with no edits in 30+ days</div>
+            <button class="btn" style="font-size:0.75rem;padding:4px 12px" onclick="devLoadStaleRooms()">🔍 Scan</button>
+            <div id="devStaleList" style="margin-top:8px;max-height:180px;overflow-y:auto"></div>
+          </div>
+
+          <div id="devRoomTransferWrap"
+            style="display:none;margin-top:12px;background:var(--surface2);border:1px solid rgba(106,180,247,0.25);border-radius:10px;padding:12px 14px">
+            <div style="font-size:0.72rem;font-weight:600;color:#6ab4f7;margin-bottom:8px">Transfer Ownership — <span
+                id="devTransferRoomIdLabel" style="font-family:monospace;color:var(--text)"></span></div>
             <input type="hidden" id="devTransferRoomId" />
             <div style="display:flex;flex-direction:column;gap:7px">
-              <input type="text" id="devTransferNewUid" placeholder="New Firebase Auth UID" style="font-family:monospace;font-size:0.78rem" />
-              <input type="text" id="devTransferNewName" placeholder="New owner display name (optional)" style="font-size:0.78rem" />
+              <input type="text" id="devTransferNewUid" placeholder="New Firebase Auth UID"
+                style="font-family:monospace;font-size:0.78rem" />
+              <input type="text" id="devTransferNewName" placeholder="New owner display name (optional)"
+                style="font-size:0.78rem" />
               <div style="display:flex;gap:8px;align-items:center">
-                <button class="btn" style="color:#6ab4f7;border-color:rgba(106,180,247,0.35);font-size:0.78rem" onclick="devConfirmTransfer()">✅ Transfer</button>
-                <button class="btn" style="font-size:0.78rem" onclick="document.getElementById('devRoomTransferWrap').style.display='none'">Cancel</button>
+                <button class="btn" style="color:#6ab4f7;border-color:rgba(106,180,247,0.35);font-size:0.78rem"
+                  onclick="devConfirmTransfer()">✅ Transfer</button>
+                <button class="btn" style="font-size:0.78rem"
+                  onclick="document.getElementById('devRoomTransferWrap').style.display='none'">Cancel</button>
                 <div id="devTransferStatus" style="font-size:0.75rem;color:var(--accent2);flex:1;min-height:16px"></div>
               </div>
             </div>
@@ -2897,20 +3091,32 @@
 
         <!-- RECOVERY TAB -->
         <div id="devPanel-recovery" style="display:none">
-          <div style="font-size:0.68rem;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">⚠️ Manual Review Required</div>
-          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:8px">Verified requests are auto-approved. Only failed verifications appear here.</div>
-          <div id="recoveryRequestsList" style="display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto;margin-bottom:16px">
+          <div
+            style="font-size:0.68rem;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">
+            ⚠️ Manual Review Required</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:8px">Verified requests are auto-approved.
+            Only failed verifications appear here.</div>
+          <div id="recoveryRequestsList"
+            style="display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto;margin-bottom:16px">
             <p style="font-size:0.78rem;color:var(--text-muted)">No pending requests.</p>
           </div>
-          <div style="background:rgba(106,180,247,0.05);border:1px solid rgba(106,180,247,0.2);border-radius:10px;padding:12px 14px">
-            <div style="font-size:0.68rem;font-weight:600;color:#6ab4f7;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">🔑 Manual Room Recovery</div>
-            <div style="font-size:0.76rem;color:var(--text-muted);margin-bottom:8px;line-height:1.5">Direct reassignment — user shares their room ID + new Auth UID.</div>
+          <div
+            style="background:rgba(106,180,247,0.05);border:1px solid rgba(106,180,247,0.2);border-radius:10px;padding:12px 14px">
+            <div
+              style="font-size:0.68rem;font-weight:600;color:#6ab4f7;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">
+              🔑 Manual Room Recovery</div>
+            <div style="font-size:0.76rem;color:var(--text-muted);margin-bottom:8px;line-height:1.5">Direct reassignment
+              — user shares their room ID + new Auth UID.</div>
             <div style="display:flex;flex-direction:column;gap:7px">
-              <input type="text" id="devRecoverRoomId" placeholder="Room ID (from ?r=XXXXX in the URL)" style="font-family:monospace;font-size:0.8rem" />
-              <input type="text" id="devRecoverNewUid" placeholder="New Firebase Auth UID" style="font-family:monospace;font-size:0.8rem" />
-              <input type="text" id="devRecoverOwnerName" placeholder="New owner display name (optional)" style="font-size:0.8rem" />
+              <input type="text" id="devRecoverRoomId" placeholder="Room ID (from ?r=XXXXX in the URL)"
+                style="font-family:monospace;font-size:0.8rem" />
+              <input type="text" id="devRecoverNewUid" placeholder="New Firebase Auth UID"
+                style="font-family:monospace;font-size:0.8rem" />
+              <input type="text" id="devRecoverOwnerName" placeholder="New owner display name (optional)"
+                style="font-size:0.8rem" />
               <div style="display:flex;gap:8px;align-items:center">
-                <button class="btn" style="color:#6ab4f7;border-color:rgba(106,180,247,0.35);font-size:0.78rem" onclick="devRecoverRoom()">🔑 Reassign</button>
+                <button class="btn" style="color:#6ab4f7;border-color:rgba(106,180,247,0.35);font-size:0.78rem"
+                  onclick="devRecoverRoom()">🔑 Reassign</button>
                 <div id="devRecoverStatus" style="font-size:0.75rem;color:var(--accent2);flex:1"></div>
               </div>
             </div>
@@ -2920,19 +3126,61 @@
         <!-- LOGS TAB -->
         <div id="devPanel-logs" style="display:none">
           <div style="display:flex;gap:8px;margin-bottom:10px">
-            <input type="text" id="devLogsUidInput" placeholder="Firebase Auth UID to look up…" style="flex:1;font-family:monospace;font-size:0.78rem" />
+            <input type="text" id="devLogsUidInput" placeholder="Firebase Auth UID to look up…"
+              style="flex:1;font-family:monospace;font-size:0.78rem" />
             <button class="btn" style="font-size:0.75rem;white-space:nowrap" onclick="devLoadLogs()">🔍 Load</button>
           </div>
           <div id="devLogsList" style="display:flex;flex-direction:column;gap:5px;max-height:380px;overflow-y:auto">
-            <p style="font-size:0.78rem;color:var(--text-muted)">Enter a Firebase Auth UID above to view account history.</p>
+            <p style="font-size:0.78rem;color:var(--text-muted)">Enter a Firebase Auth UID above to view account
+              history.</p>
           </div>
         </div>
 
         <!-- CONFIG TAB -->
         <div id="devPanel-config" style="display:none">
-          <div style="background:rgba(247,106,138,0.05);border:1px solid rgba(247,106,138,0.2);border-radius:10px;padding:12px 14px">
-            <div style="font-size:0.68rem;font-weight:600;color:var(--danger,#f76a8a);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px" data-i18n="devLockTitle">Board Creation Lock</div>
-            <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px" data-i18n="devLockDesc">When enabled, only registered devs can create new boards on this instance.</div>
+          <!-- Identity Resolver -->
+          <div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+            <div style="font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text-muted)">🔍 Identity Resolver</div>
+            <div style="display:flex;gap:6px;margin-bottom:8px">
+              <input type="text" id="devResolveUidInput" placeholder="Firebase Auth UID..." style="flex:1;padding:5px 8px;font-size:0.75rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text)" />
+              <button class="btn" style="font-size:0.75rem;padding:4px 10px;white-space:nowrap" onclick="devResolveIdentity()">Resolve</button>
+            </div>
+            <div id="devResolveResult" style="font-size:0.73rem;max-height:140px;overflow-y:auto;color:var(--text-muted)"></div>
+          </div>
+          <!-- Broadcast -->
+          <div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+            <div style="font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text-muted)">📢 Global Broadcast</div>
+            <textarea id="broadcastInput" placeholder="Message to all online users..." style="width:100%;padding:7px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem;resize:vertical;min-height:56px;font-family:inherit;box-sizing:border-box"></textarea>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <select id="broadcastType" style="flex:1;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.75rem">
+                <option value="toast">🍞 Toast (brief)</option>
+                <option value="modal">📋 Modal (dismissable)</option>
+              </select>
+              <button class="btn btn-primary" style="font-size:0.75rem;padding:4px 12px;white-space:nowrap" onclick="devBroadcast()">📢 Send</button>
+            </div>
+          </div>
+          <!-- Master CSS -->
+          <div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+            <div style="font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text-muted)">🎨 Instance Theme CSS</div>
+            <textarea id="devMasterCssInput" placeholder=":root { --accent: #ff6b6b; }" style="width:100%;padding:7px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.73rem;font-family:monospace;resize:vertical;min-height:70px;box-sizing:border-box"></textarea>
+            <button class="btn btn-primary" style="font-size:0.73rem;padding:4px 12px;margin-top:6px" onclick="devSaveMasterCss()">💾 Save CSS</button>
+          </div>
+          <!-- DB Health -->
+          <div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <div style="font-size:0.8rem;font-weight:600;color:var(--text-muted)">📊 DB Health</div>
+              <button class="btn" style="font-size:0.68rem;padding:2px 8px" onclick="devLoadDbHealth()">Refresh</button>
+            </div>
+            <div id="devDbHealth" style="font-size:0.75rem;color:var(--text-muted)">Click Refresh to load stats</div>
+          </div>
+          <!-- Board Creation Lock -->
+          <div
+            style="background:rgba(247,106,138,0.05);border:1px solid rgba(247,106,138,0.2);border-radius:10px;padding:12px 14px">
+            <div
+              style="font-size:0.68rem;font-weight:600;color:var(--danger,#f76a8a);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px"
+              data-i18n="devLockTitle">Board Creation Lock</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px" data-i18n="devLockDesc">When
+              enabled, only registered devs can create new boards on this instance.</div>
             <div class="pw-toggle-row" id="devLockToggleRow" onclick="toggleDevLock()">
               <input type="checkbox" id="devLockCheckbox" />
               <div class="pw-toggle-knob"></div>
@@ -2945,7 +3193,8 @@
       <!-- Footer -->
       <div style="padding:10px 18px;border-top:1px solid rgba(255,255,255,0.08);display:flex;gap:8px;flex-shrink:0">
         <button class="btn" onclick="closeDevAdmin()">Close</button>
-        <button class="btn" onclick="devRefreshCurrentTab()" style="color:var(--accent3);border-color:rgba(106,247,196,0.3)">↻ Refresh</button>
+        <button class="btn" onclick="devRefreshCurrentTab()"
+          style="color:var(--accent3);border-color:rgba(106,247,196,0.3)">↻ Refresh</button>
       </div>
     </div>
   </div>
@@ -2954,21 +3203,27 @@
   <div class="room-overlay" id="recoverySetupOverlay" data-closeable>
     <div class="room-box" style="width:420px">
       <h2>🔐 Account Recovery Question</h2>
-      <div style="background:rgba(247,106,138,0.07);border:1px solid rgba(247,106,138,0.25);border-radius:10px;padding:10px 14px;font-size:0.8rem;color:var(--text);line-height:1.6;margin-bottom:4px">
-        ⚠️ <strong>Important:</strong> If you ever lose your device or browser data and don't have an identity export, this question and answer are your only way to request account recovery. <strong>Write your answer down somewhere safe — it cannot be recovered if forgotten.</strong>
+      <div
+        style="background:rgba(247,106,138,0.07);border:1px solid rgba(247,106,138,0.25);border-radius:10px;padding:10px 14px;font-size:0.8rem;color:var(--text);line-height:1.6;margin-bottom:4px">
+        ⚠️ <strong>Important:</strong> If you ever lose your device or browser data and don't have an identity export,
+        this question and answer are your only way to request account recovery. <strong>Write your answer down somewhere
+          safe — it cannot be recovered if forgotten.</strong>
       </div>
       <div class="form-group">
         <label>Your Secret Question</label>
-        <input type="text" id="recoveryQuestionInput" placeholder="e.g. What was my first pet's name?" maxlength="120" />
+        <input type="text" id="recoveryQuestionInput" placeholder="e.g. What was my first pet's name?"
+          maxlength="120" />
       </div>
       <div class="form-group">
-        <label>Your Answer <span style="font-size:0.72rem;color:var(--text-muted)">(case-insensitive, stored as a hash)</span></label>
+        <label>Your Answer <span style="font-size:0.72rem;color:var(--text-muted)">(case-insensitive, stored as a
+            hash)</span></label>
         <input type="text" id="recoveryAnswerInput" placeholder="Your answer" maxlength="120" autocomplete="off" />
       </div>
       <div id="recoverySetupStatus" style="font-size:0.75rem;min-height:18px;margin-top:-4px"></div>
       <div class="modal-actions">
         <button class="btn" onclick="closeRecoverySetup()">Cancel</button>
-        <button class="btn" style="color:var(--accent3);border-color:rgba(106,247,196,0.3)" onclick="testRecoveryAnswer()">🧪 Test Answer</button>
+        <button class="btn" style="color:var(--accent3);border-color:rgba(106,247,196,0.3)"
+          onclick="testRecoveryAnswer()">🧪 Test Answer</button>
         <button class="btn btn-primary" onclick="saveRecoveryQuestion()">🔐 Save</button>
       </div>
     </div>
@@ -2978,26 +3233,34 @@
   <div class="room-overlay" id="selfRecoveryOverlay" data-closeable>
     <div class="room-box" style="width:440px">
       <h2>🔑 Recover Account</h2>
-      <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.6;margin-bottom:2px">Use this if you lost your identity backup. Enter your old Firebase Auth UID (you should have noted it down), answer your recovery question, then submit — an admin will review and transfer your rooms to your current account.</p>
+      <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.6;margin-bottom:2px">Use this if you lost your
+        identity backup. Enter your old Firebase Auth UID (you should have noted it down), answer your recovery
+        question, then submit — an admin will review and transfer your rooms to your current account.</p>
       <div class="form-group">
         <label>Your Old Firebase Auth UID</label>
-        <input type="text" id="selfRecoveryUid" placeholder="Paste your old Auth UID…" style="font-family:monospace;font-size:0.8rem" />
+        <input type="text" id="selfRecoveryUid" placeholder="Paste your old Auth UID…"
+          style="font-family:monospace;font-size:0.8rem" />
       </div>
       <div id="selfRecoveryQuestionWrap" style="display:none">
         <div class="form-group">
           <label>Recovery Question</label>
-          <div id="selfRecoveryQuestionText" style="font-size:0.85rem;padding:8px 12px;background:var(--surface2);border-radius:8px;margin-top:4px;line-height:1.5"></div>
+          <div id="selfRecoveryQuestionText"
+            style="font-size:0.85rem;padding:8px 12px;background:var(--surface2);border-radius:8px;margin-top:4px;line-height:1.5">
+          </div>
         </div>
         <div class="form-group">
           <label>Your Answer</label>
-          <input type="text" id="selfRecoveryAnswer" placeholder="Your answer (case-insensitive)" maxlength="120" autocomplete="off" />
+          <input type="text" id="selfRecoveryAnswer" placeholder="Your answer (case-insensitive)" maxlength="120"
+            autocomplete="off" />
         </div>
       </div>
       <div id="selfRecoveryStatus" style="font-size:0.78rem;min-height:20px;line-height:1.5"></div>
       <div class="modal-actions">
         <button class="btn" onclick="closeSelfRecovery()">Cancel</button>
-        <button class="btn btn-primary" id="selfRecoveryLookupBtn" onclick="selfRecoveryLookup()">🔍 Look Up Question</button>
-        <button class="btn btn-primary" id="selfRecoverySubmitBtn" style="display:none" onclick="submitSelfRecovery()">📤 Submit Request</button>
+        <button class="btn btn-primary" id="selfRecoveryLookupBtn" onclick="selfRecoveryLookup()">🔍 Look Up
+          Question</button>
+        <button class="btn btn-primary" id="selfRecoverySubmitBtn" style="display:none"
+          onclick="submitSelfRecovery()">📤 Submit Request</button>
       </div>
     </div>
   </div>
@@ -3131,7 +3394,7 @@
         // Username popover
         yourDisplayName: 'Your display name', save: 'Save',
         deviceIdentity: 'Device Identity', export: 'Export', import: 'Import',
-        copyUserId: 'Copy Firebase Auth UID (For Dev Role)',
+        copyUserId: 'Copy Firebase Auth UID',
         langToggle: '🌐 Deutsch', // button label (switches to German)
         // Veil
         joiningRoom: 'Joining Room...', syncData: 'Synchronizing secure data',
@@ -4036,6 +4299,10 @@
       document.getElementById('boardTitle').value = state.boardTitle || t('myBoard');
 
       if (!_isDashboard) trackBoardInWorkspace(_currentBoardId, _currentBoardType, state.boardTitle);
+      // Refresh filter/alternate views after render
+      if (typeof _filterVisible !== 'undefined' && _filterVisible) { populateFilterDropdowns(); renderWithFilters(); }
+      if (typeof _calendarView !== 'undefined' && _calendarView) renderCalendar();
+      if (typeof _timelineView !== 'undefined' && _timelineView) renderTimeline();
     }
 
     function renderColumn(col) {
@@ -4067,7 +4334,17 @@
       menuBtn.title = 'List options';
       menuBtn.textContent = '⋯';
 
-      header.append(dot, titleInput, count, menuBtn);
+      const totalPoints = (col.cards || []).reduce((s, c) => s + (c.points || 0), 0);
+      if (totalPoints > 0) {
+        const ptsBadge = document.createElement('span');
+        ptsBadge.className = 'col-count';
+        ptsBadge.style.cssText = 'color:var(--accent);background:rgba(124,106,247,0.12)';
+        ptsBadge.title = 'Total story points';
+        ptsBadge.textContent = '🎯 ' + totalPoints;
+        header.append(dot, titleInput, count, ptsBadge, menuBtn);
+      } else {
+        header.append(dot, titleInput, count, menuBtn);
+      }
       el.appendChild(header);
 
       // Build dropdown in body (once per column)
@@ -4151,6 +4428,18 @@
       el.draggable = true;
       el.dataset.cardId = card.id;
 
+      // Cover image
+      if (card.coverUrl) {
+        const cover = document.createElement('div');
+        cover.style.cssText = 'margin:-11px -11px 6px -13px;border-radius:var(--radius-sm) var(--radius-sm) 0 0;overflow:hidden;height:100px';
+        const img = document.createElement('img');
+        img.src = card.coverUrl;
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover';
+        img.onerror = function() { cover.style.display = 'none'; };
+        cover.appendChild(img);
+        el.appendChild(cover);
+      }
+
       // Open hint
       const hint = document.createElement('span');
       hint.className = 'card-open-hint';
@@ -4227,7 +4516,9 @@
             const stateCol = state.columns.find(c => c.id === colId);
             const stateCard = stateCol && stateCol.cards.find(c => c.id === card.id);
             if (stateCard && stateCard.checklist && stateCard.checklist[idx] !== undefined) {
-              stateCard.checklist[idx].done = !stateCard.checklist[idx].done;
+              const newDone = !stateCard.checklist[idx].done;
+              stateCard.checklist[idx].done = newDone;
+              if (_roomId) logActivity(newDone ? '☑' : '◻', (newDone ? 'checked' : 'unchecked') + ' a task in', card.title);
               save(); render();
             }
           });
@@ -4262,6 +4553,22 @@
         else if (diff <= 2) due.classList.add('soon');
         due.textContent = (allDone ? '✓ ' : '📅 ') + dueDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
         meta.appendChild(due);
+      }
+
+      if (card.points) {
+        const pts = document.createElement('div');
+        pts.className = 'card-due-pill';
+        pts.style.cssText = 'background:rgba(124,106,247,0.15);color:var(--accent);border-color:rgba(124,106,247,0.3)';
+        pts.textContent = '🎯 ' + card.points;
+        meta.appendChild(pts);
+      }
+
+      if (card.comments && card.comments.length) {
+        const cmt = document.createElement('div');
+        cmt.className = 'card-due-pill';
+        cmt.style.cssText = 'background:rgba(106,247,196,0.1);color:var(--accent3);border-color:rgba(106,247,196,0.25)';
+        cmt.textContent = '💬 ' + card.comments.length;
+        meta.appendChild(cmt);
       }
 
       // Assignees
@@ -4646,6 +4953,458 @@
       updateDuePreview();
       autoSaveCard(true);
     }
+    function clearStartDate() {
+      document.getElementById('cardStartInput').value = '';
+      autoSaveCard(false);
+    }
+
+    // ── MARKDOWN PREVIEW ──
+    function simpleMarkdown(text) {
+      if (!text) return '';
+      let html = escHtml(text);
+      html = html.replace(/^### (.+)$/gm, '<h3 style="font-size:0.9rem;margin:8px 0 4px;color:var(--accent)">$1</h3>');
+      html = html.replace(/^## (.+)$/gm, '<h2 style="font-size:1rem;margin:10px 0 4px;color:var(--accent)">$1</h2>');
+      html = html.replace(/^# (.+)$/gm, '<h1 style="font-size:1.1rem;margin:12px 0 6px;color:var(--accent)">$1</h1>');
+      html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+      html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+      html = html.replace(/_([^_\n]+)_/g, '<em>$1</em>');
+      html = html.replace(/`([^`]+)`/g, '<code style="background:var(--surface);padding:1px 5px;border-radius:4px;font-family:monospace;font-size:0.82em">$1</code>');
+      html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:var(--accent)">$1</a>');
+      html = html.replace(/^[*\-] (.+)$/gm, '<li style="margin-left:16px">$1</li>');
+      html = html.replace(/^&gt; (.+)$/gm, '<blockquote style="border-left:3px solid var(--accent);padding-left:10px;color:var(--text-muted);margin:4px 0">$1</blockquote>');
+      html = html.replace(/^---$/gm, '<hr style="border:none;border-top:1px solid var(--border);margin:8px 0">');
+      html = html.replace(/\n/g, '<br>');
+      return html;
+    }
+
+    function switchMdTab(tab) {
+      const editBtn = document.getElementById('mdTabEdit');
+      const previewBtn = document.getElementById('mdTabPreview');
+      const textarea = document.getElementById('cardDescInput');
+      const preview = document.getElementById('mdPreviewPane');
+      if (!editBtn || !textarea) return;
+      if (tab === 'preview') {
+        preview.innerHTML = simpleMarkdown(textarea.value);
+        preview.style.display = '';
+        textarea.style.display = 'none';
+        editBtn.style.cssText = 'font-size:0.68rem;padding:3px 10px;border-radius:100px;opacity:0.5';
+        previewBtn.style.cssText = 'font-size:0.68rem;padding:3px 10px;border-radius:100px;background:var(--accent);color:#fff;border-color:var(--accent)';
+      } else {
+        preview.style.display = 'none';
+        textarea.style.display = '';
+        editBtn.style.cssText = 'font-size:0.68rem;padding:3px 10px;border-radius:100px;background:var(--accent);color:#fff;border-color:var(--accent)';
+        previewBtn.style.cssText = 'font-size:0.68rem;padding:3px 10px;border-radius:100px;opacity:0.5';
+      }
+    }
+
+    // ── COMMENTS ──
+    let _editingComments = [];
+
+    function buildCommentsUI() {
+      const list = document.getElementById('commentsList');
+      if (!list) return;
+      list.innerHTML = '';
+      (_editingComments || []).forEach((c, idx) => {
+        const item = document.createElement('div');
+        item.className = 'comment-item';
+        const canDelete = c.authorId === (_authUid || _userId) || _isDev;
+        item.innerHTML = '<div style="display:flex;align-items:center">' +
+          '<span class="comment-author">' + escHtml(c.author || 'Anonymous') + '</span>' +
+          '<span class="comment-time" style="margin-left:8px">' + new Date(c.ts || 0).toLocaleString() + '</span>' +
+          (canDelete ? '<button class="comment-delete-btn" onclick="deleteComment(' + idx + ')">✕</button>' : '') +
+          '</div><div class="comment-text">' + escHtml(c.text) + '</div>';
+        list.appendChild(item);
+      });
+    }
+
+    function addComment() {
+      const input = document.getElementById('commentInput');
+      const text = (input.value || '').trim();
+      if (!text) return;
+      if (!_editingComments) _editingComments = [];
+      _editingComments.push({ id: uid(), text, author: _username || 'Anonymous', authorId: _authUid || _userId, ts: Date.now() });
+      input.value = '';
+      autoSaveCard(true);
+      buildCommentsUI();
+    }
+
+    function deleteComment(idx) {
+      if (_editingComments) _editingComments.splice(idx, 1);
+      autoSaveCard(true);
+      buildCommentsUI();
+    }
+
+    // ── FILTER BAR ──
+    let _activeFilters = { search: '', priority: '', label: '', assignee: '' };
+    let _filterVisible = false;
+
+    function toggleFilterBar() {
+      _filterVisible = !_filterVisible;
+      const bar = document.getElementById('filterBar');
+      bar.style.display = _filterVisible ? 'flex' : 'none';
+      const btn = document.getElementById('filterToggleBtn');
+      if (btn) { btn.style.borderColor = _filterVisible ? 'var(--accent)' : ''; btn.style.color = _filterVisible ? 'var(--accent)' : ''; }
+      if (_filterVisible) populateFilterDropdowns();
+    }
+
+    function populateFilterDropdowns() {
+      const labelSel = document.getElementById('filterLabel');
+      if (!labelSel) return;
+      const curLabel = labelSel.value;
+      labelSel.innerHTML = '<option value="">🏷 All Labels</option>';
+      (state.labels || []).forEach(l => {
+        const o = document.createElement('option'); o.value = l.name; o.textContent = l.name; labelSel.appendChild(o);
+      });
+      labelSel.value = curLabel;
+      const assigneeSel = document.getElementById('filterAssignee');
+      const curAssignee = assigneeSel.value;
+      assigneeSel.innerHTML = '<option value="">👤 All Assignees</option>';
+      const seen = new Set();
+      (state.columns || []).forEach(col => (col.cards || []).forEach(card => {
+        (card.assignees || []).forEach(a => {
+          if (a.name && !seen.has(a.name)) {
+            seen.add(a.name);
+            const o = document.createElement('option'); o.value = a.name; o.textContent = a.name; assigneeSel.appendChild(o);
+          }
+        });
+      }));
+      assigneeSel.value = curAssignee;
+    }
+
+    function applyFilters() {
+      _activeFilters.search = (document.getElementById('filterSearch').value || '').toLowerCase();
+      _activeFilters.priority = document.getElementById('filterPriority').value;
+      _activeFilters.label = document.getElementById('filterLabel').value;
+      _activeFilters.assignee = document.getElementById('filterAssignee').value;
+      renderWithFilters();
+    }
+
+    function clearFilters() {
+      _activeFilters = { search: '', priority: '', label: '', assignee: '' };
+      document.getElementById('filterSearch').value = '';
+      document.getElementById('filterPriority').value = '';
+      document.getElementById('filterLabel').value = '';
+      document.getElementById('filterAssignee').value = '';
+      renderWithFilters();
+    }
+
+    function cardMatchesFilter(card) {
+      const f = _activeFilters;
+      if (f.search) { const hay = ((card.title || '') + ' ' + (card.desc || '')).toLowerCase(); if (!hay.includes(f.search)) return false; }
+      if (f.priority && card.priority !== f.priority) return false;
+      if (f.label && !(card.labels || []).includes(f.label)) return false;
+      if (f.assignee && !(card.assignees || []).some(a => a.name === f.assignee)) return false;
+      return true;
+    }
+
+    function renderWithFilters() {
+      const hasFilter = _activeFilters.search || _activeFilters.priority || _activeFilters.label || _activeFilters.assignee;
+      let shown = 0, total = 0;
+      document.querySelectorAll('.card').forEach(el => {
+        const cardId = el.dataset.cardId;
+        let card = null;
+        for (const col of (state.columns || [])) { card = (col.cards || []).find(c => c.id === cardId); if (card) break; }
+        if (!card) return;
+        total++;
+        const visible = !hasFilter || cardMatchesFilter(card);
+        el.style.display = visible ? '' : 'none';
+        if (visible) shown++;
+      });
+      const countEl = document.getElementById('filterCount');
+      if (countEl) countEl.textContent = hasFilter ? shown + '/' + total + ' cards' : '';
+    }
+
+    // ── CALENDAR VIEW ──
+    let _calendarView = false;
+    let _calYear = new Date().getFullYear();
+    let _calMonth = new Date().getMonth();
+
+    function toggleCalendarView() {
+      _calendarView = !_calendarView;
+      const board = document.getElementById('board');
+      const cal = document.getElementById('calendarView');
+      const btn = document.getElementById('calendarViewBtn');
+      if (_calendarView) {
+        _timelineView = false;
+        const tlv = document.getElementById('timelineView'); if (tlv) tlv.style.display = 'none';
+        const tlBtn = document.getElementById('timelineViewBtn'); if (tlBtn) { tlBtn.style.borderColor = ''; tlBtn.style.color = ''; }
+        board.style.display = 'none'; cal.style.display = 'block';
+        if (btn) { btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)'; }
+        renderCalendar();
+      } else {
+        board.style.display = ''; cal.style.display = 'none';
+        if (btn) { btn.style.borderColor = ''; btn.style.color = ''; }
+      }
+    }
+
+    function renderCalendar() {
+      const cal = document.getElementById('calendarView');
+      const today = new Date();
+      const monthName = new Date(_calYear, _calMonth, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      const cardsByDate = {};
+      (state.columns || []).forEach(col => (col.cards || []).forEach(card => {
+        if (card.due) { if (!cardsByDate[card.due]) cardsByDate[card.due] = []; cardsByDate[card.due].push({ card, colId: col.id, colColor: col.color }); }
+      }));
+      const firstDay = new Date(_calYear, _calMonth, 1).getDay();
+      const daysInMonth = new Date(_calYear, _calMonth + 1, 0).getDate();
+      const prevDays = new Date(_calYear, _calMonth, 0).getDate();
+      let html = '<div class="cal-nav"><button class="btn" style="font-size:0.8rem;padding:4px 10px" onclick="_calMonth--;if(_calMonth<0){_calMonth=11;_calYear--;}renderCalendar()">‹ Prev</button><h3>' + escHtml(monthName) + '</h3><button class="btn" style="font-size:0.8rem;padding:4px 10px" onclick="_calMonth++;if(_calMonth>11){_calMonth=0;_calYear++;}renderCalendar()">Next ›</button></div><div class="cal-grid">';
+      ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => { html += '<div class="cal-day-name">' + d + '</div>'; });
+      for (let i = firstDay - 1; i >= 0; i--) html += '<div class="cal-cell other-month"><div class="cal-day-num">' + (prevDays - i) + '</div></div>';
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = _calYear + '-' + String(_calMonth + 1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+        const isToday = today.getFullYear() === _calYear && today.getMonth() === _calMonth && today.getDate() === d;
+        const cards = cardsByDate[dateStr] || [];
+        let chips = cards.slice(0,3).map(({card,colId,colColor}) => '<div class="cal-card-chip" style="border-left-color:' + (colColor||'var(--accent)') + '" onclick="openEditCardModal(\'' + escHtml(colId) + '\',\'' + escHtml(card.id) + '\')" title="' + escHtml(card.title) + '">' + escHtml(card.title) + '</div>').join('');
+        if (cards.length > 3) chips += '<div style="font-size:0.65rem;color:var(--text-muted);padding-left:3px">+' + (cards.length - 3) + ' more</div>';
+        html += '<div class="cal-cell' + (isToday ? ' today' : '') + '"><div class="cal-day-num">' + d + (isToday ? ' •' : '') + '</div>' + chips + '</div>';
+      }
+      const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+      for (let d2 = 1; d2 <= totalCells - firstDay - daysInMonth; d2++) html += '<div class="cal-cell other-month"><div class="cal-day-num">' + d2 + '</div></div>';
+      cal.innerHTML = html + '</div>';
+    }
+
+    // ── TIMELINE VIEW ──
+    let _timelineView = false;
+
+    function toggleTimelineView() {
+      _timelineView = !_timelineView;
+      const board = document.getElementById('board');
+      const tlv = document.getElementById('timelineView');
+      const btn = document.getElementById('timelineViewBtn');
+      if (_timelineView) {
+        _calendarView = false;
+        const cal = document.getElementById('calendarView'); if (cal) cal.style.display = 'none';
+        const calBtn = document.getElementById('calendarViewBtn'); if (calBtn) { calBtn.style.borderColor = ''; calBtn.style.color = ''; }
+        board.style.display = 'none'; tlv.style.display = 'block';
+        if (btn) { btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)'; }
+        renderTimeline();
+      } else {
+        board.style.display = ''; tlv.style.display = 'none';
+        if (btn) { btn.style.borderColor = ''; btn.style.color = ''; }
+      }
+    }
+
+    function renderTimeline() {
+      const tlv = document.getElementById('timelineView');
+      let allCards = [];
+      (state.columns || []).forEach(col => (col.cards || []).forEach(card => { if (card.startDate || card.due) allCards.push({card, col}); }));
+      if (allCards.length === 0) { tlv.innerHTML = '<div style="text-align:center;padding:60px;color:var(--text-muted)"><div style="font-size:2rem;margin-bottom:12px">📊</div><p>No cards with dates yet.<br>Add a Start Date or Due Date to cards to see them here.</p></div>'; return; }
+      let minDate = null, maxDate = null;
+      allCards.forEach(({card}) => { [card.startDate, card.due].filter(Boolean).forEach(d => { const dt = new Date(d + 'T00:00:00'); if (!minDate || dt < minDate) minDate = new Date(d + 'T00:00:00'); if (!maxDate || dt > maxDate) maxDate = new Date(d + 'T00:00:00'); }); });
+      minDate.setDate(minDate.getDate() - 2); maxDate.setDate(maxDate.getDate() + 2);
+      const totalDays = Math.round((maxDate - minDate) / 86400000) + 1;
+      const todayOff = Math.round((new Date() - minDate) / 86400000);
+      let dayLabels = '';
+      for (let i = 0; i < totalDays; i++) { const d = new Date(minDate); d.setDate(d.getDate() + i); dayLabels += '<div style="flex:1;text-align:center;font-size:0.62rem;color:var(--text-muted)">' + (i % 7 === 0 ? d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '') + '</div>'; }
+      const rows = allCards.map(({card, col}) => {
+        const start = card.startDate ? new Date(card.startDate + 'T00:00:00') : new Date(card.due + 'T00:00:00');
+        const end = card.due ? new Date(card.due + 'T00:00:00') : start;
+        const sOff = Math.max(0, Math.round((start - minDate) / 86400000));
+        const eOff = Math.min(totalDays - 1, Math.round((end - minDate) / 86400000));
+        const left = (sOff / totalDays * 100).toFixed(2);
+        const width = Math.max(0.5, ((eOff - sOff + 1) / totalDays * 100)).toFixed(2);
+        const todayLine = (todayOff >= 0 && todayOff < totalDays) ? '<div class="timeline-today-line" style="left:' + (todayOff / totalDays * 100).toFixed(2) + '%"></div>' : '';
+        return '<div class="timeline-row"><div class="timeline-card-label" onclick="openEditCardModal(\'' + escHtml(col.id) + '\',\'' + escHtml(card.id) + '\')" title="' + escHtml(card.title) + '">' + escHtml(card.title) + '</div><div class="timeline-bar-area">' + todayLine + '<div class="timeline-bar" style="left:' + left + '%;width:' + width + '%;background:' + (col.color || 'var(--accent)') + '" onclick="openEditCardModal(\'' + escHtml(col.id) + '\',\'' + escHtml(card.id) + '\')">' + (parseFloat(width) > 5 ? escHtml(card.title) : '') + '</div></div></div>';
+      }).join('');
+      tlv.innerHTML = '<div class="timeline-wrap"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><h3 style="font-family:\'Syne\',sans-serif;font-size:1rem;font-weight:700">📊 Timeline</h3><span style="font-size:0.72rem;color:var(--text-muted)">' + allCards.length + ' cards with dates</span></div><div style="display:flex;margin-bottom:4px"><div style="width:180px;flex-shrink:0"></div><div style="flex:1;display:flex">' + dayLabels + '</div></div>' + rows + '</div>';
+    }
+
+    // ── ACTIVITY SIDEBAR ──
+    let _activitySidebarOpen = false;
+
+    function toggleActivitySidebar() {
+      _activitySidebarOpen = !_activitySidebarOpen;
+      const sidebar = document.getElementById('activitySidebar');
+      const btn = document.getElementById('activityBtn');
+      sidebar.style.transform = _activitySidebarOpen ? 'translateX(0)' : 'translateX(100%)';
+      if (btn) { btn.style.borderColor = _activitySidebarOpen ? 'var(--accent)' : ''; btn.style.color = _activitySidebarOpen ? 'var(--accent)' : ''; }
+      if (_activitySidebarOpen && _roomId) loadActivityFeed();
+    }
+
+    function loadActivityFeed() {
+      if (!_roomId) return;
+      const list = document.getElementById('activityList');
+      list.innerHTML = '<div style="color:var(--text-muted);font-size:0.78rem;text-align:center;padding:20px">Loading...</div>';
+      db.ref('rooms/' + _roomId + '/activity').limitToLast(50).once('value', snap => {
+        const data = snap.val();
+        if (!data) { list.innerHTML = '<div style="color:var(--text-muted);font-size:0.78rem;text-align:center;padding:20px">No activity yet</div>'; return; }
+        const entries = Object.values(data).sort((a, b) => (b.ts || 0) - (a.ts || 0));
+        list.innerHTML = entries.map(e => '<div class="activity-item"><div class="activity-icon">' + escHtml(e.icon || '📌') + '</div><div style="flex:1;min-width:0"><div><span class="activity-who">' + escHtml(e.who || 'Someone') + '</span> <span class="activity-what">' + escHtml(e.what || '') + '</span></div>' + (e.card ? '<div style="font-size:0.7rem;color:var(--accent);margin-top:2px">"' + escHtml(e.card) + '"</div>' : '') + '<div class="activity-when">' + new Date(e.ts || 0).toLocaleString() + '</div></div></div>').join('');
+      });
+    }
+
+    function logActivity(icon, what, cardTitle) {
+      if (!_roomId) return;
+      const entry = { icon, who: _username || 'Anonymous', what, ts: Date.now() };
+      if (cardTitle) entry.card = cardTitle;
+      try { db.ref('rooms/' + _roomId + '/activity').push(entry); } catch(e) {}
+    }
+
+    // ── TYPING INDICATORS ──
+    let _typingTimer = null;
+
+    function setTypingIndicator(isTyping) {
+      if (!_presenceRef) return;
+      try { _presenceRef.update({ typing: isTyping }); } catch(e) {}
+    }
+
+    // ── THEME ENGINE ──
+    function setTheme(theme) {
+      document.body.classList.remove('theme-light', 'theme-amoled');
+      if (theme) document.body.classList.add('theme-' + theme);
+      localStorage.setItem('pb_theme', theme || '');
+    }
+
+    // ── COVER IMAGE PREVIEW ──
+    document.addEventListener('DOMContentLoaded', function() {
+      const coverInput = document.getElementById('cardCoverInput');
+      if (coverInput) {
+        coverInput.addEventListener('input', function() {
+          const url = this.value.trim();
+          const preview = document.getElementById('cardCoverPreview');
+          const img = document.getElementById('cardCoverPreviewImg');
+          if (url) { img.src = url; preview.style.display = ''; } else { preview.style.display = 'none'; }
+        });
+      }
+      // Apply typing indicator on description input
+      const descInput = document.getElementById('cardDescInput');
+      if (descInput) {
+        descInput.addEventListener('input', function() {
+          if (!_roomId) return;
+          setTypingIndicator(true);
+          clearTimeout(_typingTimer);
+          _typingTimer = setTimeout(() => setTypingIndicator(false), 2000);
+        });
+      }
+    });
+
+    // ── DEV PANEL: STALE CLEANUP ──
+    async function devLoadStaleRooms() {
+      const listEl = document.getElementById('devStaleList');
+      listEl.innerHTML = '<div style="color:var(--text-muted);font-size:0.75rem">Scanning...</div>';
+      try {
+        const snap = await db.ref('rooms').once('value');
+        const rooms = snap.val() || {};
+        const now = Date.now();
+        const threshold = 30 * 24 * 60 * 60 * 1000;
+        const stale = [];
+        Object.entries(rooms).forEach(([id, room]) => {
+          const lastUpdate = (room.state && room.state._lastUpdated) ? room.state._lastUpdated : 0;
+          if (now - lastUpdate > threshold) stale.push({ id, lastUpdate, ownerName: room.config && room.config.ownerName });
+        });
+        if (stale.length === 0) { listEl.innerHTML = '<div style="color:var(--accent3);font-size:0.75rem">✅ No stale rooms found</div>'; return; }
+        listEl.innerHTML = stale.map(r => '<div style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.73rem"><span style="flex:1;font-family:monospace;color:var(--text-muted)">' + escHtml(r.id.slice(0,14)) + '…</span><span style="color:var(--text-muted)">' + (r.lastUpdate ? new Date(r.lastUpdate).toLocaleDateString() : 'Never') + '</span><button class="btn" style="font-size:0.65rem;padding:2px 6px;color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.3)" onclick="devPurgeRoom(\'' + escHtml(r.id) + '\',this)">Purge</button></div>').join('');
+      } catch(e) { listEl.innerHTML = '<div style="color:var(--danger);font-size:0.75rem">Failed: ' + escHtml(e.message) + '</div>'; }
+    }
+
+    async function devPurgeRoom(roomId, btn) {
+      if (!confirm('Permanently delete room ' + roomId + '? Cannot be undone!')) return;
+      btn.disabled = true; btn.textContent = '...';
+      try {
+        await db.ref('rooms/' + roomId).remove();
+        btn.closest('div[style]').remove();
+        toast('Room purged: ' + roomId.slice(0, 14));
+      } catch(e) { btn.disabled = false; btn.textContent = 'Purge'; toast('Failed: ' + e.message); }
+    }
+
+    // ── DEV PANEL: IDENTITY RESOLVER ──
+    async function devResolveIdentity() {
+      const uidVal = document.getElementById('devResolveUidInput').value.trim();
+      const result = document.getElementById('devResolveResult');
+      if (!uidVal) return;
+      result.innerHTML = '<div style="color:var(--text-muted)">Searching...</div>';
+      try {
+        const snap = await db.ref('rooms').once('value');
+        const rooms = snap.val() || {};
+        const owned = [];
+        Object.entries(rooms).forEach(([id, room]) => { if (room.config && room.config.ownerAuthUid === uidVal) owned.push({ id, title: room.state && room.state.boardTitle }); });
+        let profile = null;
+        try { const ps = await db.ref('user_profiles/' + uidVal).once('value'); profile = ps.val(); } catch(e2) {}
+        result.innerHTML = '<div style="margin-bottom:6px"><strong>Profile:</strong> ' + (profile ? escHtml(profile.username || 'No username') : 'Not found') + '</div><div style="margin-bottom:4px"><strong>Owns ' + owned.length + ' room(s):</strong></div>' + (owned.length ? owned.map(r => '<div style="padding:2px 0;font-family:monospace;font-size:0.7rem;color:var(--text-muted)">' + escHtml(r.id) + (r.title ? ' — "' + escHtml(r.title) + '"' : '') + '</div>').join('') : '<div style="color:var(--text-muted)">No owned rooms</div>');
+      } catch(e) { result.innerHTML = '<div style="color:var(--danger)">Failed: ' + escHtml(e.message) + '</div>'; }
+    }
+
+    // ── DEV PANEL: BROADCAST ──
+    async function devBroadcast() {
+      const msg = (document.getElementById('broadcastInput').value || '').trim();
+      const type = document.getElementById('broadcastType').value;
+      if (!msg) return;
+      if (!confirm('Send broadcast to all users: "' + msg.slice(0, 80) + '"?')) return;
+      await db.ref('app_broadcasts').push({ message: msg, type, ts: Date.now(), from: _username || 'Dev' });
+      document.getElementById('broadcastInput').value = '';
+      toast('📢 Broadcast sent');
+    }
+
+    function listenForBroadcasts() {
+      const lastSeen = parseInt(localStorage.getItem('pb_last_broadcast') || '0');
+      db.ref('app_broadcasts').orderByChild('ts').startAt(lastSeen + 1).limitToLast(10).on('child_added', snap => {
+        const b = snap.val();
+        if (!b || !b.message) return;
+        localStorage.setItem('pb_last_broadcast', String(b.ts || Date.now()));
+        if (b.type === 'modal') {
+          const ov = document.createElement('div');
+          ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center';
+          ov.innerHTML = '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;max-width:400px;width:90%;text-align:center"><div style="font-size:1.4rem;margin-bottom:10px">📢</div><div style="font-weight:600;margin-bottom:8px">Message from Admin</div><div style="color:var(--text-muted);font-size:0.88rem;line-height:1.6;margin-bottom:18px">' + escHtml(b.message) + '</div><button class="btn btn-primary" onclick="this.closest(\'div[style]\').remove()">Dismiss</button></div>';
+          document.body.appendChild(ov);
+        } else { toast('📢 ' + b.message); }
+      });
+    }
+
+    // ── DEV PANEL: DB HEALTH ──
+    async function devLoadDbHealth() {
+      const el = document.getElementById('devDbHealth');
+      el.innerHTML = '<span style="color:var(--text-muted)">Loading...</span>';
+      try {
+        const [roomsSnap, broadSnap, adminsSnap] = await Promise.all([
+          db.ref('rooms').once('value'),
+          db.ref('app_broadcasts').once('value'),
+          db.ref('app_admins').once('value'),
+        ]);
+        const rooms = roomsSnap.val() || {};
+        const roomCount = Object.keys(rooms).length;
+        let cardCount = 0;
+        Object.values(rooms).forEach(r => { if (r.state && r.state.columns) { const cols = Array.isArray(r.state.columns) ? r.state.columns : Object.values(r.state.columns); cols.forEach(c => { cardCount += c.cards ? (Array.isArray(c.cards) ? c.cards.length : Object.keys(c.cards).length) : 0; }); } });
+        const broadcasts = broadSnap.val() ? Object.keys(broadSnap.val()).length : 0;
+        const admins = adminsSnap.val() ? Object.keys(adminsSnap.val()).length : 0;
+        el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px"><div style="background:var(--surface2);border-radius:6px;padding:8px;text-align:center"><div style="font-size:1.2rem;font-weight:700;color:var(--accent)">' + roomCount + '</div><div style="color:var(--text-muted);font-size:0.68rem">Rooms</div></div><div style="background:var(--surface2);border-radius:6px;padding:8px;text-align:center"><div style="font-size:1.2rem;font-weight:700;color:var(--accent3)">' + cardCount + '</div><div style="color:var(--text-muted);font-size:0.68rem">Total Cards</div></div><div style="background:var(--surface2);border-radius:6px;padding:8px;text-align:center"><div style="font-size:1.2rem;font-weight:700;color:var(--accent2)">' + broadcasts + '</div><div style="color:var(--text-muted);font-size:0.68rem">Broadcasts</div></div><div style="background:var(--surface2);border-radius:6px;padding:8px;text-align:center"><div style="font-size:1.2rem;font-weight:700;color:var(--text)">' + admins + '</div><div style="color:var(--text-muted);font-size:0.68rem">Admins</div></div></div>';
+      } catch(e) { el.innerHTML = '<span style="color:var(--danger)">Failed: ' + escHtml(e.message) + '</span>'; }
+    }
+
+    // ── DEV PANEL: MASTER CSS ──
+    async function devSaveMasterCss() {
+      const css = document.getElementById('devMasterCssInput').value;
+      await db.ref('app_config/master_css').set(css || null);
+      toast('🎨 Theme CSS saved');
+    }
+
+    async function devLoadConfig() {
+      try {
+        const snap = await db.ref('app_config/master_css').once('value');
+        const el = document.getElementById('devMasterCssInput');
+        if (el) el.value = snap.val() || '';
+      } catch(e) {}
+    }
+
+    // ── SELF-DESTRUCT ──
+    function saveSelfDestruct() {
+      const days = parseInt(document.getElementById('selfDestructDays').value) || 0;
+      db.ref('rooms/' + _roomId + '/config').update({ selfDestructDays: days });
+      toast(days > 0 ? '⏱ Auto-delete set to ' + days + ' days' : '⏱ Auto-delete disabled');
+    }
+
+    function checkSelfDestruct(config, stateData) {
+      if (!config || !config.selfDestructDays || !_isOwner) return;
+      const lastUpdated = stateData && stateData._lastUpdated;
+      if (!lastUpdated) return;
+      const daysSince = Math.round((Date.now() - lastUpdated) / 86400000);
+      if (daysSince >= config.selfDestructDays) {
+        if (confirm('This room has been inactive for ' + daysSince + ' days and is set to auto-delete. Delete it now?')) {
+          db.ref('rooms/' + _roomId).remove().then(() => { toast('Room deleted'); window.location.href = '?'; });
+        }
+      }
+    }
 
     // ── MOVE CARD ──
     function buildMoveToSelect(currentColId) {
@@ -4737,8 +5496,15 @@
       document.getElementById('cardPriorityInput').value = '';
       document.getElementById('newLabelName').value = '';
       document.getElementById('clNewItemInput').value = '';
+      document.getElementById('cardPointsInput').value = '';
+      document.getElementById('cardStartInput').value = '';
+      document.getElementById('cardCoverInput').value = '';
+      document.getElementById('cardCoverPreview').style.display = 'none';
       document.getElementById('cardDeleteSection').style.display = 'none';
       document.getElementById('moveToSection').style.display = 'none';
+      document.getElementById('commentsSection').style.display = 'none';
+      _editingComments = [];
+      buildCommentsUI();
       const footer = document.getElementById('cardModalFooter');
       footer.style.display = '';
       document.getElementById('cardKbdHint').style.display = 'none';
@@ -4747,6 +5513,7 @@
       buildChecklistUI();
       buildAssigneeSection();
       updatePriorityPills('');
+      switchMdTab('edit');
       document.getElementById('cardModal').classList.add('open');
       setTimeout(() => document.getElementById('cardTitleInput').focus(), 100);
     }
@@ -4770,9 +5537,19 @@
       autoGrow(document.getElementById('cardDescInput'));
       document.getElementById('cardDueInput').value = card.due || '';
       updateDuePreview();
+      document.getElementById('cardPointsInput').value = card.points || '';
+      document.getElementById('cardStartInput').value = card.startDate || '';
+      const _coverUrl = card.coverUrl || '';
+      document.getElementById('cardCoverInput').value = _coverUrl;
+      document.getElementById('cardCoverPreview').style.display = _coverUrl ? '' : 'none';
+      if (_coverUrl) document.getElementById('cardCoverPreviewImg').src = _coverUrl;
       document.getElementById('cardPriorityInput').value = card.priority || '';
       document.getElementById('newLabelName').value = '';
       document.getElementById('clNewItemInput').value = '';
+      _editingComments = (card.comments || []).map(c => ({...c}));
+      document.getElementById('commentsSection').style.display = '';
+      document.getElementById('commentInput').value = '';
+      buildCommentsUI();
       document.getElementById('cardDeleteSection').style.display = '';
       // Move to section (only show if >1 column)
       if (state.columns.length > 1) {
@@ -4795,6 +5572,7 @@
       document.getElementById('cardTitleInput').readOnly = !!isReadOnly;
       document.getElementById('cardDescInput').readOnly = !!isReadOnly;
 
+      switchMdTab('edit');
       document.getElementById('cardModal').classList.add('open');
       if (!isReadOnly) setTimeout(() => document.getElementById('cardTitleInput').focus(), 100);
     }
@@ -4820,6 +5598,10 @@
         priority: document.getElementById('cardPriorityInput').value,
         checklist: editingChecklist.map(i => ({ ...i })),
         assignees: [..._selectedAssignees],
+        points: parseInt(document.getElementById('cardPointsInput').value) || 0,
+        startDate: document.getElementById('cardStartInput').value,
+        coverUrl: document.getElementById('cardCoverInput').value.trim(),
+        comments: _editingComments.map(c => ({...c})),
       };
       if (editingCardId) {
         if (!col.cards) col.cards = [];
@@ -4828,6 +5610,7 @@
       } else {
         if (!col.cards) col.cards = [];
         col.cards.push({ id: uid(), ...cardData });
+        if (_roomId) logActivity('➕', 'added a card', cardData.title);
       }
       save(); render(); closeCardModal();
     }
@@ -4879,6 +5662,10 @@
         priority: document.getElementById('cardPriorityInput').value,
         checklist: editingChecklist.map(i => ({ ...i })),
         assignees: [..._selectedAssignees],
+        points: parseInt(document.getElementById('cardPointsInput').value) || 0,
+        startDate: document.getElementById('cardStartInput').value,
+        coverUrl: document.getElementById('cardCoverInput').value.trim(),
+        comments: _editingComments.map(c => ({...c})),
       });
       save();
       if (renderBoard) render();
@@ -5866,6 +6653,7 @@
         return;
       }
       _fbWriting = true;
+      state._lastUpdated = Date.now();
       try {
         let payload;
         if (_roomPassword) {
@@ -5897,6 +6685,9 @@
           else if (!Array.isArray(card.labels)) card.labels = Object.values(card.labels);
           if (!card.checklist) card.checklist = [];
           else if (!Array.isArray(card.checklist)) card.checklist = Object.values(card.checklist);
+          if (card.points === undefined) card.points = 0;
+          if (!card.comments) card.comments = [];
+          else if (!Array.isArray(card.comments)) card.comments = Object.values(card.comments);
         });
       });
       return s;
@@ -5940,6 +6731,7 @@
         if (!state.labels) state.labels = [];
         if (!state.columns) state.columns = [];
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        if (_roomConfig) checkSelfDestruct(_roomConfig, state);
         render();
         document.getElementById('boardTitle').value = state.boardTitle || t('myBoard');
         document.getElementById('boardVeil').classList.remove('show');
@@ -5983,6 +6775,10 @@
       _presenceRef.set({ name: _username || 'Anonymous', isOwner: _isOwner, isDev: _isDev, userId: _userId, authUid });
       _presenceRef.onDisconnect().remove();
 
+      // Show activity button for collab rooms
+      const _aBtn = document.getElementById('activityBtn');
+      if (_aBtn) _aBtn.style.display = '';
+
       const refreshPresenceUi = () => {
         const members = getUniqueRoomMembers();
         const count = members.length;
@@ -5995,7 +6791,8 @@
         btn.classList.toggle('active', count > 0);
         const names = members.map(m => {
           const n = (m && m.name) ? m.name : t('anonymous');
-          return (m && m.isOwner) ? '👑 ' + n : n;
+          const typing = m && m.typing ? ' ✏️' : '';
+          return ((m && m.isOwner) ? '👑 ' : '') + n + typing;
         });
         btn.title = names.join('\n');
         _updateCollabBtnLabel();
@@ -6308,6 +7105,10 @@
         readOnlyCb.checked = !!_roomConfig.readOnly;
         readOnlyCb.closest('.pw-toggle-row').classList.toggle('active', readOnlyCb.checked);
       }
+      const sdEl = document.getElementById('selfDestructDays');
+      if (sdEl) sdEl.value = _roomConfig.selfDestructDays || '';
+      const autoDeleteSection = document.getElementById('settingsAutoDeleteSection');
+      if (autoDeleteSection) autoDeleteSection.style.display = _isOwner ? '' : 'none';
 
       const brandingSection = document.getElementById('settingsBrandingSection');
       if (brandingSection) brandingSection.style.display = _isOwner ? '' : 'none';
@@ -6706,7 +7507,7 @@
       if (recoverStatus) { recoverStatus.textContent = ''; recoverStatus.style.color = 'var(--accent2)'; }
       // Reset to admins tab
       _devCurrentTab = 'admins';
-      ['admins','rooms','recovery','logs','config'].forEach(t => {
+      ['admins', 'rooms', 'recovery', 'logs', 'config'].forEach(t => {
         document.getElementById('devPanel-' + t).style.display = (t === 'admins') ? '' : 'none';
         document.getElementById('devTab-' + t).classList.toggle('active', t === 'admins');
       });
@@ -6828,7 +7629,7 @@
 
     // ── HTML escape helper ──
     function escHtml(str) {
-      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     // ── RECOVERY SETUP ──
@@ -6845,7 +7646,7 @@
           statusEl.style.color = 'var(--accent3)';
           statusEl.textContent = '✅ A recovery question is already set. Enter a new answer to update it.';
         }
-      }).catch(() => {});
+      }).catch(() => { });
       document.getElementById('recoverySetupOverlay').classList.add('open');
     }
     function closeRecoverySetup() {
@@ -7007,7 +7808,7 @@
             if (count > 0) await db.ref().update(updates);
             await db.ref('recovery_requests/' + reqId).remove();
             await logAccountEvent(req.oldAuthUid, 'recovery_approved', { newAuthUid: req.newAuthUid, roomsTransferred: count, autoApproved: true });
-            toast('✅ Auto-approved recovery for ' + (req.newUserName || req.newAuthUid.slice(0,8)) + '… (' + count + ' room(s))');
+            toast('✅ Auto-approved recovery for ' + (req.newUserName || req.newAuthUid.slice(0, 8)) + '… (' + count + ' room(s))');
           } catch (e) { /* skip failed auto-approve */ }
         }
         // Show only unverified requests for manual review
@@ -7024,18 +7825,18 @@
           row.style.cssText = 'background:var(--surface2);border-radius:10px;padding:10px 14px;display:flex;flex-direction:column;gap:5px;font-size:0.78rem';
           row.innerHTML =
             '<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap">' +
-              '<span style="font-weight:600;color:var(--accent2)">⚠️ Answer not verified — manual review needed</span>' +
-              '<span style="color:var(--text-muted);font-size:0.7rem">' + escHtml(new Date(req.timestamp || 0).toLocaleString()) + '</span>' +
+            '<span style="font-weight:600;color:var(--accent2)">⚠️ Answer not verified — manual review needed</span>' +
+            '<span style="color:var(--text-muted);font-size:0.7rem">' + escHtml(new Date(req.timestamp || 0).toLocaleString()) + '</span>' +
             '</div>' +
             '<div><span style="color:var(--text-muted)">Requester: </span>' + escHtml(req.newUserName || 'Unknown') + '</div>' +
             '<div style="font-family:monospace;font-size:0.72rem;word-break:break-all"><span style="color:var(--text-muted)">Old UID: </span>' + escHtml(req.oldAuthUid || '') + '</div>' +
             '<div style="font-family:monospace;font-size:0.72rem;word-break:break-all"><span style="color:var(--text-muted)">New UID: </span>' + escHtml(req.newAuthUid || '') + '</div>' +
             '<div><span style="color:var(--text-muted)">Question: </span>' + escHtml(req.question || '—') + '</div>' +
             '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">' +
-              '<button class="btn" style="color:var(--accent3);border-color:rgba(106,247,196,0.35);font-size:0.72rem;padding:3px 10px" ' +
-                'onclick="devApproveRecovery(\'' + escHtml(reqId) + '\',\'' + escHtml(req.oldAuthUid||'') + '\',\'' + escHtml(req.newAuthUid||'') + '\',\'' + escHtml(req.newUserName||'') + '\')">✅ Approve Anyway</button>' +
-              '<button class="btn" style="color:var(--accent2);border-color:rgba(247,106,138,0.3);font-size:0.72rem;padding:3px 10px" ' +
-                'onclick="devDismissRecovery(\'' + escHtml(reqId) + '\')">🗑 Dismiss</button>' +
+            '<button class="btn" style="color:var(--accent3);border-color:rgba(106,247,196,0.35);font-size:0.72rem;padding:3px 10px" ' +
+            'onclick="devApproveRecovery(\'' + escHtml(reqId) + '\',\'' + escHtml(req.oldAuthUid || '') + '\',\'' + escHtml(req.newAuthUid || '') + '\',\'' + escHtml(req.newUserName || '') + '\')">✅ Approve Anyway</button>' +
+            '<button class="btn" style="color:var(--accent2);border-color:rgba(247,106,138,0.3);font-size:0.72rem;padding:3px 10px" ' +
+            'onclick="devDismissRecovery(\'' + escHtml(reqId) + '\')">🗑 Dismiss</button>' +
             '</div>';
           list.appendChild(row);
         });
@@ -7086,14 +7887,14 @@
     let _devCurrentTab = 'admins';
     function switchDevTab(tab) {
       _devCurrentTab = tab;
-      ['admins','rooms','recovery','logs','config'].forEach(t => {
+      ['admins', 'rooms', 'recovery', 'logs', 'config'].forEach(t => {
         document.getElementById('devPanel-' + t).style.display = (t === tab) ? '' : 'none';
         document.getElementById('devTab-' + t).classList.toggle('active', t === tab);
       });
       if (tab === 'admins') devAdminRefresh();
       if (tab === 'rooms' && document.getElementById('devRoomsList').children.length <= 1) devLoadRooms();
       if (tab === 'recovery') devLoadRecoveryRequests();
-      if (tab === 'config') devLockRefresh();
+      if (tab === 'config') { devLockRefresh(); devLoadConfig(); }
     }
     function devRefreshCurrentTab() { switchDevTab(_devCurrentTab); }
 
@@ -7130,12 +7931,12 @@
         row.style.cssText = 'background:var(--surface2);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:0.78rem';
         row.innerHTML =
           '<div style="flex:1;min-width:0">' +
-            '<div style="font-family:monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:2px">' + escHtml(r.id) + '</div>' +
-            '<div style="font-weight:600;color:var(--text)">' + escHtml(r.ownerName) + '</div>' +
-            '<div style="font-family:monospace;font-size:0.7rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px">' + escHtml(r.ownerUid) + '</div>' +
+          '<div style="font-family:monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:2px">' + escHtml(r.id) + '</div>' +
+          '<div style="font-weight:600;color:var(--text)">' + escHtml(r.ownerName) + '</div>' +
+          '<div style="font-family:monospace;font-size:0.7rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px">' + escHtml(r.ownerUid) + '</div>' +
           '</div>' +
           '<button class="btn" style="font-size:0.7rem;padding:4px 10px;color:#6ab4f7;border-color:rgba(106,180,247,0.35);white-space:nowrap;flex-shrink:0" ' +
-            'onclick="devShowTransferForm(\'' + escHtml(r.id) + '\',\'' + escHtml(r.ownerName) + '\')">⇄ Transfer</button>';
+          'onclick="devShowTransferForm(\'' + escHtml(r.id) + '\',\'' + escHtml(r.ownerName) + '\')">⇄ Transfer</button>';
         list.appendChild(row);
       });
     }
@@ -7166,7 +7967,7 @@
         statusEl.textContent = '✅ Transferred.';
         document.getElementById('devRoomTransferWrap').style.display = 'none';
         devLoadRooms();
-        toast('✅ Room ' + roomId.slice(0,10) + '… transferred.');
+        toast('✅ Room ' + roomId.slice(0, 10) + '… transferred.');
       } catch (e) {
         statusEl.style.color = 'var(--accent2)';
         statusEl.textContent = '❌ Failed: ' + (e.message || 'Check rules.');
@@ -7196,13 +7997,13 @@
           const row = document.createElement('div');
           row.style.cssText = 'background:var(--surface2);border-radius:7px;padding:8px 12px;font-size:0.76rem;display:flex;align-items:flex-start;gap:10px';
           const icon = eventIcons[entry.event] || '📋';
-          const details = entry.details ? Object.entries(entry.details).map(([k,v]) => escHtml(k) + ': ' + escHtml(String(v))).join(' · ') : '';
+          const details = entry.details ? Object.entries(entry.details).map(([k, v]) => escHtml(k) + ': ' + escHtml(String(v))).join(' · ') : '';
           row.innerHTML =
             '<span style="font-size:1rem;line-height:1">' + icon + '</span>' +
             '<div style="flex:1;min-width:0">' +
-              '<div style="font-weight:600;color:var(--text)">' + escHtml(entry.event || 'unknown') + '</div>' +
-              (details ? '<div style="color:var(--text-muted);font-size:0.7rem;margin-top:2px;word-break:break-all">' + details + '</div>' : '') +
-              '<div style="color:var(--text-muted);font-size:0.68rem;margin-top:3px">' + new Date(entry.timestamp || 0).toLocaleString() + '</div>' +
+            '<div style="font-weight:600;color:var(--text)">' + escHtml(entry.event || 'unknown') + '</div>' +
+            (details ? '<div style="color:var(--text-muted);font-size:0.7rem;margin-top:2px;word-break:break-all">' + details + '</div>' : '') +
+            '<div style="color:var(--text-muted);font-size:0.68rem;margin-top:3px">' + new Date(entry.timestamp || 0).toLocaleString() + '</div>' +
             '</div>';
           logsList.appendChild(row);
         });
@@ -7239,6 +8040,16 @@
       }
     }
 
+    // ── APPLY SAVED THEME ──
+    (function() { const _t = localStorage.getItem('pb_theme'); if (_t) document.body.classList.add('theme-' + _t); })();
+
+    // ── MASTER CSS FROM FIREBASE ──
+    db.ref('app_config/master_css').on('value', snap => {
+      let styleTag = document.getElementById('masterThemeCss');
+      if (!styleTag) { styleTag = document.createElement('style'); styleTag.id = 'masterThemeCss'; document.head.appendChild(styleTag); }
+      styleTag.textContent = snap.val() || '';
+    });
+
     // ── CLICK OUTSIDE TO CLOSE OVERLAYS ──
     document.querySelectorAll('.room-overlay[data-closeable]').forEach(overlay => {
       overlay.addEventListener('click', e => {
@@ -7253,17 +8064,25 @@
       const headerBtns = document.querySelectorAll('.header-actions .btn:not(#usernamePopover .btn)');
       headerBtns.forEach(b => { if (!b.textContent.includes(t('dbBtn').replace(/🗄️ /, ''))) b.style.display = 'none'; });
       document.getElementById('collabBtn').style.display = 'none';
+      const fbtn = document.getElementById('filterToggleBtn');
+      if (fbtn) fbtn.style.display = 'none';
+      const cbtn = document.getElementById('calendarViewBtn');
+      if (cbtn) cbtn.style.display = 'none';
+      const tbtn = document.getElementById('timelineViewBtn');
+      if (tbtn) tbtn.style.display = 'none';
 
       document.getElementById('dashboardView').style.display = 'flex';
       applyTranslations();
       updateUsernameChip();
       renderDashboard();
+      listenForBroadcasts();
       if (_isDev) setTimeout(devLoadUsers, 300);
     } else {
       load();
       checkUrlImport();
       applyTranslations();
       updateUsernameChip();
+      listenForBroadcasts();
 
       if (state.columns.length === 0) {
         if (state.labels.length === 0) {
