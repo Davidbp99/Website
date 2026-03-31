@@ -2154,6 +2154,23 @@
 
     .workspace-section {
       margin-bottom: 40px;
+      border-radius: var(--radius);
+      transition: background 0.3s;
+    }
+
+    /* ── PAGE BACKGROUND OVERLAY ── */
+    #bgOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      transition: background 0.4s;
+    }
+
+    header, #dashboardView, #board, #calendarView, #timelineView,
+    .room-overlay, #toast, #activitySidebar {
+      position: relative;
+      z-index: 2;
     }
 
     .workspace-header {
@@ -2340,6 +2357,8 @@
 
 <body>
 
+  <div id="bgOverlay"></div>
+
   <header>
     <a href="?" id="boardLogoContainer" class="logo"
       style="text-decoration:none;display:flex;align-items:center;gap:8px">PrivacyBoard</a>
@@ -2444,12 +2463,85 @@
     <span id="filterCount" style="font-size:0.75rem;color:var(--text-muted);margin-left:auto"></span>
   </div>
 
+  <!-- PAGE BACKGROUND SETTINGS -->
+  <div class="room-overlay" id="pageBgOverlay" data-closeable>
+    <div class="room-box" style="width:420px">
+      <h2>🖼 Page Background</h2>
+      <div class="form-group">
+        <label>Type</label>
+        <div style="display:flex;gap:14px;margin:8px 0 10px">
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="pageBgType" value="none" id="pageBgNone" onchange="pageBgTypeChange()" checked /> None</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="pageBgType" value="color" id="pageBgColor" onchange="pageBgTypeChange()" /> Color</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="pageBgType" value="image" id="pageBgImage" onchange="pageBgTypeChange()" /> Image URL</label>
+        </div>
+        <div id="pageBgColorRow" style="display:none;margin-bottom:8px">
+          <input type="color" id="pageBgColorPicker" value="#0f0f13" style="width:60px;height:34px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0" />
+        </div>
+        <div id="pageBgImageRow" style="display:none;margin-bottom:8px">
+          <input type="text" id="pageBgImageUrl" placeholder="https://... (image URL)" style="width:100%;box-sizing:border-box;font-size:0.82rem" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Dark Overlay</label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="range" id="pageBgOpacity" min="0" max="90" value="0" style="flex:1" oninput="document.getElementById('pageBgOpacityVal').textContent=this.value+'%'" />
+          <span id="pageBgOpacityVal" style="font-size:0.73rem;color:var(--text-muted);width:35px;text-align:right">0%</span>
+        </div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">Semi-transparent black layer on top of the background for readability.</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:18px">
+        <button class="btn btn-primary" onclick="savePageBg()">💾 Save</button>
+        <button class="btn" onclick="document.getElementById('pageBgOverlay').classList.remove('open')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORKSPACE SETTINGS -->
+  <div class="room-overlay" id="wsSettingsOverlay" data-closeable>
+    <div class="room-box" style="width:420px">
+      <h2>⚙️ Workspace Settings</h2>
+      <input type="hidden" id="wsSettingsId" />
+      <div class="form-group">
+        <label>✏️ Name</label>
+        <input type="text" id="wsSettingsName" maxlength="40" placeholder="Workspace name…" />
+      </div>
+      <div class="form-group">
+        <label>🖼 Section Background</label>
+        <div style="display:flex;gap:14px;margin:8px 0 10px">
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="wssBgType" value="none" id="wssBgNone" onchange="wssBgTypeChange()" checked /> None</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="wssBgType" value="color" id="wssBgColor" onchange="wssBgTypeChange()" /> Color</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="wssBgType" value="image" id="wssBgImage" onchange="wssBgTypeChange()" /> Image URL</label>
+        </div>
+        <div id="wssBgColorRow" style="display:none;margin-bottom:8px">
+          <input type="color" id="wssBgColorPicker" value="#1a1a2e" style="width:60px;height:34px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0" />
+        </div>
+        <div id="wssBgImageRow" style="display:none;margin-bottom:8px">
+          <input type="text" id="wssBgImageUrl" placeholder="https://... (image URL)" style="width:100%;box-sizing:border-box;font-size:0.82rem" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>🎨 Section Accent Color</label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="color" id="wssAccentColor" value="#7c6af7" style="width:60px;height:34px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0" />
+          <button class="btn" style="font-size:0.73rem;padding:4px 10px" onclick="document.getElementById('wssAccentColor').value='#7c6af7'">Reset</button>
+        </div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">Colors the workspace header border and section title.</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:18px">
+        <button class="btn btn-primary" onclick="saveWsSettings()">💾 Save</button>
+        <button class="btn" onclick="document.getElementById('wsSettingsOverlay').classList.remove('open')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <!-- DASHBOARD VIEW -->
   <div id="dashboardView">
     <div class="dashboard-header">
       <h2 data-i18n="yourWorkspaces">Your Workspaces</h2>
-      <button class="btn btn-primary" onclick="createWorkspacePrompt()" data-i18n="newWorkspace">+ New
-        Workspace</button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn" style="font-size:0.78rem" onclick="openPageBgSettings()">🖼 Page Background</button>
+        <button class="btn btn-primary" onclick="createWorkspacePrompt()" data-i18n="newWorkspace">+ New Workspace</button>
+      </div>
     </div>
     <div id="workspacesContainer"></div>
   </div>
@@ -2883,6 +2975,27 @@
         <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px">Room auto-deletes after this many days with no card edits.</div>
       </div>
 
+      <div class="form-group" style="padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);margin-top:10px" id="settingsBoardBgSection">
+        <label>🖼 Board Background</label>
+        <div style="display:flex;gap:14px;margin:8px 0 10px">
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="boardBgType" value="none" id="boardBgNone" onchange="boardBgTypeChange()" /> None</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="boardBgType" value="color" id="boardBgColor" onchange="boardBgTypeChange()" /> Color</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="boardBgType" value="image" id="boardBgImage" onchange="boardBgTypeChange()" /> Image URL</label>
+        </div>
+        <div id="boardBgColorRow" style="display:none;margin-bottom:8px">
+          <input type="color" id="boardBgColorPicker" value="#0f0f13" style="width:60px;height:34px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0" />
+        </div>
+        <div id="boardBgImageRow" style="display:none;margin-bottom:8px">
+          <input type="text" id="boardBgImageUrl" placeholder="https://... (image URL)" style="font-size:0.8rem;width:100%;box-sizing:border-box" />
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap">Dark overlay:</span>
+          <input type="range" id="boardBgOverlay" min="0" max="90" value="0" style="flex:1" oninput="document.getElementById('boardBgOverlayVal').textContent=this.value+'%'" />
+          <span id="boardBgOverlayVal" style="font-size:0.73rem;color:var(--text-muted);width:35px;text-align:right">0%</span>
+        </div>
+        <button class="btn" style="font-size:0.75rem" onclick="saveBoardBg()">Apply Background</button>
+      </div>
+
       <div class="form-group" id="settingsPwSection">
         <label data-i18n="changeRoomPw">🔑 Change Room Password</label>
         <div class="pw-input-inner">
@@ -3018,6 +3131,7 @@
       <div
         style="display:flex;border-bottom:1px solid rgba(255,255,255,0.1);background:var(--surface2);flex-shrink:0;overflow-x:auto">
         <button class="dev-tab active" onclick="switchDevTab('admins')" id="devTab-admins">🛡️ Admins</button>
+        <button class="dev-tab" onclick="switchDevTab('bans')" id="devTab-bans">🚫 Bans</button>
         <button class="dev-tab" onclick="switchDevTab('rooms')" id="devTab-rooms">🏠 Rooms</button>
         <button class="dev-tab" onclick="switchDevTab('recovery')" id="devTab-recovery">🔑 Recovery<span
             id="devRecoveryTabBadge"
@@ -3045,6 +3159,31 @@
               style="font-size:0.68rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">
               Current Devs in DB</div>
             <div id="devAdminList" style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto">
+            </div>
+          </div>
+        </div>
+
+        <!-- BANS TAB -->
+        <div id="devPanel-bans" style="display:none">
+          <div class="form-group">
+            <label style="color:var(--danger,#f76a8a)">Ban Auth UID</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="devBanUidInput" placeholder="Firebase Auth UID to ban…"
+                style="flex:1;font-family:monospace;font-size:0.82rem" />
+              <button class="btn" style="color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.35);white-space:nowrap;font-size:0.78rem" onclick="devBanUid()">🚫 Ban</button>
+            </div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">
+              Banning forces the user off the app immediately and generates a new anonymous auth on their next visit. Their offline boards are not affected.
+            </div>
+            <div id="devBanError" style="font-size:0.75rem;color:var(--accent2);min-height:16px;margin-top:4px"></div>
+          </div>
+          <div>
+            <div style="font-size:0.68rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+              <span>Banned Users</span>
+              <button class="btn" style="font-size:0.65rem;padding:2px 8px" onclick="devLoadBans()">↻ Refresh</button>
+            </div>
+            <div id="devBanList" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto">
+              <p style="color:var(--text-muted);font-size:0.8rem">Loading…</p>
             </div>
           </div>
         </div>
@@ -3173,6 +3312,25 @@
             </div>
             <div id="devDbHealth" style="font-size:0.75rem;color:var(--text-muted)">Click Refresh to load stats</div>
           </div>
+          <!-- Default Backgrounds -->
+          <div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+            <div style="font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text-muted)">🖼 Default Backgrounds</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:10px">Apply to all users who haven't set their own background.</div>
+            <div style="margin-bottom:8px">
+              <div style="font-size:0.72rem;font-weight:600;margin-bottom:4px">Dashboard Background URL</div>
+              <input type="text" id="devDefaultDashBg" placeholder="https://... or leave blank" style="width:100%;padding:6px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem;box-sizing:border-box" />
+            </div>
+            <div style="margin-bottom:8px">
+              <div style="font-size:0.72rem;font-weight:600;margin-bottom:4px">Board Background URL</div>
+              <input type="text" id="devDefaultBoardBg" placeholder="https://... or leave blank" style="width:100%;padding:6px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem;box-sizing:border-box" />
+            </div>
+            <div style="margin-bottom:10px">
+              <div style="font-size:0.72rem;font-weight:600;margin-bottom:4px">Default Overlay Opacity (%)</div>
+              <input type="number" id="devDefaultOverlay" min="0" max="90" value="0" placeholder="0" style="width:80px;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem" />
+            </div>
+            <button class="btn btn-primary" style="font-size:0.73rem;padding:4px 12px" onclick="devSaveDefaults()">💾 Save Defaults</button>
+          </div>
+
           <!-- Board Creation Lock -->
           <div
             style="background:rgba(247,106,138,0.05);border:1px solid rgba(247,106,138,0.2);border-radius:10px;padding:12px 14px">
@@ -4299,6 +4457,7 @@
       document.getElementById('boardTitle').value = state.boardTitle || t('myBoard');
 
       if (!_isDashboard) trackBoardInWorkspace(_currentBoardId, _currentBoardType, state.boardTitle);
+      applyBoardBg();
       // Refresh filter/alternate views after render
       if (typeof _filterVisible !== 'undefined' && _filterVisible) { populateFilterDropdowns(); renderWithFilters(); }
       if (typeof _calendarView !== 'undefined' && _calendarView) renderCalendar();
@@ -5382,9 +5541,19 @@
 
     async function devLoadConfig() {
       try {
-        const snap = await db.ref('app_config/master_css').once('value');
+        const [cssSnap, defaultsSnap] = await Promise.all([
+          db.ref('app_config/master_css').once('value'),
+          db.ref('app_config/defaults').once('value'),
+        ]);
         const el = document.getElementById('devMasterCssInput');
-        if (el) el.value = snap.val() || '';
+        if (el) el.value = cssSnap.val() || '';
+        const defs = defaultsSnap.val() || {};
+        const ddb = document.getElementById('devDefaultDashBg');
+        const dbb = document.getElementById('devDefaultBoardBg');
+        const dov = document.getElementById('devDefaultOverlay');
+        if (ddb) ddb.value = defs.dashBg || '';
+        if (dbb) dbb.value = defs.boardBg || '';
+        if (dov) dov.value = defs.overlay || 0;
       } catch(e) {}
     }
 
@@ -5923,14 +6092,27 @@
         const sec = document.createElement('div');
         sec.className = 'workspace-section';
 
-        let headerActions = '';
-        if (ws.id !== _workspaces[0].id) {
-          headerActions = `<button class="btn btn-danger" style="font-size:0.65rem;padding:4px 8px" onclick="deleteWorkspace('${ws.id}')">${t('deleteWorkspace')}</button>`;
+        // Apply workspace section background
+        if (ws.bgType === 'color' && ws.bg) {
+          sec.style.background = ws.bg;
+          sec.style.padding = '16px';
+        } else if (ws.bgType === 'image' && ws.bg) {
+          sec.style.backgroundImage = 'url("' + ws.bg.replace(/"/g, '%22') + '")';
+          sec.style.backgroundSize = 'cover';
+          sec.style.backgroundPosition = 'center';
+          sec.style.padding = '16px';
         }
 
+        const accentColor = ws.accentColor || 'var(--border)';
+
+        let headerActions = `<div style="display:flex;gap:6px;align-items:center">
+          <button class="btn" style="font-size:0.65rem;padding:4px 8px" onclick="openWsSettings('${ws.id}')">⚙️ Settings</button>
+          ${ws.id !== _workspaces[0].id ? `<button class="btn btn-danger" style="font-size:0.65rem;padding:4px 8px" onclick="deleteWorkspace('${ws.id}')">${t('deleteWorkspace')}</button>` : ''}
+        </div>`;
+
         sec.innerHTML = `
-          <div class="workspace-header">
-            <h3>${ws.name}</h3>
+          <div class="workspace-header" style="border-bottom-color:${accentColor}">
+            <h3 style="color:${ws.accentColor || 'inherit'}">${escHtml(ws.name)}</h3>
             ${headerActions}
           </div>
           <div class="board-grid" id="grid-${ws.id}"></div>
@@ -5983,6 +6165,7 @@
       }
       applyTranslations();
       updateUsernameChip();
+      applyPageBg();
     }
 
     async function devLoadUsers() {
@@ -6212,6 +6395,165 @@
         toast('⚠️ Your session was reset by an administrator. Reconnecting…');
         setTimeout(() => location.reload(), 1800);
       });
+    }
+
+    // ── BACKGROUNDS ──
+    let _devDefaults = {};
+    let _pageBgUser = {};
+    try { _pageBgUser = JSON.parse(localStorage.getItem('pb_pageBg') || '{}'); } catch(e) {}
+
+    function applyBgToLayer(bg, bgType, overlay) {
+      document.body.style.backgroundImage = '';
+      document.body.style.backgroundSize = '';
+      document.body.style.backgroundPosition = '';
+      document.body.style.backgroundRepeat = '';
+      document.body.style.backgroundAttachment = '';
+      const ov = document.getElementById('bgOverlay');
+      if (!bg || bgType === 'none') {
+        if (ov) ov.style.background = '';
+        return;
+      }
+      if (bgType === 'color') {
+        document.body.style.backgroundColor = bg;
+      } else {
+        document.body.style.backgroundImage = 'url("' + bg.replace(/"/g, '%22') + '")';
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        document.body.style.backgroundAttachment = 'fixed';
+      }
+      if (ov) ov.style.background = (overlay > 0) ? 'rgba(0,0,0,' + (overlay / 100) + ')' : '';
+    }
+
+    function applyPageBg() {
+      const bg = _pageBgUser.bg || _devDefaults.dashBg || '';
+      const bgType = _pageBgUser.bgType || (_devDefaults.dashBg ? 'image' : 'none');
+      const overlay = parseInt(_pageBgUser.overlay !== undefined ? _pageBgUser.overlay : (_devDefaults.overlay || 0));
+      applyBgToLayer(bg, bgType, overlay);
+    }
+
+    function applyBoardBg() {
+      const bg = (state && state.boardBg) || _devDefaults.boardBg || '';
+      const bgType = (state && state.boardBgType) || (_devDefaults.boardBg ? 'image' : 'none');
+      const overlay = parseInt((state && state.boardBgOverlay !== undefined) ? state.boardBgOverlay : (_devDefaults.overlay || 0));
+      applyBgToLayer(bg, bgType, overlay);
+    }
+
+    // Page bg modal
+    function pageBgTypeChange() {
+      const v = document.querySelector('input[name="pageBgType"]:checked').value;
+      document.getElementById('pageBgColorRow').style.display = v === 'color' ? '' : 'none';
+      document.getElementById('pageBgImageRow').style.display = v === 'image' ? '' : 'none';
+    }
+
+    function openPageBgSettings() {
+      const cur = _pageBgUser;
+      const bgType = cur.bgType || 'none';
+      document.getElementById('pageBg' + bgType.charAt(0).toUpperCase() + bgType.slice(1)).checked = true;
+      pageBgTypeChange();
+      if (bgType === 'color') document.getElementById('pageBgColorPicker').value = cur.bg || '#0f0f13';
+      if (bgType === 'image') document.getElementById('pageBgImageUrl').value = cur.bg || '';
+      const op = cur.overlay || 0;
+      document.getElementById('pageBgOpacity').value = op;
+      document.getElementById('pageBgOpacityVal').textContent = op + '%';
+      document.getElementById('pageBgOverlay').classList.add('open');
+    }
+
+    function savePageBg() {
+      const bgType = document.querySelector('input[name="pageBgType"]:checked').value;
+      let bg = '';
+      if (bgType === 'color') bg = document.getElementById('pageBgColorPicker').value;
+      else if (bgType === 'image') bg = (document.getElementById('pageBgImageUrl').value || '').trim();
+      const overlay = parseInt(document.getElementById('pageBgOpacity').value) || 0;
+      _pageBgUser = { bg, bgType, overlay };
+      localStorage.setItem('pb_pageBg', JSON.stringify(_pageBgUser));
+      applyPageBg();
+      document.getElementById('pageBgOverlay').classList.remove('open');
+      toast('🖼 Page background saved');
+    }
+
+    // Workspace settings modal
+    function wssBgTypeChange() {
+      const v = document.querySelector('input[name="wssBgType"]:checked').value;
+      document.getElementById('wssBgColorRow').style.display = v === 'color' ? '' : 'none';
+      document.getElementById('wssBgImageRow').style.display = v === 'image' ? '' : 'none';
+    }
+
+    function openWsSettings(wsId) {
+      const ws = _workspaces.find(w => w.id === wsId);
+      if (!ws) return;
+      document.getElementById('wsSettingsId').value = wsId;
+      document.getElementById('wsSettingsName').value = ws.name || '';
+      const bgType = ws.bgType || 'none';
+      document.getElementById('wssBg' + bgType.charAt(0).toUpperCase() + bgType.slice(1)).checked = true;
+      wssBgTypeChange();
+      if (bgType === 'color') document.getElementById('wssBgColorPicker').value = ws.bg || '#1a1a2e';
+      if (bgType === 'image') document.getElementById('wssBgImageUrl').value = ws.bg || '';
+      document.getElementById('wssAccentColor').value = ws.accentColor || '#7c6af7';
+      document.getElementById('wsSettingsOverlay').classList.add('open');
+    }
+
+    function saveWsSettings() {
+      const wsId = document.getElementById('wsSettingsId').value;
+      const ws = _workspaces.find(w => w.id === wsId);
+      if (!ws) return;
+      const name = (document.getElementById('wsSettingsName').value || '').trim();
+      if (name) ws.name = name;
+      const bgType = document.querySelector('input[name="wssBgType"]:checked').value;
+      let bg = '';
+      if (bgType === 'color') bg = document.getElementById('wssBgColorPicker').value;
+      else if (bgType === 'image') bg = (document.getElementById('wssBgImageUrl').value || '').trim();
+      ws.bgType = bgType;
+      ws.bg = bg;
+      ws.accentColor = document.getElementById('wssAccentColor').value;
+      saveWorkspaces();
+      document.getElementById('wsSettingsOverlay').classList.remove('open');
+      renderDashboard();
+      toast('✅ Workspace settings saved');
+    }
+
+    // Board background (room settings)
+    function boardBgTypeChange() {
+      const v = document.querySelector('input[name="boardBgType"]:checked').value;
+      document.getElementById('boardBgColorRow').style.display = v === 'color' ? '' : 'none';
+      document.getElementById('boardBgImageRow').style.display = v === 'image' ? '' : 'none';
+    }
+
+    function initBoardBgUI() {
+      const bgType = (state && state.boardBgType) || 'none';
+      const el = document.getElementById('boardBg' + bgType.charAt(0).toUpperCase() + bgType.slice(1));
+      if (el) el.checked = true;
+      boardBgTypeChange();
+      if (bgType === 'color') { const p = document.getElementById('boardBgColorPicker'); if (p) p.value = state.boardBg || '#0f0f13'; }
+      if (bgType === 'image') { const u = document.getElementById('boardBgImageUrl'); if (u) u.value = state.boardBg || ''; }
+      const ov = (state && state.boardBgOverlay) || 0;
+      const ovEl = document.getElementById('boardBgOverlay');
+      if (ovEl) { ovEl.value = ov; document.getElementById('boardBgOverlayVal').textContent = ov + '%'; }
+    }
+
+    function saveBoardBg() {
+      const bgType = document.querySelector('input[name="boardBgType"]:checked').value;
+      let bg = '';
+      if (bgType === 'color') bg = document.getElementById('boardBgColorPicker').value;
+      else if (bgType === 'image') bg = (document.getElementById('boardBgImageUrl').value || '').trim();
+      state.boardBg = bg;
+      state.boardBgType = bgType;
+      state.boardBgOverlay = parseInt(document.getElementById('boardBgOverlay').value) || 0;
+      fbSave();
+      applyBoardBg();
+      toast('🖼 Board background saved');
+    }
+
+    // Dev defaults
+    async function devSaveDefaults() {
+      const defaults = {
+        dashBg: document.getElementById('devDefaultDashBg').value.trim() || null,
+        boardBg: document.getElementById('devDefaultBoardBg').value.trim() || null,
+        overlay: parseInt(document.getElementById('devDefaultOverlay').value) || 0,
+      };
+      await db.ref('app_config/defaults').set(defaults);
+      _devDefaults = defaults;
+      toast('✅ Default backgrounds saved');
     }
 
     function createWorkspacePrompt() {
@@ -6730,6 +7072,9 @@
     // Firebase stores arrays as objects — convert them back
     function normalizeState(s) {
       if (!s) return s;
+      if (s.boardBg === undefined) s.boardBg = '';
+      if (s.boardBgType === undefined) s.boardBgType = 'none';
+      if (s.boardBgOverlay === undefined) s.boardBgOverlay = 0;
       if (s.labels && !Array.isArray(s.labels)) s.labels = Object.values(s.labels);
       if (s.columns && !Array.isArray(s.columns)) s.columns = Object.values(s.columns);
       if (s.columns) s.columns.forEach(col => {
@@ -7203,6 +7548,7 @@
         }
       }
 
+      initBoardBgUI();
       document.getElementById('roomSettingsOverlay').classList.add('open');
     }
     function closeRoomSettings() {
@@ -7553,6 +7899,15 @@
     }
     ensureFirebaseAuth().then(() => { listenForBan(); checkDevStatus(true); }).catch(() => checkDevStatus(true));
 
+    // Load dev default backgrounds and apply
+    db.ref('app_config/defaults').once('value').then(snap => {
+      _devDefaults = snap.val() || {};
+      if (_isDashboard) applyPageBg();
+      else applyBoardBg();
+    }).catch(() => {});
+    // Apply user page bg immediately (before Firebase loads)
+    if (_isDashboard) applyPageBg();
+
     // ── DEV ADMIN PANEL ──
     function openDevAdmin() {
       document.getElementById('devAdminMyId').textContent = getDevIdentityLabel();
@@ -7674,6 +8029,79 @@
           }
         }
       });
+    }
+
+    // ── BAN MANAGEMENT ──
+    async function devBanUid() {
+      const input = document.getElementById('devBanUidInput');
+      const errEl = document.getElementById('devBanError');
+      const uid = (input.value || '').trim();
+      errEl.textContent = '';
+      if (!uid) { errEl.textContent = 'Enter a Firebase Auth UID.'; return; }
+      if (uid === getDevIdentity()) { errEl.textContent = 'You cannot ban yourself.'; return; }
+      if (!confirm('Ban UID: ' + uid + '?\n\nThis will:\n• Delete all their owned rooms\n• Add them to the ban list\n• Force a new auth session on next visit')) return;
+      try {
+        const roomsSnap = await db.ref('rooms').once('value');
+        const rooms = roomsSnap.val() || {};
+        const deletes = [];
+        for (const [rId, room] of Object.entries(rooms)) {
+          if (room.config && room.config.ownerAuthUid === uid) deletes.push(db.ref('rooms/' + rId).remove());
+        }
+        await Promise.all(deletes);
+        await Promise.all([
+          db.ref('user_profiles/' + uid).remove(),
+          db.ref('user_logs/' + uid).remove(),
+          db.ref('banned_users/' + uid).set({ ts: Date.now(), by: _username || 'Dev', rooms: deletes.length }),
+        ]);
+        input.value = '';
+        toast('🚫 Banned — ' + deletes.length + ' room(s) deleted');
+        devLoadBans();
+      } catch (e) {
+        errEl.textContent = 'Error: ' + e.message;
+      }
+    }
+
+    async function devLoadBans() {
+      const list = document.getElementById('devBanList');
+      if (!list) return;
+      list.innerHTML = '<p style="color:var(--text-muted);font-size:0.8rem">Loading…</p>';
+      try {
+        const snap = await db.ref('banned_users').once('value');
+        const bans = snap.val();
+        if (!bans || Object.keys(bans).length === 0) {
+          list.innerHTML = '<p style="color:var(--text-muted);font-size:0.8rem">No banned users.</p>';
+          return;
+        }
+        list.innerHTML = '';
+        Object.entries(bans).forEach(([uid, data]) => {
+          const row = document.createElement('div');
+          row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(247,106,138,0.05);border:1px solid rgba(247,106,138,0.15);border-radius:8px';
+          const ts = data.ts ? new Date(data.ts).toLocaleDateString() : '?';
+          const by = data.by || '?';
+          const rooms = data.rooms !== undefined ? data.rooms : '?';
+          row.innerHTML = `
+            <div style="flex:1;min-width:0">
+              <div style="font-family:monospace;font-size:0.75rem;word-break:break-all;color:var(--danger,#f76a8a)">${escHtml(uid)}</div>
+              <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">Banned ${escHtml(ts)} by ${escHtml(by)} · ${rooms} room(s) deleted</div>
+            </div>
+            <button onclick="devUnban('${escHtml(uid)}')" style="background:rgba(106,247,196,0.08);border:1px solid rgba(106,247,196,0.25);color:var(--accent3);border-radius:6px;padding:3px 8px;font-size:0.7rem;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;flex-shrink:0">✓ Unban</button>
+          `;
+          list.appendChild(row);
+        });
+      } catch (e) {
+        list.innerHTML = '<p style="color:var(--danger);font-size:0.8rem">Failed to load. Check Firebase rules.</p>';
+      }
+    }
+
+    async function devUnban(uid) {
+      if (!confirm('Unban ' + uid + '?\nThey will be able to use the app normally again.')) return;
+      try {
+        await db.ref('banned_users/' + uid).remove();
+        toast('✅ Unbanned');
+        devLoadBans();
+      } catch (e) {
+        toast('❌ Failed: ' + e.message);
+      }
     }
 
     // ── SHA-256 helper ──
@@ -7942,11 +8370,12 @@
     let _devCurrentTab = 'admins';
     function switchDevTab(tab) {
       _devCurrentTab = tab;
-      ['admins', 'rooms', 'recovery', 'logs', 'config'].forEach(t => {
+      ['admins', 'bans', 'rooms', 'recovery', 'logs', 'config'].forEach(t => {
         document.getElementById('devPanel-' + t).style.display = (t === tab) ? '' : 'none';
         document.getElementById('devTab-' + t).classList.toggle('active', t === tab);
       });
       if (tab === 'admins') devAdminRefresh();
+      if (tab === 'bans') devLoadBans();
       if (tab === 'rooms' && document.getElementById('devRoomsList').children.length <= 1) devLoadRooms();
       if (tab === 'recovery') devLoadRecoveryRequests();
       if (tab === 'config') { devLockRefresh(); devLoadConfig(); }
