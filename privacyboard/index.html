@@ -5345,8 +5345,9 @@
         localStorage.setItem('pb_last_broadcast', String(b.ts || Date.now()));
         if (b.type === 'modal') {
           const ov = document.createElement('div');
+          ov.setAttribute('data-broadcast-overlay', '1');
           ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center';
-          ov.innerHTML = '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;max-width:400px;width:90%;text-align:center"><div style="font-size:1.4rem;margin-bottom:10px">📢</div><div style="font-weight:600;margin-bottom:8px">Message from Admin</div><div style="color:var(--text-muted);font-size:0.88rem;line-height:1.6;margin-bottom:18px">' + escHtml(b.message) + '</div><button class="btn btn-primary" onclick="this.closest(\'div[style]\').remove()">Dismiss</button></div>';
+          ov.innerHTML = '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;max-width:400px;width:90%;text-align:center"><div style="font-size:1.4rem;margin-bottom:10px">📢</div><div style="font-weight:600;margin-bottom:8px">Message from Admin</div><div style="color:var(--text-muted);font-size:0.88rem;line-height:1.6;margin-bottom:18px">' + escHtml(b.message) + '</div><button class="btn btn-primary" onclick="this.closest(\'[data-broadcast-overlay]\').remove()">Dismiss</button></div>';
           document.body.appendChild(ov);
         } else { toast('📢 ' + b.message); }
       });
@@ -6138,6 +6139,18 @@
 
             addSection('👑 Owns', user.owned, '#f76a8a');
             addSection('⚡ Manages', user.managed, '#f7c26a');
+
+            if (!isMe) {
+              const actionRow = document.createElement('div');
+              actionRow.style.cssText = 'display:flex;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border)';
+              const forceRemoveBtn = document.createElement('button');
+              forceRemoveBtn.className = 'btn';
+              forceRemoveBtn.style.cssText = 'font-size:0.72rem;padding:4px 12px;color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.35);background:rgba(247,106,138,0.07)';
+              forceRemoveBtn.textContent = '🚫 Force Remove User';
+              forceRemoveBtn.onclick = () => devForceRemoveUser(user.userId, user.name, forceRemoveBtn);
+              actionRow.appendChild(forceRemoveBtn);
+              body.appendChild(actionRow);
+            }
           };
 
           let expanded = false;
@@ -6157,6 +6170,48 @@
         container.innerHTML = '<p style="color:var(--danger)">Failed to load. Check Firebase rules.</p>';
         console.error(e);
       }
+    }
+
+    async function devForceRemoveUser(authUid, userName, btn) {
+      if (!confirm('Force-remove ' + userName + '?\n\nThis will:\n• Delete all their owned rooms from Firebase\n• Remove their user profile & logs\n• Add them to the ban list (forces new auth on next visit)\n\nTheir offline (local) boards are not affected.')) return;
+      btn.disabled = true;
+      btn.textContent = '⏳ Removing…';
+      try {
+        const roomsSnap = await db.ref('rooms').once('value');
+        const rooms = roomsSnap.val() || {};
+        const deletes = [];
+        for (const [rId, room] of Object.entries(rooms)) {
+          if (room.config && room.config.ownerAuthUid === authUid) {
+            deletes.push(db.ref('rooms/' + rId).remove());
+          }
+        }
+        await Promise.all(deletes);
+        await Promise.all([
+          db.ref('user_profiles/' + authUid).remove(),
+          db.ref('user_logs/' + authUid).remove(),
+          db.ref('banned_users/' + authUid).set({ ts: Date.now(), by: _username || 'Dev', name: userName }),
+        ]);
+        toast('🚫 ' + userName + ' removed — ' + deletes.length + ' room(s) deleted');
+        devLoadUsers();
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = '🚫 Force Remove User';
+        toast('❌ Error: ' + e.message);
+      }
+    }
+
+    function listenForBan() {
+      if (!_authUid) return;
+      db.ref('banned_users/' + _authUid).on('value', async snap => {
+        if (!snap.val()) return;
+        // Wipe auth and get a fresh anonymous session
+        _authInitPromise = null;
+        _authUid = null;
+        _authReady = false;
+        try { await auth.signOut(); } catch (e) { /* ignore */ }
+        toast('⚠️ Your session was reset by an administrator. Reconnecting…');
+        setTimeout(() => location.reload(), 1800);
+      });
     }
 
     function createWorkspacePrompt() {
@@ -7496,7 +7551,7 @@
         if (_isDashboard) renderDashboard();
       }
     }
-    ensureFirebaseAuth().then(() => checkDevStatus(true)).catch(() => checkDevStatus(true));
+    ensureFirebaseAuth().then(() => { listenForBan(); checkDevStatus(true); }).catch(() => checkDevStatus(true));
 
     // ── DEV ADMIN PANEL ──
     function openDevAdmin() {
