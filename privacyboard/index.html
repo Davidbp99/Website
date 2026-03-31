@@ -6386,6 +6386,12 @@
       if (!_authUid) return;
       db.ref('banned_users/' + _authUid).on('value', async snap => {
         if (!snap.val()) return;
+        // Strip all cloud board entries from workspaces — their Firebase rooms are deleted.
+        // Offline (local) boards are preserved.
+        _workspaces.forEach(ws => {
+          ws.boards = ws.boards.filter(b => b.type !== 'cloud');
+        });
+        saveWorkspaces();
         // Wipe auth and get a fresh anonymous session
         _authInitPromise = null;
         _authUid = null;
