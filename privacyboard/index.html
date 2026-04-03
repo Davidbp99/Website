@@ -5821,7 +5821,7 @@
       } catch(e) { btn.disabled = false; btn.textContent = 'Purge'; toast('Failed: ' + e.message); }
     }
 
-    async function devRecoverRoom(roomId, btn) {
+    async function devUndeleteRoom(roomId, btn) {
       btn.disabled = true; btn.textContent = '...';
       try {
         await db.ref('rooms/' + roomId + '/config').update({
@@ -7009,6 +7009,8 @@
               await db.ref('rooms/' + boardId + '/config').update({
                 deleted: true, deletedAt: Date.now(), forceDeleted: false, forceDeletedBy: null
               });
+              localStorage.removeItem('pb_cloud_' + boardId);
+              localStorage.removeItem('pb_roomPw_' + boardId);
             }
             catch (e) { toast(t('toastDeleteCloudError')); }
           } else {
@@ -8287,6 +8289,8 @@
 
         // Room doesn't exist (hard-deleted legacy or never created)
         if (!rawConfig) {
+          localStorage.removeItem('pb_cloud_' + roomId);
+          localStorage.removeItem('pb_roomPw_' + roomId);
           document.getElementById('boardVeil').classList.remove('show');
           document.getElementById('boardRemovedTitle').textContent = t('boardRemovedTitle');
           document.getElementById('boardRemovedDesc').textContent = t('boardRemovedDesc');
@@ -8298,6 +8302,8 @@
 
         // Room exists but is soft-deleted
         if (rawConfig.deleted) {
+          localStorage.removeItem('pb_cloud_' + roomId);
+          localStorage.removeItem('pb_roomPw_' + roomId);
           showBoardRemovedState(roomId, rawConfig);
           return;
         }
@@ -8934,7 +8940,7 @@
           : isRemoved ? '<span style="font-size:0.65rem;padding:1px 6px;border-radius:100px;background:rgba(255,180,0,0.15);color:#f7c26a;margin-left:6px">Removed by Owner</span>'
           : '';
         const actionBtns = isRemoved
-          ? '<button class="btn" style="font-size:0.7rem;padding:4px 10px;color:var(--accent3,#6af7c2);border-color:rgba(106,247,194,0.35);white-space:nowrap;flex-shrink:0" onclick="devRecoverRoom(\'' + escHtml(r.id) + '\',this)">↩ Recover</button>'
+          ? '<button class="btn" style="font-size:0.7rem;padding:4px 10px;color:var(--accent3,#6af7c2);border-color:rgba(106,247,194,0.35);white-space:nowrap;flex-shrink:0" onclick="devUndeleteRoom(\'' + escHtml(r.id) + '\',this)">↩ Recover</button>'
             + '<button class="btn" style="font-size:0.7rem;padding:4px 10px;white-space:nowrap;flex-shrink:0" onclick="window.open(\'?r=' + escHtml(r.id) + '\',\'_blank\')">👁 View</button>'
           : '<button class="btn" style="font-size:0.7rem;padding:4px 10px;color:#6ab4f7;border-color:rgba(106,180,247,0.35);white-space:nowrap;flex-shrink:0" onclick="devShowTransferForm(\'' + escHtml(r.id) + '\',\'' + escHtml(r.ownerName) + '\')">⇄ Transfer</button>'
             + '<button class="btn" style="font-size:0.7rem;padding:4px 10px;color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.3);white-space:nowrap;flex-shrink:0" onclick="devPurgeRoom(\'' + escHtml(r.id) + '\',this)">🚫 Force Remove</button>';
