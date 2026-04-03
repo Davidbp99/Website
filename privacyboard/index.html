@@ -6487,14 +6487,17 @@
 
         const grid = document.getElementById('grid-' + ws.id);
 
-        ws.boards.forEach(b => {
+        const activeBoards = ws.boards.filter(b => !b.deleted);
+        const deletedBoards = ws.boards.filter(b => b.deleted);
+
+        activeBoards.forEach(b => {
           const href = b.type === 'cloud' ? '?r=' + b.id : '?local=' + b.id;
           const bgType = b.type === 'cloud' ? 'linear-gradient(135deg, var(--accent2), var(--accent3))' : 'var(--text-muted)';
           const typeName = b.type === 'cloud' ? t('cloudSync') : t('offlineLocal');
 
           grid.innerHTML += `
             <div class="board-card" onclick="location.href='${href}'">
-              <div class="board-card-title">${b.name}</div>
+              <div class="board-card-title">${escHtml(b.name)}</div>
               <div class="board-card-type">
                 <div class="type-dot" style="background:${bgType}"></div>
                 ${typeName}
@@ -6503,6 +6506,32 @@
             </div>
           `;
         });
+
+        // Removed boards section
+        if (deletedBoards.length > 0) {
+          const removedWrap = document.createElement('div');
+          removedWrap.style.cssText = 'margin-top:14px;padding-top:12px;border-top:1px dashed rgba(255,255,255,0.08)';
+          const removedLabel = document.createElement('div');
+          removedLabel.style.cssText = 'font-size:0.72rem;color:var(--text-muted);margin-bottom:8px;display:flex;align-items:center;gap:6px';
+          removedLabel.innerHTML = '🗑 <span style="font-weight:600">Removed Boards</span> <span style="opacity:0.5">— You removed these. Recover to restore access.</span>';
+          removedWrap.appendChild(removedLabel);
+          const removedGrid = document.createElement('div');
+          removedGrid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px';
+          deletedBoards.forEach(b => {
+            const card = document.createElement('div');
+            card.style.cssText = 'background:var(--surface2);border:1px dashed rgba(255,255,255,0.1);border-radius:var(--radius-sm);padding:14px 14px 12px;display:flex;flex-direction:column;gap:8px;opacity:0.6';
+            card.innerHTML = `
+              <div style="font-weight:600;font-size:0.92rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-muted)">${escHtml(b.name)}</div>
+              <div style="display:flex;gap:6px;margin-top:auto">
+                <button class="btn" style="font-size:0.7rem;padding:3px 10px;color:var(--accent3);border-color:rgba(106,247,196,0.35);flex:1" onclick="recoverBoardFromWorkspace('${ws.id}','${b.id}',this)">${t('boardRemovedRecover')}</button>
+                <button class="btn" style="font-size:0.7rem;padding:3px 8px;color:var(--text-muted)" onclick="removeDeletedBoardFromWorkspace('${ws.id}','${b.id}')" title="Remove shortcut">✕</button>
+              </div>
+            `;
+            removedGrid.appendChild(card);
+          });
+          removedWrap.appendChild(removedGrid);
+          sec.appendChild(removedWrap);
+        }
 
         // Add "Create new" card
         const createCard = document.createElement('div');
@@ -7002,8 +7031,7 @@
         title: t('confirmDelete'),
         message: t('confirmDeleteBoard', { name: board.name || t('untitledBoard') }),
         onConfirm: async () => {
-          ws.boards = ws.boards.filter(b => b.id !== boardId);
-          saveWorkspaces();
+          const board = ws.boards.find(b => b.id === boardId);
           if (isCloud) {
             try {
               await db.ref('rooms/' + boardId + '/config').update({
@@ -7011,16 +7039,55 @@
               });
               localStorage.removeItem('pb_cloud_' + boardId);
               localStorage.removeItem('pb_roomPw_' + boardId);
+              if (board) board.deleted = true;
+              saveWorkspaces();
             }
-            catch (e) { toast(t('toastDeleteCloudError')); }
+            catch (e) { toast(t('toastDeleteCloudError')); return; }
           } else {
             localStorage.removeItem('pb_local_' + boardId);
+            localStorage.removeItem('pb_roomPw_' + boardId);
+            ws.boards = ws.boards.filter(b => b.id !== boardId);
+            saveWorkspaces();
           }
-          localStorage.removeItem('pb_roomPw_' + boardId);
           renderDashboard();
           toast(t('toastBoardDeleted'));
         }
       });
+    }
+
+    async function recoverBoardFromWorkspace(wsId, boardId, btn) {
+      const ws = _workspaces.find(w => w.id === wsId);
+      if (!ws) return;
+      const board = ws.boards.find(b => b.id === boardId);
+      if (!board) return;
+      btn.disabled = true; btn.textContent = '...';
+      try {
+        const snap = await db.ref('rooms/' + boardId + '/config').once('value');
+        const cfg = snap.val();
+        if (cfg && cfg.forceDeleted) {
+          btn.disabled = false; btn.textContent = t('boardRemovedRecover');
+          toast('❌ This board was removed by an admin and cannot be recovered.');
+          return;
+        }
+        await db.ref('rooms/' + boardId + '/config').update({
+          deleted: false, deletedAt: null, forceDeleted: false, forceDeletedBy: null
+        });
+        board.deleted = false;
+        saveWorkspaces();
+        renderDashboard();
+        toast('✅ Board recovered.');
+      } catch(e) {
+        btn.disabled = false; btn.textContent = t('boardRemovedRecover');
+        toast('❌ Recovery failed: ' + e.message);
+      }
+    }
+
+    function removeDeletedBoardFromWorkspace(wsId, boardId) {
+      const ws = _workspaces.find(w => w.id === wsId);
+      if (!ws) return;
+      ws.boards = ws.boards.filter(b => b.id !== boardId);
+      saveWorkspaces();
+      renderDashboard();
     }
 
     function deleteWorkspace(wsId) {
@@ -9091,35 +9158,46 @@
       listenForBroadcasts();
       if (_isDev) setTimeout(devLoadUsers, 300);
     } else {
-      load();
-      checkUrlImport();
-      applyTranslations();
-      updateUsernameChip();
-      listenForBroadcasts();
-
-      if (state.columns.length === 0) {
-        if (state.labels.length === 0) {
-          state.labels = [
-            { name: 'Design', bg: '#2a1f5e', color: '#a78bfa' },
-            { name: 'Dev', bg: '#1a3a2a', color: '#6af7c4' },
-            { name: 'Bug', bg: '#3a1a1a', color: '#f76a8a' },
-            { name: 'Feature', bg: '#1a2f3a', color: '#6ab4f7' },
-            { name: 'Docs', bg: '#3a2f1a', color: '#f7c26a' },
-          ];
-        }
-        state.columns = [
-          { id: uid(), name: 'To Do', color: '#7c6af7', cards: [] },
-          { id: uid(), name: 'In Progress', color: '#f7c26a', cards: [] },
-          { id: uid(), name: 'Done', color: '#6af7c4', cards: [] },
-        ];
-        save();
-      }
-
-      render();
-
       const urlRoomId = getRoomIdFromUrl();
-      if (urlRoomId) {
+
+      if (_boardParamCloud && urlRoomId) {
+        // Cloud board: skip all local rendering until Firebase confirms the board exists and is accessible.
+        // This prevents cached card data from appearing before the deletion check completes.
+        applyTranslations();
+        updateUsernameChip();
+        listenForBroadcasts();
+        document.getElementById('boardVeil').classList.add('show');
         joinRoom(urlRoomId);
+      } else {
+        load();
+        checkUrlImport();
+        applyTranslations();
+        updateUsernameChip();
+        listenForBroadcasts();
+
+        if (state.columns.length === 0) {
+          if (state.labels.length === 0) {
+            state.labels = [
+              { name: 'Design', bg: '#2a1f5e', color: '#a78bfa' },
+              { name: 'Dev', bg: '#1a3a2a', color: '#6af7c4' },
+              { name: 'Bug', bg: '#3a1a1a', color: '#f76a8a' },
+              { name: 'Feature', bg: '#1a2f3a', color: '#6ab4f7' },
+              { name: 'Docs', bg: '#3a2f1a', color: '#f7c26a' },
+            ];
+          }
+          state.columns = [
+            { id: uid(), name: 'To Do', color: '#7c6af7', cards: [] },
+            { id: uid(), name: 'In Progress', color: '#f7c26a', cards: [] },
+            { id: uid(), name: 'Done', color: '#6af7c4', cards: [] },
+          ];
+          save();
+        }
+
+        render();
+
+        if (urlRoomId) {
+          joinRoom(urlRoomId);
+        }
       }
     }
 
