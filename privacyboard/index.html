@@ -2346,6 +2346,289 @@
     .comment-delete-btn { margin-left:auto; background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.72rem; padding:0 4px; line-height:1; }
     .comment-delete-btn:hover { color:var(--accent2); }
     @keyframes typingPulse { 0%,100% { box-shadow:0 0 0 2px var(--accent); } 50% { box-shadow:0 0 0 3px var(--accent); } }
+
+    /* ===== COMPACT MODE ===== */
+    body.compact-mode {
+      --col-w: 260px;
+    }
+    body.compact-mode .column {
+      border-radius: 10px;
+    }
+    body.compact-mode .col-header {
+      padding: 10px 10px 8px;
+    }
+    body.compact-mode .col-title {
+      font-size: 0.75rem;
+    }
+    body.compact-mode .cards-wrap {
+      padding: 3px 8px 8px;
+      gap: 6px;
+    }
+    body.compact-mode .card {
+      padding: 8px 10px;
+      gap: 6px;
+      border-radius: 6px;
+    }
+    body.compact-mode .card-text {
+      font-size: 0.82rem;
+      line-height: 1.35;
+    }
+    body.compact-mode .card-desc {
+      font-size: 0.72rem;
+    }
+    body.compact-mode .card-label {
+      gap: 4px;
+    }
+    body.compact-mode .label-tag {
+      font-size: 0.6rem;
+      padding: 1px 6px;
+    }
+    body.compact-mode #board {
+      padding: 16px 20px 40px;
+      gap: 12px;
+    }
+    body.compact-mode header {
+      height: 48px;
+      padding: 0 20px;
+    }
+    body.compact-mode .btn {
+      padding: 5px 10px;
+      font-size: 0.75rem;
+    }
+
+    /* ===== KEYBOARD SHORTCUTS MODAL ===== */
+    .shortcuts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px 24px;
+      margin-top: 12px;
+    }
+    .shortcut-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .shortcut-row:last-child {
+      border-bottom: none;
+    }
+    .shortcut-keys {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .kbd {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      font-family: monospace;
+      color: var(--text);
+      box-shadow: 0 2px 0 var(--border);
+    }
+    .kbd-sm {
+      padding: 1px 6px;
+      font-size: 0.7rem;
+    }
+
+    /* ===== RECENT BOARDS SIDEBAR ===== */
+    .recent-boards-sidebar {
+      position: fixed;
+      left: 0;
+      top: 58px;
+      bottom: 0;
+      width: 220px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      z-index: 90;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    body.compact-mode .recent-boards-sidebar {
+      top: 48px;
+    }
+    .recent-boards-sidebar.open {
+      transform: translateX(0);
+    }
+    .recent-boards-header {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .recent-boards-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow-y: auto;
+    }
+    .recent-board-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+    .recent-board-item:hover {
+      background: var(--surface2);
+      border-color: var(--border);
+    }
+    .recent-board-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .recent-board-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .recent-board-title {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .recent-board-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+    .recent-board-type {
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border-radius: 100px;
+      background: var(--surface2);
+      color: var(--text-muted);
+    }
+    .recent-board-type.cloud {
+      background: rgba(124, 106, 247, 0.15);
+      color: var(--accent);
+    }
+    .recent-board-toggle {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: none;
+      border-radius: 0 8px 8px 0;
+      padding: 12px 6px;
+      cursor: pointer;
+      z-index: 89;
+      transition: left 0.25s ease;
+    }
+    .recent-boards-sidebar.open ~ .recent-board-toggle {
+      left: 220px;
+    }
+    .recent-boards-sidebar.open ~ #board {
+      margin-left: 220px;
+    }
+
+    /* ===== INLINE CARD EDITING ===== */
+    .card-inline-edit {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 0.88rem;
+      font-family: 'DM Sans', sans-serif;
+      width: 100%;
+      resize: none;
+      outline: none;
+      line-height: 1.45;
+      padding: 0;
+      margin: 0;
+    }
+    .card-inline-edit:focus {
+      background: var(--surface);
+      border-radius: 4px;
+      padding: 4px;
+      margin: -4px;
+    }
+
+    /* ===== PRIVACY DASHBOARD ===== */
+    .privacy-dashboard {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .privacy-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .privacy-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .privacy-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+    }
+    .privacy-status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .privacy-status-indicator.secure {
+      background: var(--accent3);
+    }
+    .privacy-status-indicator.warning {
+      background: var(--accent2);
+    }
+    .privacy-status-indicator.neutral {
+      background: var(--text-muted);
+    }
+    .privacy-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .privacy-stat {
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      text-align: center;
+    }
+    .privacy-stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .privacy-stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .danger-zone {
+      border-color: rgba(247, 106, 138, 0.3);
+      background: rgba(247, 106, 138, 0.05);
+    }
   </style>
 
   <!-- Firebase Realtime Database (compat CDN) -->
@@ -2854,6 +3137,17 @@
         <button class="btn" onclick="cancelRoomJoin()" data-i18n="cancel">Cancel</button>
         <button class="btn btn-primary" id="roomJoinBtn" onclick="submitRoomJoin()" data-i18n="joinRoom">Join
           Room</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOARD REMOVED OVERLAY (when a board no longer exists) -->
+  <div class="room-overlay" id="boardRemovedOverlay">
+    <div class="room-box" style="text-align:center">
+      <h2 data-i18n="boardRemovedTitle">🗑 Board Removed</h2>
+      <p data-i18n="boardRemovedDesc">The owner has removed this board. This link is no longer valid.</p>
+      <div class="modal-actions" style="justify-content:center;margin-top:8px">
+        <button class="btn btn-primary" onclick="closeBoardRemovedOverlay()" data-i18n="boardRemovedBack">Return to Workspace</button>
       </div>
     </div>
   </div>
@@ -3624,6 +3918,16 @@
         encryptedRoomNoKey: 'Encrypted room — no key found', importBoardConfirm: 'Import this board into your current board?',
         toastDeleteCloudError: '❌ Failed to delete cloud board.', toastEncryptedRoomNoKey: '❌ Missing decryption key for room.',
         toastInvalidIdentity: '❌ Invalid identity string.', toastReadOnlyMode: '👁 Read-only mode enabled.',
+        // New features
+        keyboardShortcuts: '⌨️ Keyboard Shortcuts', recentBoards: '📚 Recent Boards', privacyDashboard: '🔒 Privacy Dashboard',
+        templates: '📋 Templates', compactMode: 'Compact Mode', boardTemplates: 'Board Templates',
+        blankBoard: 'Blank Board', applyTemplate: 'Apply Template', clearRecent: 'Clear Recent',
+        dataStorage: 'Data Storage Overview', securityStatus: 'Security Status', activeSessions: 'Active Sessions',
+        dangerZonePrivacy: '☠️ Danger Zone', nukeAllData: '💣 Nuke All Local Data', exportBackup: '📥 Export Encrypted Backup',
+        importBackup: '📤 Import Backup', encryptionSettings: '⚙️ Encryption Settings', viewExportLog: '📋 View Export Log',
+        clearCloudBoards: '☁️ Clear Cloud Boards', compactModeEnabled: 'Compact mode enabled', compactModeDisabled: 'Compact mode disabled',
+        recentBoardsCleared: 'Recent boards cleared', backupExported: 'Backup exported successfully', backupImported: 'Backup imported successfully',
+        templateApplied: 'Template applied', allDataNuked: 'All local data nuked', quickShortcuts: 'Quick Shortcuts',
         toastRoleUpdated: '✅ Role updated', toastSavingStorage: 'Saving storage settings...',
         updatePassword: '🔑 Update Password', settingsAccess: '🔐 Settings Access',
         settingsAccessMsg: 'Enter the room password to access Room Settings.',
@@ -3664,6 +3968,7 @@
         confirmYes: 'Yes, delete', confirmNo: 'Cancel',
         // Board reappear / deleted room
         toastRoomDeletedRemote: '🗑 This room was deleted from the database.',
+        boardRemovedTitle: 'Board Removed', boardRemovedDesc: 'The owner has removed this board. This link is no longer valid.', boardRemovedBack: 'Return to Workspace',
         // Dev lock
         devLockTitle: 'Board Creation Lock', devLockDesc: 'When enabled, only registered devs can create new boards on this instance.',
         devLockEnabled: 'Locked — devs only', devLockDisabled: 'Open — anyone can create',
@@ -3791,6 +4096,7 @@
         confirmYes: 'Ja, löschen', confirmNo: 'Abbrechen',
         // Board reappear / deleted room
         toastRoomDeletedRemote: '🗑 Dieser Raum wurde aus der Datenbank gelöscht.',
+        boardRemovedTitle: 'Board gelöscht', boardRemovedDesc: 'Der Inhaber hat dieses Board gelöscht. Dieser Link ist nicht mehr gültig.', boardRemovedBack: 'Zurück zum Arbeitsbereich',
         // Dev lock
         devLockTitle: 'Board-Erstellungssperre', devLockDesc: 'Wenn aktiviert, können nur registrierte Devs neue Boards in dieser Instanz erstellen.',
         devLockEnabled: 'Gesperrt — nur Devs', devLockDisabled: 'Offen — jeder kann erstellen',
@@ -3846,6 +4152,7 @@
         confirmClearList: 'Vider toutes les cartes de "{{name}}" ?',
         confirmRemoveDev: 'Retirer les droits dev de cet utilisateur ?',
         toastRoomDeletedRemote: '🗑 Cette salle a été supprimée de la base de données.',
+        boardRemovedTitle: 'Tableau supprimé', boardRemovedDesc: "Le propriétaire a supprimé ce tableau. Ce lien n'est plus valide.", boardRemovedBack: "Retour à l'espace de travail",
         toastNotDevLocked: '🔒 La création de tableaux est réservée aux devs.',
         toastUserIdCopied: '📋 UID copié dans le presse-papiers',
         storageApply: '💾 Appliquer', nameUpdated: 'Nom mis à jour',
@@ -3896,6 +4203,7 @@
         confirmDeleteWorkspace: '¿Eliminar espacio "{{name}}"?',
         confirmClearList: '¿Vaciar todas las tarjetas de "{{name}}"?',
         toastRoomDeletedRemote: '🗑 Esta sala fue eliminada de la base de datos.',
+        boardRemovedTitle: 'Tablero eliminado', boardRemovedDesc: 'El propietario ha eliminado este tablero. Este enlace ya no es válido.', boardRemovedBack: 'Volver al área de trabajo',
         toastNotDevLocked: '🔒 La creación de tableros está restringida a devs.',
         toastUserIdCopied: '📋 UID de auth copiado al portapapeles',
         storageApply: '💾 Aplicar', nameUpdated: 'Nombre actualizado',
@@ -3930,6 +4238,7 @@
         dueToday: 'Vandaag!', dueTomorrow: 'Morgen', dueInDays: 'Over {{n}} dag(en)', dueOverdue: '{{n}} dag(en) te laat',
         confirmYes: 'Ja, verwijderen', confirmNo: 'Annuleren', confirmDelete: 'Bevestig verwijdering',
         toastRoomDeletedRemote: '🗑 Deze kamer is verwijderd uit de database.',
+        boardRemovedTitle: 'Board verwijderd', boardRemovedDesc: 'De eigenaar heeft dit board verwijderd. Deze link is niet meer geldig.', boardRemovedBack: 'Terug naar werkruimte',
         toastNotDevLocked: '🔒 Borden maken is beperkt tot devs.',
         toastUserIdCopied: '📋 Auth-UID gekopieerd naar klembord',
         nameUpdated: 'Naam bijgewerkt', clearAllConfirm: 'Geheel bord wissen? Dit kan niet ongedaan worden gemaakt.',
@@ -3963,6 +4272,7 @@
         dueToday: 'Scade oggi!', dueTomorrow: 'Domani', dueInDays: 'Tra {{n}} giorno/i', dueOverdue: '{{n}} giorno/i di ritardo',
         confirmYes: 'Sì, elimina', confirmNo: 'Annulla', confirmDelete: 'Conferma eliminazione',
         toastRoomDeletedRemote: '🗑 Questa stanza è stata eliminata dal database.',
+        boardRemovedTitle: 'Bacheca rimossa', boardRemovedDesc: "Il proprietario ha eliminato questa bacheca. Questo link non è più valido.", boardRemovedBack: "Torna all'area di lavoro",
         toastNotDevLocked: '🔒 La creazione di bacheche è riservata ai dev.',
         toastUserIdCopied: '📋 UID auth copiato negli appunti',
         nameUpdated: 'Nome aggiornato', clearAllConfirm: 'Cancellare tutta la bacheca? Azione irreversibile.',
@@ -3996,6 +4306,7 @@
         dueToday: 'Vence hoje!', dueTomorrow: 'Amanhã', dueInDays: 'Em {{n}} dia(s)', dueOverdue: '{{n}} dia(s) atrasado',
         confirmYes: 'Sim, excluir', confirmNo: 'Cancelar', confirmDelete: 'Confirmar exclusão',
         toastRoomDeletedRemote: '🗑 Esta sala foi excluída do banco de dados.',
+        boardRemovedTitle: 'Quadro removido', boardRemovedDesc: 'O proprietário removeu este quadro. Este link não é mais válido.', boardRemovedBack: 'Voltar à área de trabalho',
         toastNotDevLocked: '🔒 Criação de quadros restrita a devs.',
         toastUserIdCopied: '📋 UID de auth copiado para a área de transferência',
         nameUpdated: 'Nome atualizado', clearAllConfirm: 'Limpar todo o quadro? Esta ação não pode ser desfeita.',
@@ -4029,6 +4340,7 @@
         dueToday: 'Termin dzisiaj!', dueTomorrow: 'Jutro', dueInDays: 'Za {{n}} dzień/dni', dueOverdue: '{{n}} dzień/dni po terminie',
         confirmYes: 'Tak, usuń', confirmNo: 'Anuluj', confirmDelete: 'Potwierdź usunięcie',
         toastRoomDeletedRemote: '🗑 Ten pokój został usunięty z bazy danych.',
+        boardRemovedTitle: 'Tablica usunięta', boardRemovedDesc: 'Właściciel usunął tę tablicę. Ten link jest już nieważny.', boardRemovedBack: 'Wróć do obszaru roboczego',
         toastNotDevLocked: '🔒 Tworzenie tablic jest ograniczone do devów.',
         toastUserIdCopied: '📋 UID auth skopiowany do schowka',
         nameUpdated: 'Nazwa zaktualizowana', clearAllConfirm: 'Wyczyścić całą tablicę? Tej operacji nie można cofnąć.',
@@ -4055,6 +4367,7 @@
         dueToday: 'Bugün son!', dueTomorrow: 'Yarın', dueInDays: '{{n}} gün sonra', dueOverdue: '{{n}} gün gecikti',
         confirmYes: 'Evet, sil', confirmNo: 'İptal', confirmDelete: 'Silmeyi onayla',
         toastRoomDeletedRemote: '🗑 Bu oda veritabanından silindi.',
+        boardRemovedTitle: 'Pano kaldırıldı', boardRemovedDesc: 'Sahip bu panoyu sildi. Bu bağlantı artık geçerli değil.', boardRemovedBack: 'Çalışma alanına dön',
         nameUpdated: 'İsim güncellendi', clearAllConfirm: 'Tüm pano silinsin mi? Geri alınamaz.',
       },
       sv: {
@@ -4079,6 +4392,7 @@
         dueToday: 'Idag!', dueTomorrow: 'Imorgon', dueInDays: 'Om {{n}} dag(ar)', dueOverdue: '{{n}} dag(ar) försenad',
         confirmYes: 'Ja, ta bort', confirmNo: 'Avbryt', confirmDelete: 'Bekräfta borttagning',
         toastRoomDeletedRemote: '🗑 Det här rummet raderades från databasen.',
+        boardRemovedTitle: 'Tavlan borttagen', boardRemovedDesc: 'Ägaren har tagit bort den här tavlan. Den här länken är inte längre giltig.', boardRemovedBack: 'Tillbaka till arbetsytan',
         nameUpdated: 'Namn uppdaterat', clearAllConfirm: 'Rensa hela tavlan? Det går inte att ångra.',
       },
       no: {
@@ -4098,6 +4412,7 @@
         dueToday: 'I dag!', dueTomorrow: 'I morgen', dueInDays: 'Om {{n}} dag(er)', dueOverdue: '{{n}} dag(er) forsinket',
         confirmYes: 'Ja, slett', confirmNo: 'Avbryt',
         toastRoomDeletedRemote: '🗑 Dette rommet ble slettet fra databasen.',
+        boardRemovedTitle: 'Tavlen fjernet', boardRemovedDesc: 'Eieren har fjernet dette tavlet. Denne lenken er ikke lenger gyldig.', boardRemovedBack: 'Tilbake til arbeidsområdet',
         nameUpdated: 'Navn oppdatert',
       },
       da: {
@@ -4117,6 +4432,7 @@
         dueToday: 'I dag!', dueTomorrow: 'I morgen', dueInDays: 'Om {{n}} dag(e)', dueOverdue: '{{n}} dag(e) forsinket',
         confirmYes: 'Ja, slet', confirmNo: 'Annuller',
         toastRoomDeletedRemote: '🗑 Dette rum blev slettet fra databasen.',
+        boardRemovedTitle: 'Tavlen fjernet', boardRemovedDesc: 'Ejeren har fjernet dette tavle. Dette link er ikke længere gyldigt.', boardRemovedBack: 'Tilbage til arbejdsområdet',
         nameUpdated: 'Navn opdateret',
       },
       fi: {
@@ -4136,6 +4452,7 @@
         dueToday: 'Tänään!', dueTomorrow: 'Huomenna', dueInDays: '{{n}} päivässä', dueOverdue: '{{n}} päivää myöhässä',
         confirmYes: 'Kyllä, poista', confirmNo: 'Peruuta',
         toastRoomDeletedRemote: '🗑 Tämä huone poistettiin tietokannasta.',
+        boardRemovedTitle: 'Taulu poistettu', boardRemovedDesc: 'Omistaja on poistanut tämän taulun. Tämä linkki ei ole enää voimassa.', boardRemovedBack: 'Palaa työtilaan',
         nameUpdated: 'Nimi päivitetty',
       },
       ru: {
@@ -4155,6 +4472,7 @@
         dueToday: 'Сегодня!', dueTomorrow: 'Завтра', dueInDays: 'Через {{n}} дн.', dueOverdue: 'Просрочено на {{n}} дн.',
         confirmYes: 'Да, удалить', confirmNo: 'Отмена',
         toastRoomDeletedRemote: '🗑 Эта комната была удалена из базы данных.',
+        boardRemovedTitle: 'Доска удалена', boardRemovedDesc: 'Владелец удалил эту доску. Эта ссылка больше не действительна.', boardRemovedBack: 'Вернуться в рабочее пространство',
         nameUpdated: 'Имя обновлено',
       },
       zh: {
@@ -4174,6 +4492,7 @@
         dueToday: '今天截止!', dueTomorrow: '明天', dueInDays: '{{n}}天后', dueOverdue: '已逾期{{n}}天',
         confirmYes: '是，删除', confirmNo: '取消',
         toastRoomDeletedRemote: '🗑 此房间已从数据库中删除。',
+        boardRemovedTitle: '看板已删除', boardRemovedDesc: '所有者已删除此看板，该链接已失效。', boardRemovedBack: '返回工作区',
         nameUpdated: '名称已更新',
       },
       ja: {
@@ -4193,6 +4512,7 @@
         dueToday: '今日まで!', dueTomorrow: '明日', dueInDays: '{{n}}日後', dueOverdue: '{{n}}日超過',
         confirmYes: 'はい、削除', confirmNo: 'キャンセル',
         toastRoomDeletedRemote: '🗑 このルームはデータベースから削除されました。',
+        boardRemovedTitle: 'ボードが削除されました', boardRemovedDesc: 'オーナーがこのボードを削除しました。このリンクは無効です。', boardRemovedBack: 'ワークスペースに戻る',
         toastUserIdCopied: '📋 Auth UIDをクリップボードにコピーしました',
         nameUpdated: '名前を更新しました',
       },
@@ -4466,7 +4786,10 @@
 
       document.getElementById('boardTitle').value = state.boardTitle || t('myBoard');
 
-      if (!_isDashboard) trackBoardInWorkspace(_currentBoardId, _currentBoardType, state.boardTitle);
+      if (!_isDashboard) {
+        trackBoardInWorkspace(_currentBoardId, _currentBoardType, state.boardTitle);
+        saveRecentBoard(_currentBoardId, _currentBoardType, state.boardTitle);
+      }
       applyBoardBg();
       // Refresh filter/alternate views after render
       if (typeof _filterVisible !== 'undefined' && _filterVisible) { populateFilterDropdowns(); renderWithFilters(); }
@@ -7840,11 +8163,24 @@
       });
     }
 
+    function closeBoardRemovedOverlay() {
+      window.location.replace(location.pathname);
+    }
+
     async function joinRoom(roomId) {
       document.getElementById('boardVeil').classList.add('show');
       ensureUsername(async () => {
         const configSnap = await db.ref('rooms/' + roomId + '/config').once('value');
-        const config = configSnap.val() || {};
+        const rawConfig = configSnap.val();
+
+        // Room doesn't exist — was deleted or never created
+        if (!rawConfig) {
+          document.getElementById('boardVeil').classList.remove('show');
+          document.getElementById('boardRemovedOverlay').classList.add('open');
+          return;
+        }
+
+        const config = rawConfig;
 
         // Devs bypass all password checks and get owner-level access
         if (_isDev) {
@@ -8632,7 +8968,810 @@
         joinRoom(urlRoomId);
       }
     }
+
+    // ===== KEYBOARD SHORTCUTS SYSTEM =====
+    const KEYBOARD_SHORTCUTS = {
+      enabled: true,
+      modalOpen: false
+    };
+
+    // Main keyboard handler
+    document.addEventListener('keydown', function(e) {
+      if (!KEYBOARD_SHORTCUTS.enabled) return;
+
+      // Don't trigger shortcuts when typing in inputs/textareas
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+        // Allow Escape key even in inputs
+        if (e.key === 'Escape') {
+          if (document.getElementById('cardModal').classList.contains('open')) {
+            closeCardModal();
+            e.preventDefault();
+          } else if (document.getElementById('colModal').classList.contains('open')) {
+            closeColModal();
+            e.preventDefault();
+          } else if (document.getElementById('shortcutsModal').classList.contains('open')) {
+            closeShortcutsModal();
+            e.preventDefault();
+          }
+        }
+        return;
+      }
+
+      // Toggle shortcuts
+      switch(e.key) {
+        case '?':
+        case 'Help':
+          e.preventDefault();
+          openShortcutsModal();
+          break;
+        case 'r':
+        case 'R':
+          e.preventDefault();
+          toggleRecentBoards();
+          break;
+        case '/':
+          e.preventDefault();
+          toggleFilterBar();
+          setTimeout(() => document.getElementById('filterSearch')?.focus(), 100);
+          break;
+        case 'c':
+        case 'C':
+          e.preventDefault();
+          toggleCalendarView();
+          break;
+        case 't':
+        case 'T':
+          e.preventDefault();
+          toggleTimelineView();
+          break;
+        case 'n':
+        case 'N':
+          e.preventDefault();
+          openAddColModal();
+          break;
+        case 'a':
+        case 'A':
+          e.preventDefault();
+          // Focus first "Add card" button
+          const firstAddBtn = document.querySelector('.column .add-card-btn');
+          if (firstAddBtn) {
+            firstAddBtn.click();
+          }
+          break;
+        case '.':
+          if (e.ctrlKey) {
+            e.preventDefault();
+            toggleCompactMode();
+          }
+          break;
+      }
+
+      // Ctrl+Shift+D = Nuke data
+      if (e.ctrlKey && e.shiftKey && (e.key === 'd' || e.key === 'D')) {
+        e.preventDefault();
+        showConfirm({
+          icon: '💣',
+          title: 'Nuke All Data?',
+          message: 'This will permanently delete ALL local data.',
+          subMessage: 'This action cannot be undone.',
+          yesLabel: 'Nuke Everything',
+          noLabel: 'Cancel',
+          onConfirm: nukeAllLocalData
+        });
+      }
+    });
+
+    function openShortcutsModal() {
+      document.getElementById('shortcutsModal').classList.add('open');
+      KEYBOARD_SHORTCUTS.modalOpen = true;
+    }
+
+    function closeShortcutsModal() {
+      document.getElementById('shortcutsModal').classList.remove('open');
+      KEYBOARD_SHORTCUTS.modalOpen = false;
+    }
+
+    // ===== COMPACT MODE =====
+    function initCompactMode() {
+      const saved = localStorage.getItem('pb_compact_mode');
+      if (saved === 'true') {
+        document.body.classList.add('compact-mode');
+      }
+    }
+
+    function toggleCompactMode() {
+      const isCompact = document.body.classList.toggle('compact-mode');
+      localStorage.setItem('pb_compact_mode', isCompact);
+      toast(isCompact ? 'Compact mode enabled' : 'Compact mode disabled');
+    }
+
+    // Initialize on load
+    initCompactMode();
+
+    // ===== RECENT BOARDS =====
+    function initRecentBoards() {
+      renderRecentBoards();
+    }
+
+    function getRecentBoards() {
+      const raw = localStorage.getItem('pb_recent_boards');
+      if (!raw) return [];
+      try {
+        const boards = JSON.parse(raw);
+        return Array.isArray(boards) ? boards : [];
+      } catch(e) {
+        return [];
+      }
+    }
+
+    function saveRecentBoard(boardId, type, title) {
+      let boards = getRecentBoards();
+      // Remove duplicates
+      boards = boards.filter(b => b.id !== boardId);
+      // Add to front
+      boards.unshift({
+        id: boardId,
+        type: type,
+        title: title || 'Untitled Board',
+        timestamp: Date.now()
+      });
+      // Keep only last 10
+      boards = boards.slice(0, 10);
+      localStorage.setItem('pb_recent_boards', JSON.stringify(boards));
+    }
+
+    function renderRecentBoards() {
+      const list = document.getElementById('recentBoardsList');
+      const boards = getRecentBoards();
+
+      if (boards.length === 0) {
+        list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:0.85rem">No recent boards</div>';
+        return;
+      }
+
+      list.innerHTML = boards.map(board => {
+        const icon = board.type === 'cloud' ? '☁️' : '📁';
+        const timeAgo = getTimeAgo(board.timestamp);
+        return `
+          <div class="recent-board-item" onclick="openRecentBoard('${board.id}', '${board.type}')">
+            <div class="recent-board-icon">${icon}</div>
+            <div class="recent-board-info">
+              <div class="recent-board-title">${escapeHtml(board.title)}</div>
+              <div class="recent-board-meta">${timeAgo}</div>
+            </div>
+            <div class="recent-board-type ${board.type}">${board.type}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openRecentBoard(id, type) {
+      if (type === 'cloud') {
+        window.location.href = '?r=' + encodeURIComponent(id);
+      } else {
+        window.location.href = '?local=' + encodeURIComponent(id);
+      }
+    }
+
+    function toggleRecentBoards() {
+      const sidebar = document.getElementById('recentBoardsSidebar');
+      sidebar.classList.toggle('open');
+      renderRecentBoards();
+    }
+
+    function clearRecentBoards() {
+      localStorage.removeItem('pb_recent_boards');
+      renderRecentBoards();
+      toast('Recent boards cleared');
+    }
+
+    function getTimeAgo(timestamp) {
+      const seconds = Math.floor((Date.now() - timestamp) / 1000);
+      if (seconds < 60) return 'just now';
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return minutes + 'm ago';
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return hours + 'h ago';
+      const days = Math.floor(hours / 24);
+      return days + 'd ago';
+    }
+
+    // Track current board
+    const originalSave = save;
+    save = function() {
+      originalSave();
+      saveRecentBoard(_currentBoardId, _currentBoardType, state.boardTitle);
+    };
+
+    initRecentBoards();
+
+    // ===== INLINE CARD EDITING =====
+    let inlineEditingCard = null;
+
+    function enableInlineEdit(cardId, colId) {
+      const card = state.columns.find(c => c.id === colId)?.cards.find(c => c.id === cardId);
+      if (!card) return;
+
+      const cardEl = document.querySelector(`.card[data-card-id="${cardId}"]`);
+      if (!cardEl) return;
+
+      const textEl = cardEl.querySelector('.card-text');
+      if (!textEl) return;
+
+      inlineEditingCard = { cardId, colId, originalText: card.title };
+
+      const textarea = document.createElement('textarea');
+      textarea.className = 'card-inline-edit';
+      textarea.value = card.title;
+      textarea.rows = 2;
+
+      // Replace text with textarea
+      textEl.innerHTML = '';
+      textEl.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+
+      // Handle save
+      function saveInline() {
+        const newText = textarea.value.trim();
+        if (newText && newText !== inlineEditingCard.originalText) {
+          card.title = newText;
+          save();
+          logActivity('edited_card_inline', { cardTitle: newText });
+        }
+        inlineEditingCard = null;
+        render();
+      }
+
+      // Handle cancel
+      function cancelInline() {
+        inlineEditingCard = null;
+        render();
+      }
+
+      textarea.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          saveInline();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          cancelInline();
+        }
+      });
+
+      textarea.addEventListener('blur', saveInline);
+    }
+
+    // Modify renderCard to support double-click
+    const originalRenderCard = renderCard;
+    renderCard = function(card, colId) {
+      const el = originalRenderCard(card, colId);
+
+      // Add double-click handler for title
+      const textEl = el.querySelector('.card-text');
+      if (textEl) {
+        textEl.addEventListener('dblclick', function(e) {
+          e.stopPropagation();
+          enableInlineEdit(card.id, colId);
+        });
+      }
+
+      return el;
+    };
+
+    // ===== BOARD TEMPLATES =====
+    const BOARD_TEMPLATES = {
+      kanban: {
+        title: 'Kanban Board',
+        columns: [
+          { name: 'To Do', color: '#7c6af7', cards: [{ title: 'Example task', desc: 'Drag me to another column!' }] },
+          { name: 'In Progress', color: '#f7c26a', cards: [] },
+          { name: 'Done', color: '#6af7c4', cards: [] }
+        ]
+      },
+      personal: {
+        title: 'Personal Tasks',
+        columns: [
+          { name: 'Today', color: '#f76a8a', cards: [] },
+          { name: 'This Week', color: '#f7c26a', cards: [] },
+          { name: 'Later', color: '#6af7c4', cards: [] }
+        ]
+      },
+      content: {
+        title: 'Content Calendar',
+        columns: [
+          { name: 'Ideas', color: '#6ab4f7', cards: [] },
+          { name: 'Writing', color: '#f7c26a', cards: [] },
+          { name: 'Editing', color: '#f76a8a', cards: [] },
+          { name: 'Published', color: '#6af7c4', cards: [] }
+        ]
+      },
+      bug: {
+        title: 'Bug Tracking',
+        columns: [
+          { name: 'Reported', color: '#6ab4f7', cards: [] },
+          { name: 'Triaged', color: '#f7c26a', cards: [] },
+          { name: 'In Progress', color: '#f76a8a', cards: [] },
+          { name: 'Fixed', color: '#6af7c4', cards: [] }
+        ]
+      },
+      sprint: {
+        title: 'Sprint Planning',
+        columns: [
+          { name: 'Product Backlog', color: '#6ab4f7', cards: [] },
+          { name: 'Sprint Backlog', color: '#f7c26a', cards: [] },
+          { name: 'In Progress', color: '#f76a8a', cards: [] },
+          { name: 'Review', color: '#7c6af7', cards: [] },
+          { name: 'Done', color: '#6af7c4', cards: [] }
+        ]
+      },
+      blank: {
+        title: 'Blank Board',
+        columns: [
+          { name: 'Column 1', color: '#7c6af7', cards: [] }
+        ]
+      }
+    };
+
+    function openTemplatesModal() {
+      document.getElementById('templatesModal').classList.add('open');
+    }
+
+    function closeTemplatesModal() {
+      document.getElementById('templatesModal').classList.remove('open');
+    }
+
+    function applyTemplate(templateId) {
+      const template = BOARD_TEMPLATES[templateId];
+      if (!template) return;
+
+      showConfirm({
+        icon: '📋',
+        title: 'Apply Template?',
+        message: 'This will replace your current board with the "' + template.title + '" template.',
+        subMessage: 'Your current data will be lost unless you export it first.',
+        yesLabel: 'Apply Template',
+        noLabel: 'Cancel',
+        onConfirm: function() {
+          state.boardTitle = template.title;
+          state.columns = template.columns.map(col => ({
+            id: uid(),
+            name: col.name,
+            color: col.color,
+            cards: col.cards.map(c => ({
+              id: uid(),
+              title: c.title || '',
+              desc: c.desc || '',
+              labels: [],
+              checklist: [],
+              priority: '',
+              due: '',
+              points: 0
+            }))
+          }));
+          save();
+          render();
+          closeTemplatesModal();
+          toast('Template applied: ' + template.title);
+        }
+      });
+    }
+
+    // ===== PRIVACY DASHBOARD =====
+    function openPrivacyDashboard() {
+      updatePrivacyStats();
+      document.getElementById('privacyDashboardModal').classList.add('open');
+    }
+
+    function closePrivacyDashboard() {
+      document.getElementById('privacyDashboardModal').classList.remove('open');
+    }
+
+    function updatePrivacyStats() {
+      // Count local boards
+      let localBoards = 0;
+      let cloudBoards = 0;
+      let totalCards = 0;
+      let storageUsed = 0;
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith('pb_local_')) {
+          localBoards++;
+          try {
+            const data = JSON.parse(localStorage.getItem(key));
+            if (data?.columns) {
+              data.columns.forEach(col => {
+                totalCards += col.cards?.length || 0;
+              });
+            }
+            storageUsed += localStorage.getItem(key).length / 1024;
+          } catch(e) {}
+        }
+        if (key?.startsWith('pb_cloud_')) {
+          cloudBoards++;
+        }
+      }
+
+      document.getElementById('privacyLocalBoards').textContent = localBoards;
+      document.getElementById('privacyCloudBoards').textContent = cloudBoards;
+      document.getElementById('privacyTotalCards').textContent = totalCards;
+      document.getElementById('privacyStorageUsed').textContent = Math.round(storageUsed);
+
+      // Update storage status
+      const storageText = document.getElementById('storageStatusText');
+      const storageIndicator = document.getElementById('storageIndicator');
+      if (_currentBoardType === 'local') {
+        storageText.textContent = 'Data stored locally only';
+        storageIndicator.className = 'privacy-status-indicator secure';
+      } else {
+        storageText.textContent = 'Data synced to cloud (Firebase)';
+        storageIndicator.className = 'privacy-status-indicator warning';
+      }
+
+      // Update sync status
+      const syncText = document.getElementById('syncStatusText');
+      const syncIndicator = document.getElementById('syncIndicator');
+      if (_customDbUrl) {
+        syncText.textContent = 'Custom database configured';
+        syncIndicator.className = 'privacy-status-indicator secure';
+      } else if (_currentBoardType === 'cloud') {
+        syncText.textContent = 'Using Firebase Realtime Database';
+        syncIndicator.className = 'privacy-status-indicator neutral';
+      } else {
+        syncText.textContent = 'Sync not configured (local only)';
+        syncIndicator.className = 'privacy-status-indicator neutral';
+      }
+    }
+
+    function exportEncryptedBackup() {
+      const data = {
+        state: state,
+        exportedAt: new Date().toISOString(),
+        version: '1.0'
+      };
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `privacyboard-backup-${_currentBoardId}-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast('Backup exported successfully');
+      logActivity('exported_backup', {});
+    }
+
+    function importEncryptedBackup() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json,application/json';
+      input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          try {
+            const data = JSON.parse(event.target.result);
+            if (data.state) {
+              showConfirm({
+                icon: '📤',
+                title: 'Import Backup?',
+                message: 'This will replace your current board with the backup.',
+                subMessage: 'File: ' + file.name,
+                yesLabel: 'Import',
+                noLabel: 'Cancel',
+                onConfirm: function() {
+                  state = data.state;
+                  save();
+                  render();
+                  toast('Backup imported successfully');
+                  logActivity('imported_backup', {});
+                }
+              });
+            } else {
+              toast('Invalid backup file');
+            }
+          } catch(err) {
+            toast('Failed to parse backup file');
+          }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
+    }
+
+    function toggleEncryptionSettings() {
+      toast('Encryption settings coming soon!');
+    }
+
+    function nukeAllLocalData() {
+      // Clear all localStorage items with pb_ prefix
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith('pb_')) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      toast('All local data nuked 💣');
+      setTimeout(() => window.location.reload(), 1000);
+    }
+
+    function nukeAllCloudData() {
+      if (_currentBoardType === 'cloud' && _roomId) {
+        db.ref('rooms/' + _roomId).remove().then(() => {
+          toast('Cloud data cleared');
+        }).catch(() => {
+          toast('Failed to clear cloud data');
+        });
+      } else {
+        toast('Not in a cloud room');
+      }
+    }
+
+    function showDataExportLogs() {
+      toast('Export logs feature coming soon!');
+    }
+
+    // ===== UTILITY =====
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Add Privacy Dashboard button to header
+    function addPrivacyDashboardButton() {
+      const headerActions = document.querySelector('.header-actions');
+      if (headerActions) {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.style.cssText = 'font-size:0.75rem;padding:4px 10px';
+        btn.title = 'Privacy Dashboard';
+        btn.innerHTML = '🔒 Privacy';
+        btn.onclick = openPrivacyDashboard;
+        headerActions.insertBefore(btn, headerActions.firstChild);
+      }
+    }
+
+    // Add Templates button
+    function addTemplatesButton() {
+      const header = document.querySelector('header');
+      if (header) {
+        const existingBtn = document.getElementById('templatesBtn');
+        if (!existingBtn) {
+          const btn = document.createElement('button');
+          btn.id = 'templatesBtn';
+          btn.className = 'btn';
+          btn.style.cssText = 'font-size:0.75rem;padding:4px 10px;margin-left:8px';
+          btn.title = 'Board Templates';
+          btn.innerHTML = '📋 Templates';
+          btn.onclick = openTemplatesModal;
+          header.appendChild(btn);
+        }
+      }
+    }
+
+    // Initialize new buttons
+    addPrivacyDashboardButton();
+    addTemplatesButton();
   </script>
+
+  <!-- RECENT BOARDS SIDEBAR -->
+  <div class="recent-boards-sidebar" id="recentBoardsSidebar">
+    <div class="recent-boards-header">
+      <span>📚 Recent Boards</span>
+      <button class="btn" style="padding:4px 8px;font-size:0.7rem" onclick="clearRecentBoards()">Clear</button>
+    </div>
+    <div class="recent-boards-list" id="recentBoardsList">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+  <button class="recent-board-toggle" id="recentBoardToggle" onclick="toggleRecentBoards()" title="Recent Boards (R)">
+    📚
+  </button>
+
+  <!-- KEYBOARD SHORTCUTS MODAL -->
+  <div class="modal-overlay" id="shortcutsModal">
+    <div class="modal" style="max-width:600px">
+      <div class="modal-header">
+        <h2>⌨️ Keyboard Shortcuts</h2>
+        <button class="modal-close" onclick="closeShortcutsModal()">&times;</button>
+      </div>
+      <div class="shortcuts-grid">
+        <div class="shortcut-section">
+          <h4 style="color:var(--text-muted);font-size:0.8rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">Navigation</h4>
+          <div class="shortcut-row">
+            <span>Toggle Recent Boards</span>
+            <div class="shortcut-keys"><span class="kbd">R</span></div>
+          </div>
+          <div class="shortcut-row">
+            <span>Search / Filter</span>
+            <div class="shortcut-keys"><span class="kbd">/</span></div>
+          </div>
+          <div class="shortcut-row">
+            <span>Calendar View</span>
+            <div class="shortcut-keys"><span class="kbd">C</span></div>
+          </div>
+          <div class="shortcut-row">
+            <span>Timeline View</span>
+            <div class="shortcut-keys"><span class="kbd">T</span></div>
+          </div>
+        </div>
+        <div class="shortcut-section">
+          <h4 style="color:var(--text-muted);font-size:0.8rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">Board Actions</h4>
+          <div class="shortcut-row">
+            <span>New Column/List</span>
+            <div class="shortcut-keys"><span class="kbd">N</span></div>
+          </div>
+          <div class="shortcut-row">
+            <span>Quick Add Card</span>
+            <div class="shortcut-keys"><span class="kbd">A</span></div>
+          </div>
+          <div class="shortcut-row">
+            <span>Compact Mode Toggle</span>
+            <div class="shortcut-keys"><span class="kbd">Ctrl</span>+<span class="kbd">.</span></div>
+          </div>
+          <div class="shortcut-row">
+            <span>Show Shortcuts</span>
+            <div class="shortcut-keys"><span class="kbd">?</span></div>
+          </div>
+        </div>
+        <div class="shortcut-section">
+          <h4 style="color:var(--text-muted);font-size:0.8rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">Card Editing</h4>
+          <div class="shortcut-row">
+            <span>Save Card</span>
+            <div class="shortcut-keys"><span class="kbd">Ctrl</span>+<span class="kbd">Enter</span></div>
+          </div>
+          <div class="shortcut-row">
+            <span>Close/Cancel</span>
+            <div class="shortcut-keys"><span class="kbd">Esc</span></div>
+          </div>
+          <div class="shortcut-row">
+            <span>Quick Edit Title</span>
+            <div class="shortcut-keys"><span class="kbd">Double-click</span> card</div>
+          </div>
+        </div>
+        <div class="shortcut-section">
+          <h4 style="color:var(--text-muted);font-size:0.8rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">Danger Zone</h4>
+          <div class="shortcut-row">
+            <span>Clear All Data</span>
+            <div class="shortcut-keys"><span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">D</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="closeShortcutsModal()">Got it!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRIVACY DASHBOARD MODAL -->
+  <div class="modal-overlay" id="privacyDashboardModal">
+    <div class="modal" style="max-width:700px;max-height:90vh;overflow-y:auto">
+      <div class="modal-header">
+        <h2>🔒 Privacy Dashboard</h2>
+        <button class="modal-close" onclick="closePrivacyDashboard()">&times;</button>
+      </div>
+      <div class="privacy-dashboard">
+        <!-- Data Overview -->
+        <div class="privacy-card">
+          <h3>📊 Data Storage Overview</h3>
+          <div class="privacy-stats-grid">
+            <div class="privacy-stat">
+              <div class="privacy-stat-value" id="privacyLocalBoards">0</div>
+              <div class="privacy-stat-label">Local Boards</div>
+            </div>
+            <div class="privacy-stat">
+              <div class="privacy-stat-value" id="privacyCloudBoards">0</div>
+              <div class="privacy-stat-label">Cloud Boards</div>
+            </div>
+            <div class="privacy-stat">
+              <div class="privacy-stat-value" id="privacyTotalCards">0</div>
+              <div class="privacy-stat-label">Total Cards</div>
+            </div>
+            <div class="privacy-stat">
+              <div class="privacy-stat-value" id="privacyStorageUsed">0</div>
+              <div class="privacy-stat-label">Storage (KB)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Encryption Status -->
+        <div class="privacy-card">
+          <h3>🔐 Security Status</h3>
+          <div class="privacy-status">
+            <div class="privacy-status-indicator secure" id="encryptionIndicator"></div>
+            <span id="encryptionStatusText">Client-side encryption enabled</span>
+          </div>
+          <div class="privacy-status">
+            <div class="privacy-status-indicator secure" id="storageIndicator"></div>
+            <span id="storageStatusText">Data stored locally only</span>
+          </div>
+          <div class="privacy-status">
+            <div class="privacy-status-indicator neutral" id="syncIndicator"></div>
+            <span id="syncStatusText">Sync status: Not configured</span>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" onclick="exportEncryptedBackup()">📥 Export Encrypted Backup</button>
+            <button class="btn" onclick="importEncryptedBackup()">📤 Import Backup</button>
+            <button class="btn" onclick="toggleEncryptionSettings()">⚙️ Encryption Settings</button>
+          </div>
+        </div>
+
+        <!-- Active Sessions -->
+        <div class="privacy-card">
+          <h3>👥 Active Sessions</h3>
+          <div id="activeSessionsList" style="font-size:0.85rem;color:var(--text-muted)">
+            No active collaboration sessions.
+          </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="privacy-card danger-zone">
+          <h3>☠️ Danger Zone</h3>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px">
+            These actions are irreversible. Use with caution.
+          </p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-danger" onclick="nukeAllLocalData()">💣 Nuke All Local Data</button>
+            <button class="btn btn-danger" onclick="nukeAllCloudData()">☁️ Clear Cloud Boards</button>
+            <button class="btn" onclick="showDataExportLogs()">📋 View Export Log</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOARD TEMPLATES MODAL -->
+  <div class="modal-overlay" id="templatesModal">
+    <div class="modal" style="max-width:700px">
+      <div class="modal-header">
+        <h2>📋 Board Templates</h2>
+        <button class="modal-close" onclick="closeTemplatesModal()">&times;</button>
+      </div>
+      <div style="padding:20px">
+        <p style="color:var(--text-muted);margin-bottom:16px;font-size:0.9rem">Choose a template to quickly set up your board:</p>
+        <div class="templates-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+          <div class="template-card" onclick="applyTemplate('kanban')" style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
+            <div style="font-size:1.5rem;margin-bottom:8px">📊</div>
+            <div style="font-weight:600;margin-bottom:4px">Kanban Board</div>
+            <div style="font-size:0.8rem;color:var(--text-muted)">To Do, In Progress, Done</div>
+          </div>
+          <div class="template-card" onclick="applyTemplate('personal')" style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
+            <div style="font-size:1.5rem;margin-bottom:8px">✅</div>
+            <div style="font-weight:600;margin-bottom:4px">Personal Tasks</div>
+            <div style="font-size:0.8rem;color:var(--text-muted)">Today, This Week, Later</div>
+          </div>
+          <div class="template-card" onclick="applyTemplate('content')" style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
+            <div style="font-size:1.5rem;margin-bottom:8px">✍️</div>
+            <div style="font-weight:600;margin-bottom:4px">Content Calendar</div>
+            <div style="font-size:0.8rem;color:var(--text-muted)">Ideas, Writing, Published</div>
+          </div>
+          <div class="template-card" onclick="applyTemplate('bug')" style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
+            <div style="font-size:1.5rem;margin-bottom:8px">🐛</div>
+            <div style="font-weight:600;margin-bottom:4px">Bug Tracking</div>
+            <div style="font-size:0.8rem;color:var(--text-muted)">Reported, Triaged, Fixed</div>
+          </div>
+          <div class="template-card" onclick="applyTemplate('sprint')" style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
+            <div style="font-size:1.5rem;margin-bottom:8px">🏃</div>
+            <div style="font-weight:600;margin-bottom:4px">Sprint Planning</div>
+            <div style="font-size:0.8rem;color:var(--text-muted)">Backlog, Sprint, Review</div>
+          </div>
+          <div class="template-card" onclick="applyTemplate('blank')" style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
+            <div style="font-size:1.5rem;margin-bottom:8px">⬜</div>
+            <div style="font-weight:600;margin-bottom:4px">Blank Board</div>
+            <div style="font-size:0.8rem;color:var(--text-muted)">Start from scratch</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeTemplatesModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

@@ -42,3 +42,9 @@ $AUTH_TOKEN = getenv('AUTH_TOKEN') ?: 'Bearer my-secret-token';
 
 // CORS configuration
 $CORS_ORIGIN = getenv('CORS_ORIGIN') ?: '*';
+
+// Rate Limiting (optional)
+// Set to 0 to disable
+$RATE_LIMIT_ENABLED = getenv('RATE_LIMIT_ENABLED') !== 'false'; // Default: enabled
+$RATE_LIMIT_REQUESTS = (int)(getenv('RATE_LIMIT_REQUESTS') ?: 100); // Requests per window
+$RATE_LIMIT_WINDOW = (int)(getenv('RATE_LIMIT_WINDOW') ?: 60); // Window in seconds

@@ -33,6 +33,7 @@ require_once __DIR__ . '/config.php';
 
 use PrivacyBoard\Database\DatabaseFactory;
 use PrivacyBoard\Auth\AuthHandler;
+use PrivacyBoard\Auth\RateLimiter;
 
 // ── CORS & PREFLIGHT ── //
 AuthHandler::setCorsHeaders($CORS_ORIGIN);
@@ -44,6 +45,23 @@ try {
     // ── AUTHENTICATION ── //
     $auth = new AuthHandler($AUTH_TOKEN);
     $auth->authenticate();
+
+    // ── RATE LIMITING ── //
+    if ($RATE_LIMIT_ENABLED) {
+        // Rate limit by token (if auth enabled) or by IP
+        $identifier = trim($AUTH_TOKEN) !== '' ? 'token:' . md5($AUTH_TOKEN) : 'ip:' . $_SERVER['REMOTE_ADDR'];
+        $limiter = new RateLimiter(
+            '',
+            $RATE_LIMIT_REQUESTS,
+            $RATE_LIMIT_WINDOW
+        );
+
+        if (!$limiter->isAllowed($identifier)) {
+            http_response_code(429);
+            echo json_encode(['error' => 'Too many requests. Please try again later.']);
+            exit;
+        }
+    }
 
     // ── DATABASE CONNECTION ── //
     $config = [
