@@ -3141,14 +3141,12 @@
     </div>
   </div>
 
-  <!-- BOARD REMOVED OVERLAY (when a board no longer exists) -->
+  <!-- BOARD REMOVED OVERLAY (when a board is deleted) -->
   <div class="room-overlay" id="boardRemovedOverlay">
     <div class="room-box" style="text-align:center">
-      <h2 data-i18n="boardRemovedTitle">🗑 Board Removed</h2>
-      <p data-i18n="boardRemovedDesc">The owner has removed this board. This link is no longer valid.</p>
-      <div class="modal-actions" style="justify-content:center;margin-top:8px">
-        <button class="btn btn-primary" onclick="closeBoardRemovedOverlay()" data-i18n="boardRemovedBack">Return to Workspace</button>
-      </div>
+      <h2 id="boardRemovedTitle">🗑 Board Removed</h2>
+      <p id="boardRemovedDesc" style="color:var(--text-muted);font-size:0.88rem;line-height:1.6"></p>
+      <div class="modal-actions" style="justify-content:center;margin-top:12px;flex-wrap:wrap;gap:8px" id="boardRemovedActions"></div>
     </div>
   </div>
 
@@ -3485,11 +3483,15 @@
 
         <!-- ROOMS TAB -->
         <div id="devPanel-rooms" style="display:none">
-          <div style="display:flex;gap:8px;margin-bottom:10px">
+          <div style="display:flex;gap:8px;margin-bottom:8px">
             <input type="text" id="devRoomsSearch" placeholder="Filter by room ID or owner name…"
               style="flex:1;font-size:0.8rem" oninput="devFilterRooms(this.value)" />
-            <button class="btn" style="font-size:0.75rem;white-space:nowrap" onclick="devLoadRooms()">↻ Load
-              Rooms</button>
+            <button class="btn" style="font-size:0.75rem;white-space:nowrap" onclick="devLoadRooms()">↻ Load Rooms</button>
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:10px">
+            <button class="btn" id="devRoomsFilterAll" style="font-size:0.7rem;padding:3px 10px;background:var(--accent);color:#fff;border-color:var(--accent)" onclick="devSetRoomsFilter('all')">All</button>
+            <button class="btn" id="devRoomsFilterActive" style="font-size:0.7rem;padding:3px 10px" onclick="devSetRoomsFilter('active')">Active</button>
+            <button class="btn" id="devRoomsFilterRemoved" style="font-size:0.7rem;padding:3px 10px;color:#f7c26a;border-color:rgba(247,194,106,0.35)" onclick="devSetRoomsFilter('removed')">🗑 Removed</button>
           </div>
           <div id="devRoomsList" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto">
             <p style="font-size:0.78rem;color:var(--text-muted)">Click "Load Rooms" to fetch all boards.</p>
@@ -3968,7 +3970,8 @@
         confirmYes: 'Yes, delete', confirmNo: 'Cancel',
         // Board reappear / deleted room
         toastRoomDeletedRemote: '🗑 This room was deleted from the database.',
-        boardRemovedTitle: 'Board Removed', boardRemovedDesc: 'The owner has removed this board. This link is no longer valid.', boardRemovedBack: 'Return to Workspace',
+        boardRemovedTitle: 'Board Removed', boardRemovedDesc: 'The owner has removed this board. This link is no longer valid.', boardRemovedDescOwner: 'You removed this board. You can recover it below.', boardRemovedBack: 'Return to Workspace', boardRemovedRecover: 'Recover Board',
+        boardForceRemovedTitle: 'Board Permanently Removed', boardForceRemovedDesc: 'This board was removed by an administrator and cannot be recovered.', boardForceRemovedDescDev: 'This board was force-removed by:',
         // Dev lock
         devLockTitle: 'Board Creation Lock', devLockDesc: 'When enabled, only registered devs can create new boards on this instance.',
         devLockEnabled: 'Locked — devs only', devLockDisabled: 'Open — anyone can create',
@@ -4096,7 +4099,8 @@
         confirmYes: 'Ja, löschen', confirmNo: 'Abbrechen',
         // Board reappear / deleted room
         toastRoomDeletedRemote: '🗑 Dieser Raum wurde aus der Datenbank gelöscht.',
-        boardRemovedTitle: 'Board gelöscht', boardRemovedDesc: 'Der Inhaber hat dieses Board gelöscht. Dieser Link ist nicht mehr gültig.', boardRemovedBack: 'Zurück zum Arbeitsbereich',
+        boardRemovedTitle: 'Board gelöscht', boardRemovedDesc: 'Der Inhaber hat dieses Board gelöscht. Dieser Link ist nicht mehr gültig.', boardRemovedDescOwner: 'Du hast dieses Board gelöscht. Du kannst es unten wiederherstellen.', boardRemovedBack: 'Zurück zum Arbeitsbereich', boardRemovedRecover: 'Board wiederherstellen',
+        boardForceRemovedTitle: 'Board dauerhaft entfernt', boardForceRemovedDesc: 'Dieses Board wurde von einem Administrator entfernt und kann nicht wiederhergestellt werden.', boardForceRemovedDescDev: 'Dieses Board wurde force-removed von:',
         // Dev lock
         devLockTitle: 'Board-Erstellungssperre', devLockDesc: 'Wenn aktiviert, können nur registrierte Devs neue Boards in dieser Instanz erstellen.',
         devLockEnabled: 'Gesperrt — nur Devs', devLockDisabled: 'Offen — jeder kann erstellen',
@@ -4152,7 +4156,8 @@
         confirmClearList: 'Vider toutes les cartes de "{{name}}" ?',
         confirmRemoveDev: 'Retirer les droits dev de cet utilisateur ?',
         toastRoomDeletedRemote: '🗑 Cette salle a été supprimée de la base de données.',
-        boardRemovedTitle: 'Tableau supprimé', boardRemovedDesc: "Le propriétaire a supprimé ce tableau. Ce lien n'est plus valide.", boardRemovedBack: "Retour à l'espace de travail",
+        boardRemovedTitle: 'Tableau supprimé', boardRemovedDesc: "Le propriétaire a supprimé ce tableau. Ce lien n'est plus valide.", boardRemovedDescOwner: 'Vous avez supprimé ce tableau. Vous pouvez le récupérer ci-dessous.', boardRemovedBack: "Retour à l'espace de travail", boardRemovedRecover: 'Récupérer le tableau',
+        boardForceRemovedTitle: 'Tableau définitivement supprimé', boardForceRemovedDesc: "Ce tableau a été supprimé par un administrateur et ne peut pas être récupéré.", boardForceRemovedDescDev: 'Ce tableau a été supprimé de force par :',
         toastNotDevLocked: '🔒 La création de tableaux est réservée aux devs.',
         toastUserIdCopied: '📋 UID copié dans le presse-papiers',
         storageApply: '💾 Appliquer', nameUpdated: 'Nom mis à jour',
@@ -4203,7 +4208,8 @@
         confirmDeleteWorkspace: '¿Eliminar espacio "{{name}}"?',
         confirmClearList: '¿Vaciar todas las tarjetas de "{{name}}"?',
         toastRoomDeletedRemote: '🗑 Esta sala fue eliminada de la base de datos.',
-        boardRemovedTitle: 'Tablero eliminado', boardRemovedDesc: 'El propietario ha eliminado este tablero. Este enlace ya no es válido.', boardRemovedBack: 'Volver al área de trabajo',
+        boardRemovedTitle: 'Tablero eliminado', boardRemovedDesc: 'El propietario ha eliminado este tablero. Este enlace ya no es válido.', boardRemovedDescOwner: 'Has eliminado este tablero. Puedes recuperarlo a continuación.', boardRemovedBack: 'Volver al área de trabajo', boardRemovedRecover: 'Recuperar tablero',
+        boardForceRemovedTitle: 'Tablero eliminado permanentemente', boardForceRemovedDesc: 'Este tablero fue eliminado por un administrador y no se puede recuperar.', boardForceRemovedDescDev: 'Este tablero fue eliminado forzosamente por:',
         toastNotDevLocked: '🔒 La creación de tableros está restringida a devs.',
         toastUserIdCopied: '📋 UID de auth copiado al portapapeles',
         storageApply: '💾 Aplicar', nameUpdated: 'Nombre actualizado',
@@ -4238,7 +4244,8 @@
         dueToday: 'Vandaag!', dueTomorrow: 'Morgen', dueInDays: 'Over {{n}} dag(en)', dueOverdue: '{{n}} dag(en) te laat',
         confirmYes: 'Ja, verwijderen', confirmNo: 'Annuleren', confirmDelete: 'Bevestig verwijdering',
         toastRoomDeletedRemote: '🗑 Deze kamer is verwijderd uit de database.',
-        boardRemovedTitle: 'Board verwijderd', boardRemovedDesc: 'De eigenaar heeft dit board verwijderd. Deze link is niet meer geldig.', boardRemovedBack: 'Terug naar werkruimte',
+        boardRemovedTitle: 'Board verwijderd', boardRemovedDesc: 'De eigenaar heeft dit board verwijderd. Deze link is niet meer geldig.', boardRemovedDescOwner: 'Je hebt dit board verwijderd. Je kunt het hieronder herstellen.', boardRemovedBack: 'Terug naar werkruimte', boardRemovedRecover: 'Board herstellen',
+        boardForceRemovedTitle: 'Board permanent verwijderd', boardForceRemovedDesc: 'Dit board is verwijderd door een beheerder en kan niet worden hersteld.', boardForceRemovedDescDev: 'Dit board is geforceerd verwijderd door:',
         toastNotDevLocked: '🔒 Borden maken is beperkt tot devs.',
         toastUserIdCopied: '📋 Auth-UID gekopieerd naar klembord',
         nameUpdated: 'Naam bijgewerkt', clearAllConfirm: 'Geheel bord wissen? Dit kan niet ongedaan worden gemaakt.',
@@ -4272,7 +4279,8 @@
         dueToday: 'Scade oggi!', dueTomorrow: 'Domani', dueInDays: 'Tra {{n}} giorno/i', dueOverdue: '{{n}} giorno/i di ritardo',
         confirmYes: 'Sì, elimina', confirmNo: 'Annulla', confirmDelete: 'Conferma eliminazione',
         toastRoomDeletedRemote: '🗑 Questa stanza è stata eliminata dal database.',
-        boardRemovedTitle: 'Bacheca rimossa', boardRemovedDesc: "Il proprietario ha eliminato questa bacheca. Questo link non è più valido.", boardRemovedBack: "Torna all'area di lavoro",
+        boardRemovedTitle: 'Bacheca rimossa', boardRemovedDesc: "Il proprietario ha eliminato questa bacheca. Questo link non è più valido.", boardRemovedDescOwner: 'Hai rimosso questa bacheca. Puoi recuperarla qui sotto.', boardRemovedBack: "Torna all'area di lavoro", boardRemovedRecover: 'Recupera bacheca',
+        boardForceRemovedTitle: 'Bacheca rimossa definitivamente', boardForceRemovedDesc: 'Questa bacheca è stata rimossa da un amministratore e non può essere recuperata.', boardForceRemovedDescDev: 'Questa bacheca è stata rimossa forzatamente da:',
         toastNotDevLocked: '🔒 La creazione di bacheche è riservata ai dev.',
         toastUserIdCopied: '📋 UID auth copiato negli appunti',
         nameUpdated: 'Nome aggiornato', clearAllConfirm: 'Cancellare tutta la bacheca? Azione irreversibile.',
@@ -4306,7 +4314,8 @@
         dueToday: 'Vence hoje!', dueTomorrow: 'Amanhã', dueInDays: 'Em {{n}} dia(s)', dueOverdue: '{{n}} dia(s) atrasado',
         confirmYes: 'Sim, excluir', confirmNo: 'Cancelar', confirmDelete: 'Confirmar exclusão',
         toastRoomDeletedRemote: '🗑 Esta sala foi excluída do banco de dados.',
-        boardRemovedTitle: 'Quadro removido', boardRemovedDesc: 'O proprietário removeu este quadro. Este link não é mais válido.', boardRemovedBack: 'Voltar à área de trabalho',
+        boardRemovedTitle: 'Quadro removido', boardRemovedDesc: 'O proprietário removeu este quadro. Este link não é mais válido.', boardRemovedDescOwner: 'Você removeu este quadro. Pode recuperá-lo abaixo.', boardRemovedBack: 'Voltar à área de trabalho', boardRemovedRecover: 'Recuperar quadro',
+        boardForceRemovedTitle: 'Quadro removido permanentemente', boardForceRemovedDesc: 'Este quadro foi removido por um administrador e não pode ser recuperado.', boardForceRemovedDescDev: 'Este quadro foi removido à força por:',
         toastNotDevLocked: '🔒 Criação de quadros restrita a devs.',
         toastUserIdCopied: '📋 UID de auth copiado para a área de transferência',
         nameUpdated: 'Nome atualizado', clearAllConfirm: 'Limpar todo o quadro? Esta ação não pode ser desfeita.',
@@ -4340,7 +4349,8 @@
         dueToday: 'Termin dzisiaj!', dueTomorrow: 'Jutro', dueInDays: 'Za {{n}} dzień/dni', dueOverdue: '{{n}} dzień/dni po terminie',
         confirmYes: 'Tak, usuń', confirmNo: 'Anuluj', confirmDelete: 'Potwierdź usunięcie',
         toastRoomDeletedRemote: '🗑 Ten pokój został usunięty z bazy danych.',
-        boardRemovedTitle: 'Tablica usunięta', boardRemovedDesc: 'Właściciel usunął tę tablicę. Ten link jest już nieważny.', boardRemovedBack: 'Wróć do obszaru roboczego',
+        boardRemovedTitle: 'Tablica usunięta', boardRemovedDesc: 'Właściciel usunął tę tablicę. Ten link jest już nieważny.', boardRemovedDescOwner: 'Usunąłeś tę tablicę. Możesz ją odzyskać poniżej.', boardRemovedBack: 'Wróć do obszaru roboczego', boardRemovedRecover: 'Odzyskaj tablicę',
+        boardForceRemovedTitle: 'Tablica trwale usunięta', boardForceRemovedDesc: 'Ta tablica została usunięta przez administratora i nie można jej odzyskać.', boardForceRemovedDescDev: 'Ta tablica została wymusznie usunięta przez:',
         toastNotDevLocked: '🔒 Tworzenie tablic jest ograniczone do devów.',
         toastUserIdCopied: '📋 UID auth skopiowany do schowka',
         nameUpdated: 'Nazwa zaktualizowana', clearAllConfirm: 'Wyczyścić całą tablicę? Tej operacji nie można cofnąć.',
@@ -4367,7 +4377,8 @@
         dueToday: 'Bugün son!', dueTomorrow: 'Yarın', dueInDays: '{{n}} gün sonra', dueOverdue: '{{n}} gün gecikti',
         confirmYes: 'Evet, sil', confirmNo: 'İptal', confirmDelete: 'Silmeyi onayla',
         toastRoomDeletedRemote: '🗑 Bu oda veritabanından silindi.',
-        boardRemovedTitle: 'Pano kaldırıldı', boardRemovedDesc: 'Sahip bu panoyu sildi. Bu bağlantı artık geçerli değil.', boardRemovedBack: 'Çalışma alanına dön',
+        boardRemovedTitle: 'Pano kaldırıldı', boardRemovedDesc: 'Sahip bu panoyu sildi. Bu bağlantı artık geçerli değil.', boardRemovedDescOwner: 'Bu panoyu kaldırdınız. Aşağıdan kurtarabilirsiniz.', boardRemovedBack: 'Çalışma alanına dön', boardRemovedRecover: 'Panoyu kurtar',
+        boardForceRemovedTitle: 'Pano kalıcı olarak kaldırıldı', boardForceRemovedDesc: 'Bu pano bir yönetici tarafından kaldırıldı ve kurtarılamaz.', boardForceRemovedDescDev: 'Bu pano şu kişi tarafından zorla kaldırıldı:',
         nameUpdated: 'İsim güncellendi', clearAllConfirm: 'Tüm pano silinsin mi? Geri alınamaz.',
       },
       sv: {
@@ -4392,7 +4403,8 @@
         dueToday: 'Idag!', dueTomorrow: 'Imorgon', dueInDays: 'Om {{n}} dag(ar)', dueOverdue: '{{n}} dag(ar) försenad',
         confirmYes: 'Ja, ta bort', confirmNo: 'Avbryt', confirmDelete: 'Bekräfta borttagning',
         toastRoomDeletedRemote: '🗑 Det här rummet raderades från databasen.',
-        boardRemovedTitle: 'Tavlan borttagen', boardRemovedDesc: 'Ägaren har tagit bort den här tavlan. Den här länken är inte längre giltig.', boardRemovedBack: 'Tillbaka till arbetsytan',
+        boardRemovedTitle: 'Tavlan borttagen', boardRemovedDesc: 'Ägaren har tagit bort den här tavlan. Den här länken är inte längre giltig.', boardRemovedDescOwner: 'Du tog bort den här tavlan. Du kan återställa den nedan.', boardRemovedBack: 'Tillbaka till arbetsytan', boardRemovedRecover: 'Återställ tavlan',
+        boardForceRemovedTitle: 'Tavlan permanent borttagen', boardForceRemovedDesc: 'Den här tavlan togs bort av en administratör och kan inte återställas.', boardForceRemovedDescDev: 'Den här tavlan togs bort tvångsvis av:',
         nameUpdated: 'Namn uppdaterat', clearAllConfirm: 'Rensa hela tavlan? Det går inte att ångra.',
       },
       no: {
@@ -4412,7 +4424,8 @@
         dueToday: 'I dag!', dueTomorrow: 'I morgen', dueInDays: 'Om {{n}} dag(er)', dueOverdue: '{{n}} dag(er) forsinket',
         confirmYes: 'Ja, slett', confirmNo: 'Avbryt',
         toastRoomDeletedRemote: '🗑 Dette rommet ble slettet fra databasen.',
-        boardRemovedTitle: 'Tavlen fjernet', boardRemovedDesc: 'Eieren har fjernet dette tavlet. Denne lenken er ikke lenger gyldig.', boardRemovedBack: 'Tilbake til arbeidsområdet',
+        boardRemovedTitle: 'Tavlen fjernet', boardRemovedDesc: 'Eieren har fjernet dette tavlet. Denne lenken er ikke lenger gyldig.', boardRemovedDescOwner: 'Du fjernet dette tavlet. Du kan gjenopprette det nedenfor.', boardRemovedBack: 'Tilbake til arbeidsområdet', boardRemovedRecover: 'Gjenopprett tavlen',
+        boardForceRemovedTitle: 'Tavlen permanent fjernet', boardForceRemovedDesc: 'Dette tavlet ble fjernet av en administrator og kan ikke gjenopprettes.', boardForceRemovedDescDev: 'Dette tavlet ble tvangsfjernt av:',
         nameUpdated: 'Navn oppdatert',
       },
       da: {
@@ -4432,7 +4445,8 @@
         dueToday: 'I dag!', dueTomorrow: 'I morgen', dueInDays: 'Om {{n}} dag(e)', dueOverdue: '{{n}} dag(e) forsinket',
         confirmYes: 'Ja, slet', confirmNo: 'Annuller',
         toastRoomDeletedRemote: '🗑 Dette rum blev slettet fra databasen.',
-        boardRemovedTitle: 'Tavlen fjernet', boardRemovedDesc: 'Ejeren har fjernet dette tavle. Dette link er ikke længere gyldigt.', boardRemovedBack: 'Tilbage til arbejdsområdet',
+        boardRemovedTitle: 'Tavlen fjernet', boardRemovedDesc: 'Ejeren har fjernet dette tavle. Dette link er ikke længere gyldigt.', boardRemovedDescOwner: 'Du fjernede dette tavle. Du kan gendanne det nedenfor.', boardRemovedBack: 'Tilbage til arbejdsområdet', boardRemovedRecover: 'Gendan tavlen',
+        boardForceRemovedTitle: 'Tavlen permanent fjernet', boardForceRemovedDesc: 'Dette tavle blev fjernet af en administrator og kan ikke gendannes.', boardForceRemovedDescDev: 'Dette tavle blev tvangsfjernet af:',
         nameUpdated: 'Navn opdateret',
       },
       fi: {
@@ -4452,7 +4466,8 @@
         dueToday: 'Tänään!', dueTomorrow: 'Huomenna', dueInDays: '{{n}} päivässä', dueOverdue: '{{n}} päivää myöhässä',
         confirmYes: 'Kyllä, poista', confirmNo: 'Peruuta',
         toastRoomDeletedRemote: '🗑 Tämä huone poistettiin tietokannasta.',
-        boardRemovedTitle: 'Taulu poistettu', boardRemovedDesc: 'Omistaja on poistanut tämän taulun. Tämä linkki ei ole enää voimassa.', boardRemovedBack: 'Palaa työtilaan',
+        boardRemovedTitle: 'Taulu poistettu', boardRemovedDesc: 'Omistaja on poistanut tämän taulun. Tämä linkki ei ole enää voimassa.', boardRemovedDescOwner: 'Poistat tämän taulun. Voit palauttaa sen alla.', boardRemovedBack: 'Palaa työtilaan', boardRemovedRecover: 'Palauta taulu',
+        boardForceRemovedTitle: 'Taulu poistettu pysyvästi', boardForceRemovedDesc: 'Tämä taulu poistettiin järjestelmänvalvojan toimesta eikä sitä voi palauttaa.', boardForceRemovedDescDev: 'Tämä taulu poistettiin pakolla:',
         nameUpdated: 'Nimi päivitetty',
       },
       ru: {
@@ -4472,7 +4487,8 @@
         dueToday: 'Сегодня!', dueTomorrow: 'Завтра', dueInDays: 'Через {{n}} дн.', dueOverdue: 'Просрочено на {{n}} дн.',
         confirmYes: 'Да, удалить', confirmNo: 'Отмена',
         toastRoomDeletedRemote: '🗑 Эта комната была удалена из базы данных.',
-        boardRemovedTitle: 'Доска удалена', boardRemovedDesc: 'Владелец удалил эту доску. Эта ссылка больше не действительна.', boardRemovedBack: 'Вернуться в рабочее пространство',
+        boardRemovedTitle: 'Доска удалена', boardRemovedDesc: 'Владелец удалил эту доску. Эта ссылка больше не действительна.', boardRemovedDescOwner: 'Вы удалили эту доску. Вы можете восстановить её ниже.', boardRemovedBack: 'Вернуться в рабочее пространство', boardRemovedRecover: 'Восстановить доску',
+        boardForceRemovedTitle: 'Доска удалена навсегда', boardForceRemovedDesc: 'Эта доска была удалена администратором и не может быть восстановлена.', boardForceRemovedDescDev: 'Эта доска была принудительно удалена пользователем:',
         nameUpdated: 'Имя обновлено',
       },
       zh: {
@@ -4492,7 +4508,8 @@
         dueToday: '今天截止!', dueTomorrow: '明天', dueInDays: '{{n}}天后', dueOverdue: '已逾期{{n}}天',
         confirmYes: '是，删除', confirmNo: '取消',
         toastRoomDeletedRemote: '🗑 此房间已从数据库中删除。',
-        boardRemovedTitle: '看板已删除', boardRemovedDesc: '所有者已删除此看板，该链接已失效。', boardRemovedBack: '返回工作区',
+        boardRemovedTitle: '看板已删除', boardRemovedDesc: '所有者已删除此看板，该链接已失效。', boardRemovedDescOwner: '您已删除此看板，可在下方恢复它。', boardRemovedBack: '返回工作区', boardRemovedRecover: '恢复看板',
+        boardForceRemovedTitle: '看板已被永久删除', boardForceRemovedDesc: '此看板已被管理员删除，无法恢复。', boardForceRemovedDescDev: '此看板被强制删除，操作者：',
         nameUpdated: '名称已更新',
       },
       ja: {
@@ -4512,7 +4529,8 @@
         dueToday: '今日まで!', dueTomorrow: '明日', dueInDays: '{{n}}日後', dueOverdue: '{{n}}日超過',
         confirmYes: 'はい、削除', confirmNo: 'キャンセル',
         toastRoomDeletedRemote: '🗑 このルームはデータベースから削除されました。',
-        boardRemovedTitle: 'ボードが削除されました', boardRemovedDesc: 'オーナーがこのボードを削除しました。このリンクは無効です。', boardRemovedBack: 'ワークスペースに戻る',
+        boardRemovedTitle: 'ボードが削除されました', boardRemovedDesc: 'オーナーがこのボードを削除しました。このリンクは無効です。', boardRemovedDescOwner: 'このボードを削除しました。以下から復元できます。', boardRemovedBack: 'ワークスペースに戻る', boardRemovedRecover: 'ボードを復元',
+        boardForceRemovedTitle: 'ボードが完全に削除されました', boardForceRemovedDesc: 'このボードは管理者によって削除されたため、復元できません。', boardForceRemovedDescDev: 'このボードは強制削除されました。操作者：',
         toastUserIdCopied: '📋 Auth UIDをクリップボードにコピーしました',
         nameUpdated: '名前を更新しました',
       },
@@ -5792,13 +5810,26 @@
     }
 
     async function devPurgeRoom(roomId, btn) {
-      if (!confirm('Permanently delete room ' + roomId + '? Cannot be undone!')) return;
+      if (!confirm('Force-remove room ' + roomId + '?\n\nThe owner will see a "removed by admin" message and cannot recover it.')) return;
       btn.disabled = true; btn.textContent = '...';
       try {
-        await db.ref('rooms/' + roomId).remove();
+        await db.ref('rooms/' + roomId + '/config').update({
+          deleted: true, deletedAt: Date.now(), forceDeleted: true, forceDeletedBy: _username || 'Dev'
+        });
         btn.closest('div[style]').remove();
-        toast('Room purged: ' + roomId.slice(0, 14));
+        toast('Room force-removed: ' + roomId.slice(0, 14));
       } catch(e) { btn.disabled = false; btn.textContent = 'Purge'; toast('Failed: ' + e.message); }
+    }
+
+    async function devRecoverRoom(roomId, btn) {
+      btn.disabled = true; btn.textContent = '...';
+      try {
+        await db.ref('rooms/' + roomId + '/config').update({
+          deleted: false, deletedAt: null, forceDeleted: false, forceDeletedBy: null
+        });
+        toast('✅ Room recovered: ' + roomId.slice(0, 14));
+        devLoadRooms();
+      } catch(e) { btn.disabled = false; btn.textContent = 'Recover'; toast('Failed: ' + e.message); }
     }
 
     // ── DEV PANEL: IDENTITY RESOLVER ──
@@ -5904,7 +5935,9 @@
       const daysSince = Math.round((Date.now() - lastUpdated) / 86400000);
       if (daysSince >= config.selfDestructDays) {
         if (confirm('This room has been inactive for ' + daysSince + ' days and is set to auto-delete. Delete it now?')) {
-          db.ref('rooms/' + _roomId).remove().then(() => { toast('Room deleted'); window.location.href = '?'; });
+          db.ref('rooms/' + _roomId + '/config').update({
+            deleted: true, deletedAt: Date.now(), forceDeleted: false, forceDeletedBy: null
+          }).then(() => { toast('Room deleted'); window.location.href = '?'; });
         }
       }
     }
@@ -6699,7 +6732,9 @@
         const deletes = [];
         for (const [rId, room] of Object.entries(rooms)) {
           if (room.config && room.config.ownerAuthUid === authUid) {
-            deletes.push(db.ref('rooms/' + rId).remove());
+            deletes.push(db.ref('rooms/' + rId + '/config').update({
+              deleted: true, deletedAt: Date.now(), forceDeleted: true, forceDeletedBy: _username || 'Dev'
+            }));
           }
         }
         await Promise.all(deletes);
@@ -6970,7 +7005,11 @@
           ws.boards = ws.boards.filter(b => b.id !== boardId);
           saveWorkspaces();
           if (isCloud) {
-            try { await db.ref('rooms/' + boardId).remove(); }
+            try {
+              await db.ref('rooms/' + boardId + '/config').update({
+                deleted: true, deletedAt: Date.now(), forceDeleted: false, forceDeletedBy: null
+              });
+            }
             catch (e) { toast(t('toastDeleteCloudError')); }
           } else {
             localStorage.removeItem('pb_local_' + boardId);
@@ -8163,8 +8202,81 @@
       });
     }
 
-    function closeBoardRemovedOverlay() {
-      window.location.replace(location.pathname);
+    function showBoardRemovedState(roomId, config) {
+      const currentUid = _authUid || (auth.currentUser && auth.currentUser.uid);
+      const isOwner = config.ownerAuthUid && currentUid && config.ownerAuthUid === currentUid;
+      const forceDeleted = !!config.forceDeleted;
+
+      const titleEl = document.getElementById('boardRemovedTitle');
+      const descEl = document.getElementById('boardRemovedDesc');
+      const actionsEl = document.getElementById('boardRemovedActions');
+
+      if (forceDeleted) {
+        titleEl.textContent = t('boardForceRemovedTitle');
+        descEl.textContent = _isDev
+          ? t('boardForceRemovedDescDev') + (config.forceDeletedBy ? ' (' + config.forceDeletedBy + ')' : '')
+          : t('boardForceRemovedDesc');
+      } else if (isOwner) {
+        titleEl.textContent = t('boardRemovedTitle');
+        descEl.textContent = t('boardRemovedDescOwner');
+      } else {
+        titleEl.textContent = t('boardRemovedTitle');
+        descEl.textContent = t('boardRemovedDesc');
+      }
+
+      actionsEl.innerHTML = '';
+
+      // Always: return to workspace
+      const backBtn = document.createElement('button');
+      backBtn.className = 'btn';
+      backBtn.textContent = t('boardRemovedBack');
+      backBtn.onclick = () => window.location.replace(location.pathname);
+      actionsEl.appendChild(backBtn);
+
+      // Owner (non-force-deleted) or dev: recover button
+      if ((isOwner && !forceDeleted) || _isDev) {
+        const recoverBtn = document.createElement('button');
+        recoverBtn.className = 'btn btn-primary';
+        recoverBtn.textContent = t('boardRemovedRecover');
+        recoverBtn.onclick = () => recoverBoard(roomId, recoverBtn);
+        actionsEl.appendChild(recoverBtn);
+      }
+
+      // Dev only: view board (read-only)
+      if (_isDev) {
+        const viewBtn = document.createElement('button');
+        viewBtn.className = 'btn';
+        viewBtn.style.cssText = 'border-color:rgba(247,106,138,0.4);color:var(--danger,#f76a8a)';
+        viewBtn.textContent = '🛠️ View Board';
+        viewBtn.onclick = async () => {
+          document.getElementById('boardRemovedOverlay').classList.remove('open');
+          _roomDeletedRemotely = true; // block any accidental saves
+          toast('🛠️ Viewing deleted board — read-only');
+          await finishJoinRoom(roomId);
+        };
+        actionsEl.appendChild(viewBtn);
+      }
+
+      document.getElementById('boardVeil').classList.remove('show');
+      document.getElementById('boardRemovedOverlay').classList.add('open');
+    }
+
+    async function recoverBoard(roomId, btn) {
+      btn.disabled = true;
+      btn.textContent = '...';
+      try {
+        await db.ref('rooms/' + roomId + '/config').update({
+          deleted: false,
+          deletedAt: null,
+          forceDeleted: false,
+          forceDeletedBy: null
+        });
+        window.location.reload();
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = t('boardRemovedRecover');
+        toast('❌ Failed to recover: ' + e.message);
+      }
     }
 
     async function joinRoom(roomId) {
@@ -8173,10 +8285,20 @@
         const configSnap = await db.ref('rooms/' + roomId + '/config').once('value');
         const rawConfig = configSnap.val();
 
-        // Room doesn't exist — was deleted or never created
+        // Room doesn't exist (hard-deleted legacy or never created)
         if (!rawConfig) {
           document.getElementById('boardVeil').classList.remove('show');
+          document.getElementById('boardRemovedTitle').textContent = t('boardRemovedTitle');
+          document.getElementById('boardRemovedDesc').textContent = t('boardRemovedDesc');
+          document.getElementById('boardRemovedActions').innerHTML =
+            '<button class="btn btn-primary" onclick="window.location.replace(location.pathname)">' + t('boardRemovedBack') + '</button>';
           document.getElementById('boardRemovedOverlay').classList.add('open');
+          return;
+        }
+
+        // Room exists but is soft-deleted
+        if (rawConfig.deleted) {
+          showBoardRemovedState(roomId, rawConfig);
           return;
         }
 
@@ -8770,16 +8892,33 @@
           ownerName: (data.config && data.config.ownerName) || '—',
           ownerUid: (data.config && data.config.ownerAuthUid) || '—',
           locked: !!(data.config && data.config.locked),
+          deleted: !!(data.config && data.config.deleted),
+          forceDeleted: !!(data.config && data.config.forceDeleted),
+          forceDeletedBy: (data.config && data.config.forceDeletedBy) || null,
         }));
         devRenderRooms(_devRoomsCache);
       } catch (e) {
         list.innerHTML = '<p style="color:var(--danger,#f76a8a);font-size:0.78rem">Failed to load rooms. Check Firebase rules.</p>';
       }
     }
+    let _devRoomsFilter = 'all';
+    function devSetRoomsFilter(f) {
+      _devRoomsFilter = f;
+      ['all', 'active', 'removed'].forEach(id => {
+        const btn = document.getElementById('devRoomsFilter' + id.charAt(0).toUpperCase() + id.slice(1));
+        if (btn) { btn.style.background = f === id ? 'var(--accent)' : ''; btn.style.color = f === id ? '#fff' : ''; btn.style.borderColor = f === id ? 'var(--accent)' : ''; }
+      });
+      devFilterRooms(document.getElementById('devRoomsSearch').value);
+    }
     function devFilterRooms(q) {
-      if (!q.trim()) { devRenderRooms(_devRoomsCache); return; }
-      const lq = q.toLowerCase();
-      devRenderRooms(_devRoomsCache.filter(r => r.id.toLowerCase().includes(lq) || r.ownerName.toLowerCase().includes(lq) || r.ownerUid.toLowerCase().includes(lq)));
+      let rooms = _devRoomsCache;
+      if (_devRoomsFilter === 'active') rooms = rooms.filter(r => !r.deleted);
+      if (_devRoomsFilter === 'removed') rooms = rooms.filter(r => r.deleted);
+      if (q && q.trim()) {
+        const lq = q.toLowerCase();
+        rooms = rooms.filter(r => r.id.toLowerCase().includes(lq) || r.ownerName.toLowerCase().includes(lq) || r.ownerUid.toLowerCase().includes(lq));
+      }
+      devRenderRooms(rooms);
     }
     function devRenderRooms(rooms) {
       const list = document.getElementById('devRoomsList');
@@ -8787,15 +8926,24 @@
       list.innerHTML = '';
       rooms.forEach(r => {
         const row = document.createElement('div');
-        row.style.cssText = 'background:var(--surface2);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:0.78rem';
+        const isRemoved = r.deleted;
+        const borderColor = r.forceDeleted ? 'rgba(247,106,138,0.3)' : isRemoved ? 'rgba(255,180,0,0.3)' : 'transparent';
+        row.style.cssText = 'background:var(--surface2);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:0.78rem;border:1px solid ' + borderColor;
+        const removedBadge = r.forceDeleted
+          ? '<span style="font-size:0.65rem;padding:1px 6px;border-radius:100px;background:rgba(247,106,138,0.15);color:var(--danger,#f76a8a);margin-left:6px">Force Removed' + (r.forceDeletedBy ? ' by ' + escHtml(r.forceDeletedBy) : '') + '</span>'
+          : isRemoved ? '<span style="font-size:0.65rem;padding:1px 6px;border-radius:100px;background:rgba(255,180,0,0.15);color:#f7c26a;margin-left:6px">Removed by Owner</span>'
+          : '';
+        const actionBtns = isRemoved
+          ? '<button class="btn" style="font-size:0.7rem;padding:4px 10px;color:var(--accent3,#6af7c2);border-color:rgba(106,247,194,0.35);white-space:nowrap;flex-shrink:0" onclick="devRecoverRoom(\'' + escHtml(r.id) + '\',this)">↩ Recover</button>'
+            + '<button class="btn" style="font-size:0.7rem;padding:4px 10px;white-space:nowrap;flex-shrink:0" onclick="window.open(\'?r=' + escHtml(r.id) + '\',\'_blank\')">👁 View</button>'
+          : '<button class="btn" style="font-size:0.7rem;padding:4px 10px;color:#6ab4f7;border-color:rgba(106,180,247,0.35);white-space:nowrap;flex-shrink:0" onclick="devShowTransferForm(\'' + escHtml(r.id) + '\',\'' + escHtml(r.ownerName) + '\')">⇄ Transfer</button>'
+            + '<button class="btn" style="font-size:0.7rem;padding:4px 10px;color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.3);white-space:nowrap;flex-shrink:0" onclick="devPurgeRoom(\'' + escHtml(r.id) + '\',this)">🚫 Force Remove</button>';
         row.innerHTML =
           '<div style="flex:1;min-width:0">' +
-          '<div style="font-family:monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:2px">' + escHtml(r.id) + '</div>' +
+          '<div style="font-family:monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:2px">' + escHtml(r.id) + removedBadge + '</div>' +
           '<div style="font-weight:600;color:var(--text)">' + escHtml(r.ownerName) + '</div>' +
-          '<div style="font-family:monospace;font-size:0.7rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px">' + escHtml(r.ownerUid) + '</div>' +
-          '</div>' +
-          '<button class="btn" style="font-size:0.7rem;padding:4px 10px;color:#6ab4f7;border-color:rgba(106,180,247,0.35);white-space:nowrap;flex-shrink:0" ' +
-          'onclick="devShowTransferForm(\'' + escHtml(r.id) + '\',\'' + escHtml(r.ownerName) + '\')">⇄ Transfer</button>';
+          '<div style="font-family:monospace;font-size:0.7rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px">' + escHtml(r.ownerUid) + '</div>' +
+          '</div>' + actionBtns;
         list.appendChild(row);
       });
     }
