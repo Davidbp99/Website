@@ -7026,12 +7026,40 @@
       const board = ws.boards.find(b => b.id === boardId);
       if (!board) return;
       const isCloud = board.type === 'cloud';
+
+      // For cloud boards, check ownership before deciding what "delete" means
+      let isOwner = !isCloud;
+      if (isCloud) {
+        try {
+          const snap = await db.ref('rooms/' + boardId + '/config/ownerAuthUid').once('value');
+          const ownerUid = snap.val();
+          const currentUid = _authUid || (auth.currentUser && auth.currentUser.uid);
+          isOwner = !!(ownerUid && currentUid && ownerUid === currentUid);
+        } catch(e) { /* if check fails, treat as non-owner */ }
+      }
+
+      if (!isOwner) {
+        // Non-owner: just remove the shortcut from their workspace, no Firebase changes
+        showConfirm({
+          icon: '✕',
+          title: 'Remove from Workspace',
+          message: 'Remove "' + escHtml(board.name || 'this board') + '" from your workspace? The board itself will not be affected.',
+          onConfirm: () => {
+            ws.boards = ws.boards.filter(b => b.id !== boardId);
+            saveWorkspaces();
+            renderDashboard();
+            toast('Removed from workspace.');
+          }
+        });
+        return;
+      }
+
+      // Owner: soft-delete the board from Firebase
       showConfirm({
         icon: isCloud ? '☁️' : '🗑',
         title: t('confirmDelete'),
         message: t('confirmDeleteBoard', { name: board.name || t('untitledBoard') }),
         onConfirm: async () => {
-          const board = ws.boards.find(b => b.id === boardId);
           if (isCloud) {
             try {
               await db.ref('rooms/' + boardId + '/config').update({
@@ -7039,7 +7067,7 @@
               });
               localStorage.removeItem('pb_cloud_' + boardId);
               localStorage.removeItem('pb_roomPw_' + boardId);
-              if (board) board.deleted = true;
+              board.deleted = true;
               saveWorkspaces();
             }
             catch (e) { toast(t('toastDeleteCloudError')); return; }
@@ -9166,6 +9194,24 @@
         applyTranslations();
         updateUsernameChip();
         listenForBroadcasts();
+        // Pre-seed default state so finishJoinRoom has content to write when this is a brand-new board.
+        // We do NOT render or save locally — Firebase is the source of truth for cloud boards.
+        if (state.labels.length === 0) {
+          state.labels = [
+            { name: 'Design', bg: '#2a1f5e', color: '#a78bfa' },
+            { name: 'Dev', bg: '#1a3a2a', color: '#6af7c4' },
+            { name: 'Bug', bg: '#3a1a1a', color: '#f76a8a' },
+            { name: 'Feature', bg: '#1a2f3a', color: '#6ab4f7' },
+            { name: 'Docs', bg: '#3a2f1a', color: '#f7c26a' },
+          ];
+        }
+        if (state.columns.length === 0) {
+          state.columns = [
+            { id: uid(), name: 'To Do', color: '#7c6af7', cards: [] },
+            { id: uid(), name: 'In Progress', color: '#f7c26a', cards: [] },
+            { id: uid(), name: 'Done', color: '#6af7c4', cards: [] },
+          ];
+        }
         document.getElementById('boardVeil').classList.add('show');
         joinRoom(urlRoomId);
       } else {
@@ -9354,6 +9400,7 @@
 
     function renderRecentBoards() {
       const list = document.getElementById('recentBoardsList');
+      if (!list) return;
       const boards = getRecentBoards();
 
       if (boards.length === 0) {
