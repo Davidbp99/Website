@@ -1,0 +1,2097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Card Rewards Calculator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ══════════════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════════════ */
+    :root {
+      --bg:         #020B15;
+      --surface:    #050F1E;
+      --surface-2:  #091629;
+      --surface-3:  #0E1F36;
+      --border:     #112030;
+      --border-2:   #1A3352;
+      --ink:        #D0E8F5;
+      --ink-2:      #6E9CB8;
+      --ink-3:      #334F65;
+      --cyan:       #00CBFF;
+      --cyan-glow:  rgba(0,203,255,0.18);
+      --cyan-dim:   rgba(0,203,255,0.07);
+      --gold:       #F5A31A;
+      --gold-glow:  rgba(245,163,26,0.18);
+      --gold-dim:   rgba(245,163,26,0.07);
+      --green:      #00E5A0;
+      --green-dim:  rgba(0,229,160,0.08);
+      --red:        #FF4D78;
+      --red-dim:    rgba(255,77,120,0.08);
+      --radius:     14px;
+      --radius-sm:  8px;
+      --display:    'Syne', sans-serif;
+      --body:       'DM Sans', sans-serif;
+      --mono:       'DM Mono', monospace;
+    }
+
+    /* ══════════════════════════════════════════════
+       RESET
+    ══════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(ellipse 80% 40% at 50% -5%, rgba(0,130,200,0.07) 0%, transparent 70%),
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: auto, 40px 40px, 40px 40px;
+      color: var(--ink);
+      font-family: var(--body);
+      font-size: 14px;
+      line-height: 1.55;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ══════════════════════════════════════════════
+       LAYOUT
+    ══════════════════════════════════════════════ */
+    .app {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 28px 20px 80px;
+    }
+
+    /* ══════════════════════════════════════════════
+       HEADER
+    ══════════════════════════════════════════════ */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 28px;
+      gap: 16px;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(0,203,255,0.12), var(--surface-2));
+      border: 1px solid var(--border-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: var(--cyan);
+      flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(0,203,255,0.08);
+    }
+
+    .header-title {
+      font-family: var(--display);
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .header-sub {
+      font-size: 0.75rem;
+      color: var(--ink-2);
+      letter-spacing: 0.01em;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-2);
+      background: var(--surface);
+      color: var(--ink-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.18s;
+    }
+    .icon-btn:hover { background: var(--surface-2); color: var(--ink); }
+
+    /* ══════════════════════════════════════════════
+       CONFIG STRIP (always-visible global inputs)
+    ══════════════════════════════════════════════ */
+    .config-strip {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 22px;
+    }
+
+    /* ══════════════════════════════════════════════
+       SHARED CONTROL
+    ══════════════════════════════════════════════ */
+    .ctrl {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .ctrl label,
+    label.ctrl-lbl {
+      font-size: 0.58rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--ink-3);
+    }
+
+    .ctrl select,
+    .ctrl input[type="number"],
+    .ctrl input[type="text"] {
+      background: var(--surface-2);
+      border: 1px solid var(--border-2);
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.83rem;
+      font-family: var(--mono);
+      font-weight: 400;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .ctrl select:focus,
+    .ctrl input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 2px var(--cyan-dim);
+    }
+
+    .ctrl-sm select,
+    .ctrl-sm input { width: 80px; }
+
+    /* ══════════════════════════════════════════════
+       FETCH BUTTON
+    ══════════════════════════════════════════════ */
+    .fetch-btn {
+      background: var(--cyan);
+      color: #020B15;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 9px 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      font-family: var(--body);
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+    .fetch-btn:hover { background: #33D5FF; transform: translateY(-1px); }
+    .fetch-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ══════════════════════════════════════════════
+       PANELS
+    ══════════════════════════════════════════════ */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    /* ══════════════════════════════════════════════
+       LIVE PRICES
+    ══════════════════════════════════════════════ */
+    .live-prices {
+      padding: 16px 20px;
+      margin-bottom: 14px;
+    }
+
+    .lp-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .lp-badge {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green);
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--green); }
+      50%       { opacity: 0.4; box-shadow: none; }
+    }
+
+    .lp-time {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--ink-3);
+    }
+
+    .lp-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .lp-item { padding-right: 16px; }
+
+    .lp-k {
+      font-size: 0.58rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 4px;
+    }
+
+    .lp-v {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--ink);
+    }
+
+    .lp-foot {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      font-size: 0.68rem;
+      color: var(--ink-3);
+      font-family: var(--mono);
+    }
+
+    /* ══════════════════════════════════════════════
+       BEST CARD
+    ══════════════════════════════════════════════ */
+    .best-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      margin-bottom: 14px;
+      background: var(--surface);
+      border: 1px solid rgba(245,163,26,0.22);
+      border-radius: var(--radius);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .best-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 15% 50%, rgba(245,163,26,0.07) 0%, transparent 55%);
+      pointer-events: none;
+    }
+
+    .trophy {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: var(--gold-dim);
+      border: 1px solid rgba(245,163,26,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .best-card-info { flex: 1; position: relative; }
+
+    .best-card-info .k {
+      font-size: 0.58rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .best-card-info .v {
+      font-family: var(--display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .best-card-net { text-align: right; position: relative; }
+
+    .best-card-net .v {
+      display: block;
+      font-family: var(--mono);
+      font-size: 1.65rem;
+      font-weight: 400;
+      color: var(--green);
+      letter-spacing: -0.03em;
+    }
+
+    .best-card-net .k {
+      font-size: 0.62rem;
+      color: var(--ink-3);
+      margin-top: 3px;
+    }
+
+    /* ══════════════════════════════════════════════
+       STAT GRID
+    ══════════════════════════════════════════════ */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    .stat-icon { font-size: 1.1rem; margin-bottom: 10px; color: var(--cyan); }
+    .stat-icon.gold { color: var(--gold); }
+
+    .stat-k {
+      font-size: 0.58rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-3);
+      margin-bottom: 4px;
+    }
+
+    .stat-v {
+      font-family: var(--display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .stat-v.green { color: var(--green); }
+
+    /* ══════════════════════════════════════════════
+       SECTION TITLE
+    ══════════════════════════════════════════════ */
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 26px 0 12px;
+    }
+
+    .section-title h2 {
+      font-family: var(--display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .section-title button {
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      color: var(--ink-2);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.18s;
+      font-family: var(--body);
+    }
+    .section-title button:hover { background: var(--surface-2); color: var(--ink); }
+
+    /* ══════════════════════════════════════════════
+       COMPARISON TABLE
+    ══════════════════════════════════════════════ */
+    .table-panel { margin-bottom: 14px; }
+
+    .table-panel h3 {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dash-table-wrap { overflow-x: auto; }
+
+    table.dash-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+      min-width: 400px;
+    }
+
+    table.dash-table th {
+      font-size: 0.58rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    table.dash-table td {
+      font-size: 0.84rem;
+      font-family: var(--mono);
+      font-weight: 400;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    table.dash-table tr:last-child td { border-bottom: none; }
+    table.dash-table tbody tr:hover { background: var(--surface-2); transition: background 0.15s; }
+
+    table.dash-table th:first-child,
+    table.dash-table td:first-child { text-align: left; }
+
+    .card-name-td {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: var(--body);
+      font-weight: 600;
+      font-size: 0.87rem;
+    }
+
+    .card-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .td-dash { color: var(--ink-3); }
+
+    .dot-coca    { background: #F97316; box-shadow: 0 0 5px rgba(249,115,22,0.5); }
+    .dot-ready   { background: #A855F7; box-shadow: 0 0 5px rgba(168,85,247,0.5); }
+    .dot-cdc     { background: #3B82F6; box-shadow: 0 0 5px rgba(59,130,246,0.5); }
+    .dot-ether   { background: #6366F1; box-shadow: 0 0 5px rgba(99,102,241,0.5); }
+    .dot-revolut { background: #22D3EE; box-shadow: 0 0 5px rgba(34,211,238,0.5); }
+    .dot-gnosis  { background: #22C55E; box-shadow: 0 0 5px rgba(34,197,94,0.5); }
+
+    /* ══════════════════════════════════════════════
+       INSIGHT PANELS
+    ══════════════════════════════════════════════ */
+    .insight {
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      border-radius: var(--radius);
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .insight.orange {
+      border-color: rgba(245,163,26,0.2);
+      background: linear-gradient(135deg, rgba(245,163,26,0.04) 0%, var(--surface) 60%);
+    }
+
+    .insight-title {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .insight-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+      gap: 16px;
+    }
+
+    .insight-split > div:first-child { border-right: 1px solid var(--border); }
+
+    .insight-k {
+      font-size: 0.58rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-3);
+      margin-bottom: 7px;
+    }
+
+    .insight-v {
+      font-family: var(--mono);
+      font-size: 1.2rem;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 4px;
+    }
+
+    .insight-v.green { color: var(--green); }
+    .insight-v.red   { color: var(--red); }
+    .insight-v .trend { font-size: 1rem; }
+    .insight-sub { font-size: 0.73rem; color: var(--ink-3); }
+
+    .loss-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.84rem;
+      color: var(--ink-2);
+    }
+
+    .loss-row .red {
+      font-family: var(--mono);
+      font-weight: 400;
+      font-size: 1rem;
+      color: var(--red);
+    }
+
+    /* FX List */
+    .fx-list { display: flex; flex-direction: column; }
+
+    .fx-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .fx-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .fx-card {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 600;
+      font-size: 0.87rem;
+    }
+
+    .fx-vals { text-align: right; }
+    .fx-vals .mo { font-family: var(--mono); font-size: 0.88rem; margin-bottom: 2px; }
+    .fx-vals .yr { font-family: var(--mono); font-size: 0.68rem; color: var(--ink-3); }
+    .fx-vals .mo.orange { color: var(--gold); }
+    .fx-vals .yr.orange { color: var(--gold); opacity: 0.7; }
+    .fx-none { font-size: 0.8rem; color: var(--ink-3); }
+
+    /* ══════════════════════════════════════════════
+       CARD CONFIG SECTION
+    ══════════════════════════════════════════════ */
+    .card-config { margin-top: 38px; }
+
+    .card-config-title {
+      font-family: var(--display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 14px;
+    }
+
+    /* Visual card tabs */
+    .card-tabs {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius);
+      padding: 5px;
+      margin-bottom: 18px;
+    }
+
+    .card-tab {
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink-2);
+      transition: all 0.16s;
+      font-family: var(--body);
+      flex: 1;
+      text-align: center;
+      min-width: 80px;
+    }
+
+    .card-tab:hover { background: var(--surface-2); color: var(--ink); }
+
+    .card-tab.active {
+      background: var(--surface-2);
+      border-color: var(--border-2);
+      color: var(--cyan);
+    }
+
+    /* ══════════════════════════════════════════════
+       PER-CARD SECTIONS
+    ══════════════════════════════════════════════ */
+    section.calc { display: none; }
+    section.calc.active { display: block; }
+
+    .row2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .panel-body { padding: 20px; }
+
+    .panel-title {
+      font-family: var(--display);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .panel-sub {
+      font-size: 0.76rem;
+      color: var(--ink-2);
+      margin-bottom: 16px;
+      line-height: 1.45;
+    }
+
+    .inline {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    /* ══════════════════════════════════════════════
+       METRICS GRID
+    ══════════════════════════════════════════════ */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+      gap: 7px;
+      margin: 14px 0;
+    }
+
+    .metric {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 11px 12px;
+    }
+
+    .metric .k {
+      font-size: 0.57rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--ink-3);
+      margin-bottom: 5px;
+    }
+
+    .metric .v {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--ink);
+    }
+
+    .metric .v.positive { color: var(--green); }
+    .metric .v.negative { color: var(--red); }
+
+    /* ══════════════════════════════════════════════
+       SEGMENTED CONTROL
+    ══════════════════════════════════════════════ */
+    .seg {
+      display: flex;
+      background: var(--surface-2);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+    }
+
+    .seg label {
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--ink-3);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .seg input { display: none; }
+
+    .seg label:has(input:checked) { background: var(--surface-3); color: var(--ink); }
+    .seg input:checked + span { color: var(--ink); }
+
+    /* ══════════════════════════════════════════════
+       SUBSCRIPTION ITEMS
+    ══════════════════════════════════════════════ */
+    .sub-grid { display: grid; gap: 7px; margin-top: 10px; }
+
+    .sub-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      transition: opacity 0.2s;
+    }
+
+    .sub-item.off { opacity: 0.4; }
+
+    .sub-item .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .sub-item .name { font-size: 0.83rem; font-weight: 600; }
+
+    .sub-item .pill {
+      font-size: 0.58rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 8px;
+      border-radius: 100px;
+      background: var(--bg);
+      border: 1px solid var(--border-2);
+      color: var(--ink-3);
+    }
+
+    .sub-item .pill.ok {
+      background: var(--green-dim);
+      border-color: rgba(0,229,160,0.22);
+      color: var(--green);
+    }
+
+    .sub-item .fields { display: flex; gap: 6px; }
+
+    .sub-item .fields select,
+    .sub-item .fields input {
+      background: var(--bg);
+      border: 1px solid var(--border-2);
+      color: var(--ink);
+      padding: 7px 9px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-family: var(--mono);
+      flex: 1;
+      outline: none;
+    }
+
+    /* ══════════════════════════════════════════════
+       CONFIG TABLES
+    ══════════════════════════════════════════════ */
+    .tbl-wrap { overflow-x: auto; }
+
+    table.config-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.79rem;
+      text-align: right;
+    }
+
+    table.config-table th {
+      font-size: 0.57rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-3);
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      white-space: nowrap;
+    }
+
+    table.config-table td {
+      padding: 10px 12px;
+      font-family: var(--mono);
+      font-weight: 400;
+      border-bottom: 1px solid var(--border);
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    table.config-table tr:last-child td { border-bottom: none; }
+    table.config-table tbody tr:hover { background: var(--surface-2); }
+
+    table.config-table tr.sel td {
+      background: rgba(0,203,255,0.04);
+      color: var(--cyan);
+    }
+
+    table.config-table tr.best td { background: rgba(0,229,160,0.04); }
+
+    table.config-table th:first-child,
+    table.config-table td:first-child { text-align: left; font-family: var(--body); }
+
+    /* ══════════════════════════════════════════════
+       RANGE SLIDERS
+    ══════════════════════════════════════════════ */
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border-2);
+      outline: none;
+      margin: 8px 0;
+      cursor: pointer;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--cyan);
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--cyan-glow);
+      border: 2px solid var(--bg);
+    }
+
+    input[type=checkbox] {
+      accent-color: var(--cyan);
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+
+    /* ══════════════════════════════════════════════
+       HINT TEXT
+    ══════════════════════════════════════════════ */
+    .hint {
+      font-size: 0.71rem;
+      color: var(--ink-3);
+      line-height: 1.5;
+      margin-top: 10px;
+    }
+
+    /* ══════════════════════════════════════════════
+       STATUS LABEL
+    ══════════════════════════════════════════════ */
+    #priceStatusLbl {
+      font-size: 0.58rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--ink-3);
+    }
+
+    /* ══════════════════════════════════════════════
+       LOAD ANIMATIONS
+    ══════════════════════════════════════════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .live-prices  { animation: fadeUp 0.35s ease both; }
+    .best-card    { animation: fadeUp 0.35s 0.05s ease both; }
+    .stat-grid    { animation: fadeUp 0.35s 0.10s ease both; }
+    .table-panel  { animation: fadeUp 0.35s 0.15s ease both; }
+    .insight      { animation: fadeUp 0.35s 0.18s ease both; }
+    .card-config  { animation: fadeUp 0.35s 0.20s ease both; }
+
+    /* ══════════════════════════════════════════════
+       HIDE LEGACY DETAILS ELEMENT (not used)
+    ══════════════════════════════════════════════ */
+    .settings-details { display: none !important; }
+
+    /* ══════════════════════════════════════════════
+       MOBILE
+    ══════════════════════════════════════════════ */
+    @media (max-width: 560px) {
+      .lp-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .card-tabs { gap: 4px; }
+      .card-tab { font-size: 0.7rem; padding: 6px 9px; min-width: 60px; }
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app" id="appWrap">
+
+  <!-- ── HEADER ── -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="header-icon">◈</div>
+      <div>
+        <h1 class="header-title">Card Rewards</h1>
+        <p class="header-sub">Compare cashback across 6 crypto cards</p>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="icon-btn" onclick="fetchPrices()" title="Refresh prices">⟳</button>
+    </div>
+  </header>
+
+  <!-- ── GLOBAL CONFIG STRIP ── -->
+  <div class="config-strip" id="controls">
+    <div class="ctrl">
+      <label>Monthly spend</label>
+      <input id="globalSpend" type="number" value="2500" min="0" step="100">
+    </div>
+    <div class="ctrl">
+      <label>Token stake (USD)</label>
+      <input id="globalStake" type="number" value="0" min="0" step="100" placeholder="0 = manual">
+    </div>
+    <div class="ctrl">
+      <label>Currency</label>
+      <select id="cur">
+        <option value="GBP">£ GBP</option>
+        <option value="EUR">€ EUR</option>
+      </select>
+    </div>
+    <div class="ctrl ctrl-sm">
+      <label id="fxLbl">FX (1 GBP = USD)</label>
+      <input id="fx" type="number" value="1.35" step="0.01">
+    </div>
+    <div class="ctrl">
+      <label id="priceStatusLbl">Token prices</label>
+      <button id="fetchPricesBtn" class="fetch-btn" onclick="fetchPrices()">↻ Live prices</button>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div class="dashboard">
+
+    <!-- Live Prices -->
+    <div class="live-prices panel">
+      <div class="lp-head">
+        <div class="lp-badge"><span class="dot"></span> Live prices</div>
+        <div class="lp-time" id="lpTime">--:--:--</div>
+      </div>
+      <div class="lp-grid">
+        <div class="lp-item">
+          <div class="lp-k">COCA</div>
+          <div class="lp-v" id="dashPriceCoca">—</div>
+        </div>
+        <div class="lp-item">
+          <div class="lp-k">CRO</div>
+          <div class="lp-v" id="dashPriceCro">—</div>
+        </div>
+        <div class="lp-item">
+          <div class="lp-k">STRK</div>
+          <div class="lp-v" id="dashPriceStrk">—</div>
+        </div>
+        <div class="lp-item">
+          <div class="lp-k">GNO</div>
+          <div class="lp-v" id="dashPriceGno">—</div>
+        </div>
+      </div>
+      <div class="lp-foot" id="dashFxFoot">FX: 1 GBP = $1.3500 USD</div>
+    </div>
+
+    <!-- Best Card -->
+    <div class="best-card">
+      <div class="trophy">🏆</div>
+      <div class="best-card-info">
+        <div class="k">Best card</div>
+        <div class="v" id="dashBestName">Loading…</div>
+      </div>
+      <div class="best-card-net">
+        <span class="v" id="dashBestNet">£—</span>
+        <div class="k">/month net</div>
+      </div>
+    </div>
+
+    <!-- Stat Grid -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon">💳</div>
+        <div class="stat-k">Cards compared</div>
+        <div class="stat-v">6</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon gold">%</div>
+        <div class="stat-k">Best annual</div>
+        <div class="stat-v green" id="dashBestAnn">£—</div>
+      </div>
+    </div>
+
+    <!-- Comparison -->
+    <div class="section-title">
+      <h2>Net Comparison</h2>
+      <button onclick="document.querySelector('.card-config').scrollIntoView({behavior:'smooth'})">Configure →</button>
+    </div>
+
+    <div class="panel table-panel">
+      <h3>Monthly &amp; Annual Net</h3>
+      <div class="dash-table-wrap">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>Card</th>
+              <th>Net/mo</th>
+              <th>Net/yr</th>
+              <th>FX/mo</th>
+              <th>FX/yr</th>
+            </tr>
+          </thead>
+          <tbody id="dashCompTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CDC Warning -->
+    <div class="insight orange">
+      <div class="insight-title">⚠ CDC 6-Month Rebate Window</div>
+      <div class="insight-split">
+        <div>
+          <div class="insight-k">With rebates</div>
+          <div class="insight-v green"><span class="trend">↗</span> <span id="dashCdcWith">£—/mo</span></div>
+          <div class="insight-sub" id="dashCdcWithYr">£—/yr</div>
+        </div>
+        <div>
+          <div class="insight-k">After window ends</div>
+          <div class="insight-v red"><span class="trend">↘</span> <span id="dashCdcAfter">£—/mo</span></div>
+          <div class="insight-sub" id="dashCdcAfterYr">£—/yr</div>
+        </div>
+      </div>
+      <div class="loss-row">
+        <span>Rebate loss after 6mo:</span>
+        <span class="red" id="dashCdcLoss">-£—/mo</span>
+      </div>
+    </div>
+
+    <!-- FX Fees -->
+    <div class="insight panel">
+      <div class="insight-title">◈ FX fees per card</div>
+      <div class="fx-list" id="dashFxList"></div>
+    </div>
+
+  </div><!-- /dashboard -->
+
+  <!-- ── CARD CONFIGURATION ── -->
+  <div class="card-config">
+
+    <div class="card-config-title">Card Configuration</div>
+
+    <!-- Visual tabs -->
+    <div class="card-tabs" role="tablist">
+      <button class="card-tab active" onclick="switchCard('COCA', this)" role="tab">COCA</button>
+      <button class="card-tab" onclick="switchCard('CDC', this)" role="tab">Crypto.com</button>
+      <button class="card-tab" onclick="switchCard('READY', this)" role="tab">Ready</button>
+      <button class="card-tab" onclick="switchCard('GNOSIS', this)" role="tab">Gnosis</button>
+      <button class="card-tab" onclick="switchCard('ETHERFI', this)" role="tab">ether.fi</button>
+      <button class="card-tab" onclick="switchCard('REVOLUT', this)" role="tab">Revolut</button>
+    </div>
+
+    <!-- Hidden select (required by JS) -->
+    <select id="cardSel" style="display:none">
+      <option value="COCA">COCA Card</option>
+      <option value="CDC">Crypto.com Card</option>
+      <option value="READY">Ready Card</option>
+      <option value="GNOSIS">Gnosis Pay</option>
+      <option value="ETHERFI">ether.fi Cash</option>
+      <option value="REVOLUT">Revolut (RevPoints)</option>
+    </select>
+
+    <!-- ════════════════ COCA ════════════════ -->
+    <section class="calc active" id="sec_COCA">
+      <div class="row2">
+        <div class="panel panel-body">
+          <div class="panel-title">COCA Card</div>
+          <div class="panel-sub">Tiered cashback on card spend + 6% APY on balance + 50% subscription rebates</div>
+          <div class="inline">
+            <div class="ctrl"><label>Balance (6% APY)</label><input id="cocaBal" type="number" value="1000"></div>
+            <div class="ctrl"><label>Tier</label>
+              <select id="cocaTier">
+                <option>Base</option>
+                <option>Standard</option>
+                <option>Standard+</option>
+                <option>Premium</option>
+                <option>Premium+</option>
+                <option>Elite</option>
+              </select>
+            </div>
+            <div class="ctrl"><label>$COCA price</label><input id="cocaPrice" type="number" value="0.81" step="0.01"></div>
+            <div class="ctrl"><label>Promo discount %</label><input id="cocaPromo" type="number" value="0" min="0" max="99" step="1" placeholder="e.g. 20"></div>
+            <div class="ctrl"><label>FX fee %</label><input id="cocaFxFee" type="number" value="0" min="0" max="5" step="0.1"></div>
+          </div>
+
+          <div class="ctrl" style="margin-top:10px;">
+            <label>Volatility multiplier: <strong id="cocaVolV">1.0</strong>×</label>
+            <input type="range" id="cocaVol" min="0.5" max="1.5" step="0.1" value="1">
+          </div>
+
+          <label style="font-size:.58rem;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.09em;margin-top:14px;display:block;">
+            Subscriptions (50% rebate) — tier-limited · Cap $70/service ≈ <span id="cocaCapV">£51.85</span>
+          </label>
+          <div class="sub-grid">
+            <div class="sub-item" id="coca_ai">
+              <div class="top"><div class="name">AI Assistants</div><div class="pill" id="coca_ai_pill">Not eligible</div></div>
+              <div class="fields">
+                <select id="cocaAISel"><option value="">None</option><option>ChatGPT</option><option>Claude</option><option>Perplexity</option><option>Midjourney</option></select>
+                <input id="cocaAICost" type="number" value="20">
+                <select id="cocaAICur"><option>USD</option><option>GBP</option><option>EUR</option><option>SEK</option></select>
+              </div>
+            </div>
+            <div class="sub-item" id="coca_stream">
+              <div class="top"><div class="name">Streaming</div><div class="pill" id="coca_stream_pill">Not eligible</div></div>
+              <div class="fields">
+                <select id="cocaStreamSel"><option value="">None</option><option>Netflix</option><option>Disney+</option><option>Paramount+</option><option>YouTube Premium</option></select>
+                <input id="cocaStreamCost" type="number" value="11">
+                <select id="cocaStreamCur"><option>USD</option><option>GBP</option><option>EUR</option><option>SEK</option></select>
+              </div>
+            </div>
+            <div class="sub-item" id="coca_music">
+              <div class="top"><div class="name">Music</div><div class="pill" id="coca_music_pill">Not eligible</div></div>
+              <div class="fields">
+                <select id="cocaMusicSel"><option value="">None</option><option>Spotify</option><option>Apple Music</option><option>YouTube Music</option></select>
+                <input id="cocaMusicCost" type="number" value="11">
+                <select id="cocaMusicCur"><option>USD</option><option>GBP</option><option>EUR</option><option>SEK</option></select>
+              </div>
+            </div>
+            <div class="sub-item" id="coca_mkt">
+              <div class="top"><div class="name">Marketplaces</div><div class="pill" id="coca_mkt_pill">Not eligible</div></div>
+              <div class="fields">
+                <select id="cocaMktSel"><option value="">None</option><option>Amazon Prime</option><option>Etsy Plus</option><option>Walmart+</option></select>
+                <input id="cocaMktCost" type="number" value="9">
+                <select id="cocaMktCur"><option>USD</option><option>GBP</option><option>EUR</option><option>SEK</option></select>
+              </div>
+            </div>
+          </div>
+
+          <div class="metrics">
+            <div class="metric"><div class="k">Subs rebate/mo</div><div class="v" id="cocaSubV">£0</div></div>
+            <div class="metric"><div class="k">APY/mo</div><div class="v" id="cocaApyV">£0</div></div>
+            <div class="metric"><div class="k">Stake req.</div><div class="v" id="cocaStakeReqV">0 COCA</div></div>
+            <div class="metric"><div class="k">Stake value</div><div class="v" id="cocaStakeV">£0</div></div>
+            <div class="metric"><div class="k">ROI (annual)</div><div class="v" id="cocaRoiV">0%</div></div>
+            <div class="metric"><div class="k">FX fee/mo</div><div class="v" id="cocaFxFeeV">£0</div></div>
+            <div class="metric"><div class="k">Spend cashback/mo</div><div class="v" id="cocaSpendCbV">£0</div></div>
+          </div>
+        </div>
+
+        <div class="panel panel-body">
+          <div class="panel-title">All Tiers</div>
+          <div class="tbl-wrap">
+            <table class="config-table" id="cocaTbl">
+              <thead><tr><th>Tier</th><th>Stake</th><th>Monthly</th><th>Annual</th><th>Blend %</th><th>Break-even</th><th>ROI</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="hint">Monthly/Annual include spend cashback + subs rebates + APY. Cap drops to 1% above tier limit.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ CDC ════════════════ -->
+    <section class="calc" id="sec_CDC">
+      <div class="row2">
+        <div class="panel panel-body">
+          <div class="panel-title">Crypto.com Card</div>
+          <div class="panel-sub">CRO rewards on spend + subscription rebates (Spotify, Netflix, Truth+)</div>
+          <div class="inline">
+            <div class="ctrl"><label>Tier</label>
+              <select id="cdcTier">
+                <option value="0">Midnight Blue (Basic)</option>
+                <option value="1">Ruby Steel (Plus)</option>
+                <option value="2">Jade / Indigo (Pro)</option>
+                <option value="3">Icy / Rose (Private)</option>
+                <option value="4">Obsidian (Private)</option>
+                <option value="5">Prime (Private)</option>
+              </select>
+            </div>
+          </div>
+          <div class="ctrl" style="margin-top:10px;">
+            <label>Level Up Method</label>
+            <div class="seg" id="cdcAccSeg">
+              <label><input type="radio" name="cdcAcc" value="monthly" checked><span>Monthly sub</span></label>
+              <label><input type="radio" name="cdcAcc" value="annual"><span>Annual sub</span></label>
+              <label><input type="radio" name="cdcAcc" value="stake"><span>CRO stake</span></label>
+            </div>
+          </div>
+          <div class="hint" id="cdcAccHint">Monthly subscription: rebates not eligible.</div>
+
+          <div class="inline" style="margin-top:12px;">
+            <div class="ctrl"><label>Monthly fee</label><input id="cdcMoFee" type="number" value="4.99"></div>
+            <div class="ctrl"><label>Annual fee</label><input id="cdcYrFee" type="number" value="39.90"></div>
+            <div class="ctrl"><label>CRO price (USD)</label><input id="cdcCROPrice" type="number" value="0.12" step="0.01"></div>
+            <div class="ctrl"><label>CRO multiplier: <strong id="cdcMultV">1.0</strong>×</label><input type="range" id="cdcMult" min="0.5" max="2" step="0.1" value="1" style="width:90px;"></div>
+            <div class="ctrl"><label>FX fee %</label><input id="cdcFxFee" type="number" value="0" min="0" max="5" step="0.1"></div>
+          </div>
+
+          <label style="font-size:.58rem;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.09em;margin-top:14px;display:block;">Subscription rebates</label>
+          <div class="sub-grid">
+            <div class="sub-item" id="cdc_spot">
+              <div class="top"><div class="name">Spotify</div><div class="pill" id="cdc_spot_pill">—</div></div>
+              <div class="fields"><label style="display:flex;gap:6px;align-items:center;font-size:.78rem;"><input type="checkbox" id="cdcSpotOn" checked> Enabled</label><input id="cdcSpotCost" type="number" value="11"><select id="cdcSpotCur"><option>USD</option><option>GBP</option><option>EUR</option><option>SEK</option></select></div>
+            </div>
+            <div class="sub-item" id="cdc_nflx">
+              <div class="top"><div class="name">Netflix</div><div class="pill" id="cdc_nflx_pill">—</div></div>
+              <div class="fields"><label style="display:flex;gap:6px;align-items:center;font-size:.78rem;"><input type="checkbox" id="cdcNflxOn" checked> Enabled</label><input id="cdcNflxCost" type="number" value="11"><select id="cdcNflxCur"><option>USD</option><option>GBP</option><option>EUR</option><option>SEK</option></select></div>
+            </div>
+            <div class="sub-item" id="cdc_truth">
+              <div class="top"><div class="name">Truth+</div><div class="pill" id="cdc_truth_pill">—</div></div>
+              <div class="fields"><label style="display:flex;gap:6px;align-items:center;font-size:.78rem;"><input type="checkbox" id="cdcTruthOn"> Enabled</label><input id="cdcTruthCost" type="number" value="9"><select id="cdcTruthCur"><option>USD</option><option>GBP</option><option>EUR</option><option>SEK</option></select></div>
+            </div>
+            <div class="sub-item" id="cdc_window">
+              <div class="top"><div class="name">Rebate window</div><div class="pill" id="cdc_win_pill">—</div></div>
+              <div class="fields"><label style="display:flex;gap:6px;align-items:center;font-size:.78rem;"><input type="checkbox" id="cdcRespWin" checked> Respect window</label><input id="cdcMonLeft" type="number" value="6" min="0"></div>
+            </div>
+          </div>
+
+          <div class="metrics">
+            <div class="metric"><div class="k">CRO stake req.</div><div class="v" id="cdcStakeReqV">Free</div></div>
+            <div class="metric"><div class="k">Gross/mo</div><div class="v" id="cdcGrossV">£0</div></div>
+            <div class="metric"><div class="k">Fee/mo</div><div class="v" id="cdcFeeV">£0</div></div>
+            <div class="metric"><div class="k">Net/mo</div><div class="v" id="cdcNetV">£0</div></div>
+            <div class="metric"><div class="k">Net/yr</div><div class="v" id="cdcNetYV">£0</div></div>
+            <div class="metric"><div class="k">CRO earned/mo</div><div class="v" id="cdcCROV">—</div></div>
+            <div class="metric"><div class="k">Spend cap</div><div class="v" id="cdcCapV">—</div></div>
+          </div>
+        </div>
+
+        <div class="panel panel-body">
+          <div class="panel-title">All Tiers</div>
+          <div class="tbl-wrap">
+            <table class="config-table" id="cdcTbl">
+              <thead><tr><th>Tier</th><th>CRO stake req.</th><th>Rate</th><th>Spend cap</th><th>CRO/mo</th><th>Gross/mo</th><th>Fee/mo</th><th>Net/mo</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="hint">Monthly sub disables rebates. Annual or Stake enables rebates (subject to window).</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ READY ════════════════ -->
+    <section class="calc" id="sec_READY">
+      <div class="row2">
+        <div class="panel panel-body">
+          <div class="panel-title">Ready Card</div>
+          <div class="panel-sub">Cashback in STRK · $5,000/mo spend cap · $150/mo rewards cap</div>
+          <div class="inline">
+            <div class="ctrl"><label>Tier</label>
+              <select id="readyTier">
+                <option value="lite">Ready Lite (0.5%)</option>
+                <option value="metal">Ready Metal (3%)</option>
+              </select>
+            </div>
+            <div class="ctrl"><label>STRK price (USD)</label><input id="readyStrk" type="number" value="0.60" step="0.01"></div>
+            <div class="ctrl"><label>Metal annual fee (USD)</label><input id="readyMetalFee" type="number" value="120" min="0" step="1"></div>
+            <div class="ctrl"><label>FX fee %</label><input id="readyFxFee" type="number" value="0" min="0" max="5" step="0.1"></div>
+          </div>
+          <div class="inline" style="margin-top:10px;align-items:center;">
+            <label style="display:flex;gap:6px;align-items:center;font-size:.82rem;font-weight:600;"><input type="checkbox" id="readyBoostOn"> Metal boost</label>
+            <div class="ctrl" style="flex:1;max-width:200px;"><label>Boost rate: <strong id="readyBoostPct">6.0</strong>%</label><input type="range" id="readyBoostSlider" min="3" max="6" step="0.1" value="6"></div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><div class="k">Gross/mo</div><div class="v" id="readyGrossV">£0</div></div>
+            <div class="metric"><div class="k">Fee/mo</div><div class="v" id="readyFeeV">£0</div></div>
+            <div class="metric"><div class="k">Net/mo</div><div class="v" id="readyNetV">£0</div></div>
+            <div class="metric"><div class="k">Net/yr</div><div class="v" id="readyNetYV">£0</div></div>
+            <div class="metric"><div class="k">STRK/mo</div><div class="v" id="readyStrkV">—</div></div>
+            <div class="metric"><div class="k">STRK/yr</div><div class="v" id="readyStrkYV">—</div></div>
+          </div>
+        </div>
+        <div class="panel panel-body">
+          <div class="panel-title">Tier Comparison</div>
+          <div class="tbl-wrap">
+            <table class="config-table" id="readyTbl">
+              <thead><tr><th>Tier</th><th>Rate</th><th>Spend cap</th><th>Reward cap</th><th>Gross/mo</th><th>Fee/mo</th><th>Net/mo</th><th>STRK/mo</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ GNOSIS ════════════════ -->
+    <section class="calc" id="sec_GNOSIS">
+      <div class="row2">
+        <div class="panel panel-body">
+          <div class="panel-title">Gnosis Pay</div>
+          <div class="panel-sub">Tiered cashback in GNO · Weekly spend caps based on GNO held</div>
+          <div class="inline">
+            <div class="ctrl"><label>GNO held</label><input id="gnoHeld" type="number" value="1" step="0.1"></div>
+            <div class="ctrl"><label>GNO price (USD)</label><input id="gnoPrice" type="number" value="350" step="1"></div>
+            <div class="ctrl">
+              <label style="text-transform:none;letter-spacing:0;font-size:.82rem;font-weight:500;">
+                <input type="checkbox" id="gnoOG" checked style="margin-right:4px;">OG NFT (+1%)
+              </label>
+            </div>
+            <div class="ctrl"><label>FX fee %</label><input id="gnoFxFee" type="number" value="0" min="0" max="5" step="0.1"></div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><div class="k">Rate</div><div class="v" id="gnoRateV">—</div></div>
+            <div class="metric"><div class="k">Cap/mo (approx)</div><div class="v" id="gnoCapV">—</div></div>
+            <div class="metric"><div class="k">Gross/mo</div><div class="v" id="gnoGrossV">£0</div></div>
+            <div class="metric"><div class="k">Stab. fee (~1.5%)</div><div class="v" id="gnoStabV">—</div></div>
+            <div class="metric"><div class="k">FX fee/mo</div><div class="v" id="gnoFxFeeV">—</div></div>
+            <div class="metric"><div class="k">Net/mo</div><div class="v" id="gnoNetV">£0</div></div>
+            <div class="metric"><div class="k">GNO earned/mo</div><div class="v" id="gnoGnoV">—</div></div>
+          </div>
+        </div>
+        <div class="panel panel-body">
+          <div class="panel-title">GNO Tier Table</div>
+          <div class="tbl-wrap">
+            <table class="config-table" id="gnoTbl">
+              <thead><tr><th>Min GNO</th><th>Base</th><th>With OG</th><th>Weekly cap</th><th>Monthly cap</th><th>Gross/mo</th><th>Net/mo</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="hint">Monthly cap ≈ weekly cap × 4.345. Net deducts the ~1.5% stabilisation fee applied to all Gnosis Pay transactions.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ ETHERFI ════════════════ -->
+    <section class="calc" id="sec_ETHERFI">
+      <div class="row2">
+        <div class="panel panel-body">
+          <div class="panel-title">ether.fi Cash Card</div>
+          <div class="panel-sub">Tiered cashback by membership level · 1% FX fee on all transactions</div>
+          <div class="inline">
+            <div class="ctrl"><label>Membership</label>
+              <select id="efLevel">
+                <option value="core">Core</option>
+                <option value="luxe">Luxe</option>
+                <option value="pinnacle">Pinnacle</option>
+                <option value="vip">VIP</option>
+              </select>
+            </div>
+            <div class="ctrl"><label>FX fee %</label><input id="efFxFee" type="number" value="1" min="0" max="5" step="0.1"></div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><div class="k">Gross cashback/mo</div><div class="v" id="efGrossV">£0</div></div>
+            <div class="metric"><div class="k">FX fee (1%)/mo</div><div class="v" id="efFxFeeV">£0</div></div>
+            <div class="metric"><div class="k">Net after FX/mo</div><div class="v" id="efNetV">£0</div></div>
+            <div class="metric"><div class="k">Net after FX/yr</div><div class="v" id="efNetYV">£0</div></div>
+            <div class="metric"><div class="k">Effective rate</div><div class="v" id="efEffV">—</div></div>
+            <div class="metric"><div class="k">Breakdown</div><div class="v" id="efBreakV" style="font-size:.7rem;">—</div></div>
+          </div>
+        </div>
+        <div class="panel panel-body">
+          <div class="panel-title">Level Comparison</div>
+          <div class="tbl-wrap">
+            <table class="config-table" id="efTbl">
+              <thead><tr><th>Level</th><th>Tier rules</th><th>Gross/mo</th><th>FX fee/mo</th><th>Net/mo</th><th>Net eff. %</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="hint">Net = gross cashback − 1% FX fee on total spend. Effective % is net return on spend.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ REVOLUT ════════════════ -->
+    <section class="calc" id="sec_REVOLUT">
+      <div class="row2">
+        <div class="panel panel-body">
+          <div class="panel-title">Revolut RevPoints</div>
+          <div class="panel-sub">Earn points on card spend → redeem for airline miles, hotel stays, gift cards &amp; more</div>
+          <div class="inline">
+            <div class="ctrl"><label>Plan</label>
+              <select id="revPlan">
+                <option value="0">Standard (Free)</option>
+                <option value="1">Plus (£3.99/mo)</option>
+                <option value="2">Premium (£7.99/mo)</option>
+                <option value="3" selected>Metal (£14.99/mo)</option>
+                <option value="4">Ultra (£55/mo)</option>
+              </select>
+            </div>
+            <div class="ctrl"><label>Billing</label>
+              <select id="revBill">
+                <option value="mo">Monthly</option>
+                <option value="yr">Annual (save ~17%)</option>
+              </select>
+            </div>
+            <div class="ctrl"><label>FX fee %</label><input id="revFxFee" type="number" value="0" min="0" max="5" step="0.1"></div>
+          </div>
+          <div class="inline" style="margin-top:10px;">
+            <div class="ctrl"><label>Redemption</label>
+              <select id="revRedeem">
+                <option value="0">✈️ Airline miles — best (£0.025/pt)</option>
+                <option value="1">✈️ Airline miles — typical (£0.015/pt)</option>
+                <option value="2">🏨 Hotel stays (~£0.020/pt)</option>
+                <option value="3">🎭 Experiences (~£0.012/pt)</option>
+                <option value="4">🎁 Gift cards (~£0.007/pt)</option>
+              </select>
+            </div>
+          </div>
+          <div class="inline" style="margin-top:10px;align-items:center;">
+            <label style="display:flex;gap:6px;align-items:center;font-size:.82rem;font-weight:600;"><input type="checkbox" id="revRU"> Spare change round-ups</label>
+            <div class="ctrl" style="flex:1;max-width:200px;"><label>Round-up %: <strong id="revRUPctV">3.0</strong>%</label><input type="range" id="revRUPct" min="1" max="10" step="0.5" value="3"></div>
+          </div>
+          <div class="hint">Round-ups cost real money (50 pts per £1). Only worthwhile if your redemption value exceeds the cost.</div>
+
+          <div class="metrics">
+            <div class="metric"><div class="k">Pts from spend</div><div class="v" id="revPtsSpV">0</div></div>
+            <div class="metric"><div class="k">Pts from round-ups</div><div class="v" id="revPtsRUV">0</div></div>
+            <div class="metric"><div class="k">Total pts/mo</div><div class="v" id="revPtsTotV">0</div></div>
+            <div class="metric"><div class="k">Value/pt</div><div class="v" id="revPtValV">—</div></div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><div class="k">Gross value/mo</div><div class="v" id="revGrossV">£0</div></div>
+            <div class="metric"><div class="k">Plan fee/mo</div><div class="v" id="revFeeV">£0</div></div>
+            <div class="metric"><div class="k">Round-up cost/mo</div><div class="v" id="revRUCV">£0</div></div>
+            <div class="metric"><div class="k">Net/mo</div><div class="v" id="revNetV">£0</div></div>
+            <div class="metric"><div class="k">Net/yr</div><div class="v" id="revNetYV">£0</div></div>
+            <div class="metric"><div class="k">Effective %</div><div class="v" id="revEffV">0%</div></div>
+          </div>
+          <div class="hint">Partners: Flying Blue (KLM/Air France), Avios (BA/Iberia/Vueling/Aer Lingus), Turkish Miles &amp; Smiles, TAP Miles&amp;Go, Etihad Guest, SAS EuroBonus, Aegean Miles+Bonus, Avianca. 1 RevPoint = 1 airline mile. Points expire after 3 years. Cannot convert back to cash.</div>
+        </div>
+
+        <div class="panel panel-body">
+          <div class="panel-title">Plan Comparison</div>
+          <div class="tbl-wrap">
+            <table class="config-table" id="revTbl">
+              <thead><tr><th>Plan</th><th>Earn rate</th><th>Fee/mo</th><th>Pts/mo</th><th>Gross/mo</th><th>Net/mo</th><th>Net/yr</th><th>Eff. %</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="hint" style="margin-top:8px;">Best net plan highlighted. Values assume all spend is eligible.</div>
+
+          <div class="panel-title" style="margin-top:20px;">Redemption Comparison</div>
+          <div class="tbl-wrap" style="margin-top:10px;">
+            <table class="config-table" id="revRedeemTbl">
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>Value/pt</th>
+                  <th>Rating</th>
+                  <th>Annual pts → value</th>
+                  <th style="text-align:left">Notes</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /card-config -->
+
+</div><!-- /app -->
+
+<script>
+  /* ── Tab switcher helper (drives the hidden #cardSel) ── */
+  function switchCard(val, btn) {
+    document.getElementById('cardSel').value = val;
+    document.querySelectorAll('.card-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    refresh();
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     SHARED HELPERS
+     ══════════════════════════════════════════════════════════ */
+  const $ = id => document.getElementById(id);
+  const fxStore = { GBP: 1.35, EUR: 1.10, SEK: 0.092 };
+  const subCurToUSD = cur => cur === 'GBP' ? (fxStore.GBP || 1.35) : cur === 'EUR' ? (fxStore.EUR || 1.10) : cur === 'SEK' ? (fxStore.SEK || 0.092) : 1;
+  const sym = () => $('cur').value === 'EUR' ? '€' : '£';
+  const fxR = () => +($('fx').value) || 0;
+  const toU = c => c * fxR();
+  const frU = u => { const f = fxR(); return f > 0 ? u / f : 0; };
+  const f2 = n => n.toFixed(2);
+  const fmtV = (n, s) => s + f2(n);
+
+  function syncFx() {
+    const c = $('cur').value;
+    const p = $('cur').dataset.prev || c;
+    fxStore[p] = fxR();
+    $('fx').value = fxStore[c] || 1.35;
+    $('cur').dataset.prev = c;
+    $('fxLbl').textContent = `FX (1 ${c} = USD)`;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     COCA
+     ══════════════════════════════════════════════════════════ */
+  const cocaT = [
+    { name: 'Base',      req: 0,     cap: Infinity, rate: .01 },
+    { name: 'Standard',  req: 300,   cap: 1000,     rate: .03 },
+    { name: 'Standard+', req: 1000,  cap: 1750,     rate: .04 },
+    { name: 'Premium',   req: 3000,  cap: 2500,     rate: .05 },
+    { name: 'Premium+',  req: 10000, cap: 5000,     rate: .06 },
+    { name: 'Elite',     req: 30000, cap: 10000,    rate: .08 }
+  ];
+  const cocaSubE = { Base: [], Standard: ['Streaming'], 'Standard+': ['AI Assistants', 'Streaming'], Premium: ['AI Assistants', 'Streaming'], 'Premium+': ['AI Assistants', 'Streaming', 'Music'], Elite: ['AI Assistants', 'Streaming', 'Music', 'Marketplaces'] };
+
+
+  function updateDashboard(cardsData) {
+    const s = sym();
+    const cdc = cardsData.find(c => c.key === 'CDC');
+
+    // Sort cards by net monthly (descending)
+    cardsData.sort((a, b) => b.netMo - a.netMo);
+
+    let tbody = document.getElementById('dashCompTbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    let fxList = document.getElementById('dashFxList');
+    fxList.innerHTML = '';
+
+    const classMap = {
+      COCA: 'coca', READY: 'ready', CDC: 'cdc', ETHERFI: 'ether', REVOLUT: 'revolut', GNOSIS: 'gnosis'
+    };
+    const nameMap = {
+      READY: 'Ready Card', COCA: 'COCA Card', CDC: 'Crypto.com', ETHERFI: 'ether.fi Cash', REVOLUT: 'Revolut', GNOSIS: 'Gnosis Pay'
+    };
+
+    cardsData.forEach(c => {
+      // 1. Comparison Table Row
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+    <td><div class="card-name-td"><span class="card-dot dot-${classMap[c.key]}"></span> ${nameMap[c.key]}</div></td>
+    <td style="color:${c.netMo >= 0 ? 'var(--green)' : 'var(--red)'}">${s}${f2(c.netMo)}</td>
+    <td style="color:${c.netMo >= 0 ? 'var(--green)' : 'var(--red)'}">${s}${f2(c.netMo * 12)}</td>
+    <td class="${c.fxFeeMo > 0 ? '' : 'td-dash'}">${c.fxFeeMo > 0 ? '-' + s + f2(c.fxFeeMo) : '—'}</td>
+    <td class="${c.fxFeeMo > 0 ? '' : 'td-dash'}">${c.fxFeeMo > 0 ? '-' + s + f2(c.fxFeeMo * 12) : '—'}</td>
+  `;
+      tbody.appendChild(tr);
+
+      // 2. FX List item
+      const fDiv = document.createElement('div');
+      fDiv.className = 'fx-row';
+      const fxMoText = c.fxFeeMo > 0 ? '-' + s + f2(c.fxFeeMo) + '/mo' : 'No FX fee';
+      const fxYrText = c.fxFeeMo > 0 ? '-' + s + f2(c.fxFeeMo * 12) + '/yr' : '';
+      fDiv.innerHTML = `
+    <div class="fx-card"><span class="card-dot dot-${classMap[c.key]}"></span> ${nameMap[c.key]}</div>
+    <div class="fx-vals">
+      ${c.fxFeeMo > 0 ? `<div class="mo orange">${fxMoText}</div><div class="yr orange">${fxYrText}</div>` : `<div class="fx-none">No FX fee</div>`}
+    </div>
+  `;
+      fxList.appendChild(fDiv);
+    });
+
+    // Best Card
+    if (cardsData[0]) {
+      document.getElementById('dashBestName').textContent = nameMap[cardsData[0].key];
+      document.getElementById('dashBestNet').textContent = s + f2(cardsData[0].netMo);
+      document.getElementById('dashBestAnn').textContent = s + f2(cardsData[0].netMo * 12);
+    }
+
+    // CDC Warning logic
+    const dashCdcWith = document.getElementById('dashCdcWith');
+    const dashCdcWithYr = document.getElementById('dashCdcWithYr');
+    const dashCdcAfter = document.getElementById('dashCdcAfter');
+    const dashCdcAfterYr = document.getElementById('dashCdcAfterYr');
+    const dashCdcLoss = document.getElementById('dashCdcLoss');
+
+    if (cdc && dashCdcWith) {
+      dashCdcWith.textContent = s + f2(cdc.netMo) + '/mo';
+      dashCdcWithYr.textContent = s + f2(cdc.netMo * 12) + '/yr';
+
+      // Calculate CDC without rebounds
+      let grossNoRebates = cdc.baseGrossMo;
+      let afterNetMos = grossNoRebates - cdc.feeMo - cdc.fxFeeMo;
+
+      dashCdcAfter.textContent = s + f2(afterNetMos) + '/mo';
+      dashCdcAfterYr.textContent = s + f2(afterNetMos * 12) + '/yr';
+
+      const loss = afterNetMos - cdc.netMo;
+      if (loss < 0) {
+        dashCdcLoss.textContent = s + f2(loss) + '/mo';
+      } else {
+        dashCdcLoss.textContent = s + '0.00/mo';
+      }
+    }
+
+    // Live prices update
+    if (document.getElementById('lpTime')) document.getElementById('lpTime').textContent = new Date().toLocaleTimeString();
+    if (document.getElementById('dashPriceCoca')) document.getElementById('dashPriceCoca').textContent = document.getElementById('cocaPrice').value;
+    if (document.getElementById('dashPriceCro')) document.getElementById('dashPriceCro').textContent = document.getElementById('cdcCROPrice').value;
+    if (document.getElementById('dashPriceStrk')) document.getElementById('dashPriceStrk').textContent = document.getElementById('readyStrk').value;
+    if (document.getElementById('dashPriceGno')) document.getElementById('dashPriceGno').textContent = document.getElementById('gnoPrice').value;
+    if (document.getElementById('dashFxFoot')) document.getElementById('dashFxFoot').textContent = `FX: 1 ${document.getElementById('cur').value} = ${f2(fxR())} USD`;
+  }
+
+  // Override updateSummary completely
+  function updateSummary() {
+    const n = window._net || {};
+    const fx = window._net_fx || {};
+    const gr = window._net_gross || {};
+    const fe = window._net_fee || {};
+    const cData = [
+      { key: 'COCA',    netMo: n.COCA    || 0, fxFeeMo: fx.COCA    || 0 },
+      { key: 'CDC',     netMo: n.CDC     || 0, fxFeeMo: fx.CDC     || 0, baseGrossMo: gr.CDC || 0, feeMo: fe.CDC || 0 },
+      { key: 'READY',   netMo: n.READY   || 0, fxFeeMo: fx.READY   || 0 },
+      { key: 'GNOSIS',  netMo: n.GNOSIS  || 0, fxFeeMo: fx.GNOSIS  || 0 },
+      { key: 'ETHERFI', netMo: n.ETHERFI || 0, fxFeeMo: fx.ETHERFI || 0 },
+      { key: 'REVOLUT', netMo: n.REVOLUT || 0, fxFeeMo: fx.REVOLUT || 0 }
+    ];
+    updateDashboard(cData);
+  }
+
+  function cocaCalc() {
+    const s = sym(), fx = fxR(), spend = +$('globalSpend').value || 0, bal = +$('cocaBal').value || 0, cp = +$('cocaPrice').value || 0, vol = +$('cocaVol').value || 1;
+    const cocaFxFeeC = spend * (+$('cocaFxFee').value || 0) / 100;
+    const promo = Math.min(Math.max(+$('cocaPromo').value || 0, 0), 99) / 100;
+    const effReq = t => Math.round(t.req * (1 - promo));
+    const stakeUSD = +$('globalStake').value || 0;
+    if (stakeUSD > 0 && cp > 0) { const canBuy = stakeUSD / cp; let best = cocaT[0]; cocaT.forEach(t => { if (effReq(t) <= canBuy) best = t; }); $('cocaTier').value = best.name; }
+    const tier = $('cocaTier').value;
+    $('cocaVolV').textContent = vol.toFixed(1);
+    const capCur = fx > 0 ? 70 / fx : 0;
+    $('cocaCapV').textContent = s + capCur.toFixed(2);
+
+    // subs eligibility
+    const elig = new Set(cocaSubE[tier] || []);
+    const subMap = [['AI Assistants', 'coca_ai', 'coca_ai_pill', 'cocaAISel', 'cocaAICost', 'cocaAICur'], ['Streaming', 'coca_stream', 'coca_stream_pill', 'cocaStreamSel', 'cocaStreamCost', 'cocaStreamCur'], ['Music', 'coca_music', 'coca_music_pill', 'cocaMusicSel', 'cocaMusicCost', 'cocaMusicCur'], ['Marketplaces', 'coca_mkt', 'coca_mkt_pill', 'cocaMktSel', 'cocaMktCost', 'cocaMktCur']];
+    let subsCb = 0;
+    subMap.forEach(([cat, cardId, pillId, selId, costId, curId]) => {
+      const ok = elig.has(cat);
+      $(cardId).classList.toggle('off', !ok);
+      $(pillId).textContent = ok ? 'Eligible' : 'Not eligible';
+      $(pillId).classList.toggle('ok', ok);
+      if (ok && ($(selId).value || '').trim()) {
+        const costUSD = (+($(costId).value) || 0) * subCurToUSD($(curId).value);
+        subsCb += .5 * Math.min(frU(costUSD), capCur);
+      }
+    });
+
+    const apyY = bal * .06, apyM = apyY / 12;
+    $('cocaSubV').textContent = s + f2(subsCb);
+    $('cocaApyV').textContent = s + f2(apyM);
+
+    const tbody = $('cocaTbl').querySelector('tbody');
+    tbody.innerHTML = '';
+    let selData = null;
+    cocaT.forEach(t => {
+      const spU = spend * fx, hi = Math.min(spU, t.cap), lo = Math.max(spU - t.cap, 0);
+      const spCB = fx > 0 ? ((hi * t.rate + lo * .01) / fx) : 0;
+      const moTot = spCB + subsCb + apyM, yrTot = (spCB + subsCb) * 12 + apyY;
+      const blend = spend > 0 ? (moTot / spend) * 100 : 0;
+      const stk = fx > 0 ? (effReq(t) * cp) / fx : 0;
+      const be = moTot > 0 ? stk / moTot : 0;
+      const roi = (stk * vol) > 0 ? (yrTot / (stk * vol)) * 100 : 0;
+      const isSel = t.name === tier;
+      if (isSel) selData = { stk, roi };
+      const tr = document.createElement('tr');
+      if (isSel) tr.className = 'sel';
+      tr.innerHTML = `<td>${t.name}</td><td>${s}${f2(stk)}</td><td>${s}${f2(moTot)}</td><td>${s}${f2(yrTot)}</td><td>${blend.toFixed(2)}%</td><td>${be.toFixed(1)} mo</td><td>${roi.toFixed(1)}%</td>`;
+      tbody.appendChild(tr);
+    });
+    if (selData) { $('cocaStakeV').textContent = s + f2(selData.stk); $('cocaRoiV').textContent = selData.roi.toFixed(1) + '%'; }
+    const selTier = cocaT.find(t => t.name === tier) || cocaT[0];
+    const reqTokens = effReq(selTier);
+    $('cocaStakeReqV').textContent = reqTokens === 0 ? '0 COCA' : reqTokens.toLocaleString() + ' COCA' + (promo > 0 ? ' (−' + (promo * 100).toFixed(0) + '%)' : '');
+    $('cocaFxFeeV').textContent = '-' + s + f2(cocaFxFeeC);
+
+    // net for summary
+    const selT = cocaT.find(t => t.name === tier) || cocaT[0];
+    const spU2 = spend * fx, hi2 = Math.min(spU2, selT.cap), lo2 = Math.max(spU2 - selT.cap, 0);
+    const spCB2 = fx > 0 ? ((hi2 * selT.rate + lo2 * .01) / fx) : 0;
+    const spBlend = spend > 0 ? (spCB2 / spend) * 100 : 0;
+    $('cocaSpendCbV').textContent = s + f2(spCB2) + ' (' + spBlend.toFixed(2) + '% of spend)';
+    window._net = window._net || {};
+    window._net.COCA = spCB2 + subsCb + apyM - cocaFxFeeC;
+    window._net_fx = window._net_fx || {}; window._net_fx.COCA = cocaFxFeeC;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     CDC
+     ══════════════════════════════════════════════════════════ */
+  const cdcT = [
+    { name: 'Midnight Blue', plan: 'Basic',   rate: 0,   cap: null, croReq: 0 },
+    { name: 'Ruby Steel',    plan: 'Plus',    rate: .02, cap: 1250, croReq: 400 },
+    { name: 'Jade / Indigo', plan: 'Pro',     rate: .03, cap: 2500, croReq: 4000 },
+    { name: 'Icy / Rose',    plan: 'Private', rate: .04, cap: null, croReq: 40000 },
+    { name: 'Obsidian',      plan: 'Private', rate: .06, cap: null, croReq: 400000 },
+    { name: 'Prime',         plan: 'Private', rate: .08, cap: null, croReq: 4000000 }
+  ];
+  function cdcMode() { return document.querySelector('input[name=cdcAcc]:checked')?.value || 'monthly'; }
+  function cdcCanRebate() { const m = cdcMode(); return m === 'annual' || m === 'stake'; }
+  function cdcElig(plan) {
+    if (plan === 'Basic') return { ok: false, win: 'N/A', def: 0, unl: false };
+    if (plan === 'Plus')  return { ok: true,  win: '3 months', def: 3, unl: false };
+    if (plan === 'Pro')   return { ok: true,  win: '6 months', def: 6, unl: false };
+    return { ok: true, win: 'Unlimited', def: 9999, unl: true };
+  }
+  function cdcCalc() {
+    const s = sym(), fx = fxR(), spend = +$('globalSpend').value || 0, ep = +$('cdcCROPrice').value || 0, mult = +$('cdcMult').value || 1;
+    const cdcFxFeeC = spend * (+$('cdcFxFee').value || 0) / 100;
+    const stakeUSD = +$('globalStake').value || 0;
+    if (stakeUSD > 0) { let bestTi = 0; cdcT.forEach((t, i) => { if (stakeUSD >= t.croReq) bestTi = i; }); $('cdcTier').value = bestTi; }
+    const ti = +$('cdcTier').value;
+    $('cdcMultV').textContent = mult.toFixed(1);
+    const tier = cdcT[ti] || cdcT[0];
+
+    // auto-fill fees
+    let moFee = 0, yrFee = 0;
+    if (tier.plan === 'Plus') { moFee = 4.99; yrFee = 49.90; } else if (tier.plan === 'Pro') { moFee = 24.99; yrFee = 249.90; }
+    if (!$('cdcMoFee').dataset.u) $('cdcMoFee').value = moFee.toFixed(2);
+    if (!$('cdcYrFee').dataset.u) $('cdcYrFee').value = yrFee.toFixed(2);
+
+    // private forces stake
+    if (tier.plan === 'Private') {
+      document.querySelectorAll('input[name=cdcAcc]').forEach(r => { r.disabled = r.value !== 'stake'; });
+      document.querySelector('input[name=cdcAcc][value=stake]').checked = true;
+    } else {
+      document.querySelectorAll('input[name=cdcAcc]').forEach(r => r.disabled = false);
+    }
+
+    const canR = cdcCanRebate();
+    $('cdcAccHint').textContent = canR ? 'Rebates eligible (' + cdcMode() + ').' : 'Monthly subscription: rebates not eligible.';
+    [['cdcSpotOn', 'cdc_spot', 'cdc_spot_pill'], ['cdcNflxOn', 'cdc_nflx', 'cdc_nflx_pill'], ['cdcTruthOn', 'cdc_truth', 'cdc_truth_pill']].forEach(([cbId, cId, pId]) => {
+      $(cbId).disabled = !canR; if (!canR) $(cbId).checked = false;
+      $(cId).classList.toggle('off', !canR);
+      $(pId).textContent = canR ? 'Eligible' : 'Not eligible';
+      $(pId).classList.toggle('ok', canR);
+    });
+
+    // rebates
+    function rebUSD(tierObj) {
+      if (!canR) return 0;
+      const e = cdcElig(tierObj.plan);
+      $('cdc_win_pill').textContent = e.win;
+      const ml = Math.max(+$('cdcMonLeft').value || 0, 0);
+      const active = e.ok && (!$('cdcRespWin').checked || ml > 0);
+      if (!active) return 0;
+      const capR = (cb, cost, curId, cap) => { if (!$(cb).checked) return 0; return Math.min((+$(cost).value || 0) * subCurToUSD($(curId).value), cap); };
+      return capR('cdcSpotOn', 'cdcSpotCost', 'cdcSpotCur', 13.99) + capR('cdcNflxOn', 'cdcNflxCost', 'cdcNflxCur', 13.99) + capR('cdcTruthOn', 'cdcTruthCost', 'cdcTruthCur', 9.95);
+    }
+
+    const mode = cdcMode();
+    const feeMo = mode === 'monthly' ? (+$('cdcMoFee').value || 0) : mode === 'annual' ? ((+$('cdcYrFee').value || 0) / 12) : 0;
+
+    // selected tier
+    const spU = toU(spend);
+    let elU = spU; if (tier.cap !== null) elU = Math.min(spU, tier.cap);
+    const rwU = elU * tier.rate + rebUSD(tier);
+    const grossCRO = ep > 0 ? rwU / ep : 0;
+    const grossCur = frU(rwU) * mult;
+    const netMo = grossCur - feeMo;
+
+    $('cdcStakeReqV').textContent = tier.croReq === 0 ? 'Free' : tier.croReq >= 1000000 ? (tier.croReq / 1000000).toLocaleString() + 'M CRO' : tier.croReq >= 1000 ? (tier.croReq / 1000).toLocaleString() + 'k CRO' : tier.croReq.toLocaleString() + ' CRO';
+    $('cdcGrossV').textContent = fmtV(grossCur, s);
+    $('cdcFeeV').textContent = fmtV(feeMo, s);
+    $('cdcNetV').textContent = fmtV(netMo, s); $('cdcNetV').className = 'v ' + (netMo >= 0 ? 'positive' : 'negative');
+    $('cdcNetYV').textContent = fmtV(netMo * 12, s);
+    $('cdcCROV').textContent = ep > 0 ? grossCRO.toFixed(2) + ' CRO' : '—';
+    $('cdcCapV').textContent = tier.cap === null ? 'Unlimited' : '$' + tier.cap + '/mo';
+
+    // table
+    const tbody = $('cdcTbl').querySelector('tbody'); tbody.innerHTML = '';
+    cdcT.forEach((t, i) => {
+      let el2 = spU; if (t.cap !== null) el2 = Math.min(spU, t.cap);
+      const rw2 = el2 * t.rate + rebUSD(t);
+      const cro2 = ep > 0 ? rw2 / ep : 0;
+      const gv2 = frU(rw2) * mult;
+      const n2 = gv2 - feeMo - cdcFxFeeC;
+      const tr = document.createElement('tr');
+      if (i === ti) tr.className = 'sel';
+      const croReqFmt = t.croReq === 0 ? 'Free' : t.croReq >= 1000000 ? '$' + (t.croReq / 1000000) + 'M' : t.croReq >= 1000 ? '$' + (t.croReq / 1000) + 'k' : '$' + t.croReq;
+      tr.innerHTML = `<td>${t.name}</td><td>${croReqFmt}</td><td>${(t.rate * 100).toFixed(0)}%</td><td>${t.cap === null ? 'Unlimited' : '$' + t.cap}</td><td>${ep > 0 ? cro2.toFixed(2) : '—'}</td><td>${s}${f2(gv2)}</td><td>${s}${f2(feeMo)}</td><td style="font-weight:500;color:${n2 >= 0 ? 'var(--green)' : 'var(--red)'}">${s}${f2(n2)}</td>`;
+      tbody.appendChild(tr);
+    });
+    window._net = window._net || {}; window._net.CDC = netMo - cdcFxFeeC;
+    window._net_fx = window._net_fx || {}; window._net_fx.CDC = cdcFxFeeC;
+    window._net_gross = window._net_gross || {}; window._net_gross.CDC = frU(elU * tier.rate) * mult;
+    window._net_fee = window._net_fee || {}; window._net_fee.CDC = feeMo;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     READY
+     ══════════════════════════════════════════════════════════ */
+  const readyT = [{ key: 'lite', name: 'Ready Lite', base: .005, fee: 0 }, { key: 'metal', name: 'Ready Metal', base: .03, fee: 120 }];
+  function readyRate(t) {
+    if (t.key !== 'metal') return t.base;
+    if (!$('readyBoostOn').checked) return t.base;
+    return Math.max(3, Math.min(6, +$('readyBoostSlider').value || 6)) / 100;
+  }
+  function readyCalc() {
+    const s = sym(), fx = fxR(), spend = +$('globalSpend').value || 0, tk = $('readyTier').value, sp = +$('readyStrk').value || 0;
+    const readyFxFeeC = spend * (+$('readyFxFee').value || 0) / 100;
+    $('readyBoostPct').textContent = (+$('readyBoostSlider').value || 6).toFixed(1);
+    const isMetal = tk === 'metal';
+    $('readyBoostOn').disabled = !isMetal; $('readyBoostSlider').disabled = !isMetal;
+    if (!isMetal) $('readyBoostOn').checked = false;
+
+    const metalFeeUSD = +$('readyMetalFee').value || 0;
+    const selT = readyT.find(t => t.key === tk) || readyT[0];
+    const rate = readyRate(selT);
+    const annFeeUSD = isMetal ? metalFeeUSD : 0;
+    const spU = toU(spend), elU = Math.min(spU, 5000), rwU = Math.min(elU * rate, 150), feeU = annFeeUSD / 12;
+    const gCur = frU(rwU), annFeeC = frU(feeU), nCur = gCur - annFeeC - readyFxFeeC;
+    const strk = sp > 0 ? rwU / sp : 0;
+
+    $('readyGrossV').textContent = fmtV(gCur, s); $('readyFeeV').textContent = fmtV(annFeeC, s);
+    $('readyNetV').textContent = fmtV(nCur, s); $('readyNetV').className = 'v ' + (nCur >= 0 ? 'positive' : 'negative');
+    $('readyNetYV').textContent = fmtV(nCur * 12, s);
+    $('readyStrkV').textContent = strk > 0 ? strk.toFixed(2) + ' STRK' : '—';
+    $('readyStrkYV').textContent = strk > 0 ? (strk * 12).toFixed(2) + ' STRK' : '—';
+
+    const tbody = $('readyTbl').querySelector('tbody'); tbody.innerHTML = '';
+    let bestN = -1e18, bestK = '';
+    const rows = readyT.map(t => {
+      const r = readyRate(t), rU = Math.min(Math.min(toU(spend), 5000) * r, 150), fU = (t.key === 'metal' ? metalFeeUSD : 0) / 12;
+      const g = frU(rU), f = frU(fU), n = g - f - readyFxFeeC, sk = sp > 0 ? rU / sp : 0;
+      if (n > bestN) { bestN = n; bestK = t.key; }
+      return { t, r, g, f, n, sk };
+    });
+    rows.forEach(({ t, r, g, f, n, sk }) => {
+      const tr = document.createElement('tr');
+      if (t.key === bestK) tr.className = 'best';
+      if (t.key === tk) tr.classList.add('sel');
+      tr.innerHTML = `<td>${t.name}</td><td>${(r * 100).toFixed(1)}%</td><td>$5,000/mo</td><td>$150/mo</td><td>${s}${f2(g)}</td><td>${s}${f2(f)}</td><td style="font-weight:500">${s}${f2(n)}</td><td>${sk > 0 ? sk.toFixed(2) : '—'}</td>`;
+      tbody.appendChild(tr);
+    });
+    window._net = window._net || {}; window._net.READY = nCur;
+    window._net_fx = window._net_fx || {}; window._net_fx.READY = readyFxFeeC;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     GNOSIS
+     ══════════════════════════════════════════════════════════ */
+  const gnoT = [{ min: .1, base: .01, og: .02, wCap: 250 }, { min: 1, base: .02, og: .03, wCap: 375 }, { min: 10, base: .03, og: .04, wCap: 500 }, { min: 100, base: .04, og: .05, wCap: 1250 }];
+  const WPM = 4.345;
+  function gnoCalc() {
+    const s = sym(), spend = +$('globalSpend').value || 0, og = $('gnoOG').checked, gp = +$('gnoPrice').value || 0;
+    const gnoFxFeeC = spend * (+$('gnoFxFee').value || 0) / 100;
+    const stakeUSD = +$('globalStake').value || 0;
+    if (stakeUSD > 0 && gp > 0) $('gnoHeld').value = (stakeUSD / gp).toFixed(4);
+    const held = +$('gnoHeld').value || 0;
+    const tier = gnoT.filter(t => held >= t.min).slice(-1)[0] || gnoT[0];
+    const rate = og ? tier.og : tier.base, mCap = tier.wCap * WPM;
+    const spU = toU(spend), elU = Math.min(spU, mCap), rwU = elU * rate, rwC = frU(rwU), stabFeeC = frU(spU * 0.015), gnoNetC = rwC - stabFeeC - gnoFxFeeC;
+    const gno = gp > 0 ? rwU / gp : 0;
+    $('gnoRateV').textContent = (rate * 100).toFixed(1) + '%';
+    $('gnoCapV').textContent = '$' + mCap.toFixed(0);
+    $('gnoGrossV').textContent = fmtV(rwC, s); $('gnoStabV').textContent = '-' + fmtV(stabFeeC, s); $('gnoNetV').textContent = fmtV(gnoNetC, s); $('gnoNetV').className = 'v ' + (gnoNetC >= 0 ? 'positive' : 'negative');
+    $('gnoGnoV').textContent = gno > 0 ? gno.toFixed(4) + ' GNO' : '—';
+
+    const tbody = $('gnoTbl').querySelector('tbody'); tbody.innerHTML = '';
+    gnoT.forEach(t => {
+      const r = og ? t.og : t.base, mc = t.wCap * WPM, el = Math.min(spU, mc), rw = el * r, rc = frU(rw);
+      const tr = document.createElement('tr');
+      if (t.min === tier.min) tr.className = 'sel';
+      const stab = frU(spU * 0.015), nc = rc - stab - gnoFxFeeC;
+      tr.innerHTML = `<td>${t.min}</td><td>${(t.base * 100).toFixed(0)}%</td><td>${(t.og * 100).toFixed(0)}%</td><td>${t.wCap}</td><td>${mc.toFixed(0)}</td><td>${s}${f2(rc)}</td><td style="font-weight:500;color:${nc >= 0 ? 'var(--green)' : 'var(--red)'}">${s}${f2(nc)}</td>`;
+      tbody.appendChild(tr);
+    });
+    $('gnoFxFeeV').textContent = gnoFxFeeC > 0 ? '-' + s + f2(gnoFxFeeC) : '—';
+    window._net = window._net || {}; window._net.GNOSIS = gnoNetC;
+    window._net_fx = window._net_fx || {}; window._net_fx.GNOSIS = gnoFxFeeC;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     ETHERFI
+     ══════════════════════════════════════════════════════════ */
+  const efL = [
+    { key: 'core',     name: 'Core',     rules: '3% first $2k; 1% $2k–$3k; 0.5% above',   tiers: [{ l: 2000,  r: .03 }, { l: 3000,  r: .01 }, { l: Infinity, r: .005 }] },
+    { key: 'luxe',     name: 'Luxe',     rules: '3% first $10k; 1% $10k–$20k; 0.5% above', tiers: [{ l: 10000, r: .03 }, { l: 20000, r: .01 }, { l: Infinity, r: .005 }] },
+    { key: 'pinnacle', name: 'Pinnacle', rules: '3% first $50k; 1% $50k–$80k; 0.5% above', tiers: [{ l: 50000, r: .03 }, { l: 80000, r: .01 }, { l: Infinity, r: .005 }] },
+    { key: 'vip',      name: 'VIP',      rules: '4% first $50k; 2% $50k–$80k; 1% above',   tiers: [{ l: 50000, r: .04 }, { l: 80000, r: .02 }, { l: Infinity, r: .01 }] }
+  ];
+  function efTiered(spU, tiers) {
+    let rem = spU, prev = 0, tot = 0; const parts = [];
+    for (const t of tiers) {
+      const band = t.l === Infinity ? rem : Math.max(0, Math.min(rem, t.l - prev));
+      if (band > 0) { tot += band * t.r; parts.push(`${(t.r * 100).toFixed(1)}% on $${band.toFixed(0)}`); rem -= band; }
+      prev = t.l; if (rem <= 0) break;
+    }
+    return { tot, parts };
+  }
+  function efCalc() {
+    const s = sym(), spend = +$('globalSpend').value || 0, key = $('efLevel').value;
+    const lvl = efL.find(l => l.key === key) || efL[0];
+    const spU = toU(spend), res = efTiered(spU, lvl.tiers), gC = frU(res.tot);
+    // Configurable FX fee on total spend
+    const fxFeeC = spend * (+$('efFxFee').value || 0) / 100;
+    const netC = gC - fxFeeC;
+    const eff = spend > 0 ? (netC / spend) : 0;
+    $('efGrossV').textContent = fmtV(gC, s);
+    $('efFxFeeV').textContent = fmtV(fxFeeC, s);
+    $('efNetV').textContent = fmtV(netC, s); $('efNetV').className = 'v ' + (netC >= 0 ? 'positive' : 'negative');
+    $('efNetYV').textContent = fmtV(netC * 12, s);
+    $('efEffV').textContent = (eff * 100).toFixed(2) + '%';
+    $('efBreakV').textContent = res.parts.join(' + ') || '—';
+
+    const tbody = $('efTbl').querySelector('tbody'); tbody.innerHTML = '';
+    efL.forEach(l => {
+      const r = efTiered(spU, l.tiers), gc = frU(r.tot);
+      const fxf = spend * (+$('efFxFee').value || 0) / 100, nc = gc - fxf;
+      const ef2 = spend > 0 ? (nc / spend) : 0;
+      const tr = document.createElement('tr');
+      if (l.key === key) tr.className = 'sel';
+      tr.innerHTML = `<td>${l.name}</td><td style="font-size:.72rem;text-align:left">${l.rules}</td><td>${s}${f2(gc)}</td><td>${s}${f2(fxf)}</td><td style="font-weight:500;color:${nc >= 0 ? 'var(--green)' : 'var(--red)'}">${s}${f2(nc)}</td><td>${(ef2 * 100).toFixed(2)}%</td>`;
+      tbody.appendChild(tr);
+    });
+    window._net = window._net || {}; window._net.ETHERFI = netC;
+    window._net_fx = window._net_fx || {}; window._net_fx.ETHERFI = fxFeeC;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     REVOLUT
+     ══════════════════════════════════════════════════════════ */
+  const revP = [
+    { name: 'Standard', earn: 10, moFee: 0,     yrFee: 0 },
+    { name: 'Plus',     earn: 10, moFee: 3.99,  yrFee: 40 },
+    { name: 'Premium',  earn: 4,  moFee: 7.99,  yrFee: 80 },
+    { name: 'Metal',    earn: 2,  moFee: 14.99, yrFee: 140 },
+    { name: 'Ultra',    earn: 1,  moFee: 55,    yrFee: 540 }
+  ];
+  const revRed = [
+    { name: '✈️ Airline Miles (best)',    v: .025, stars: '★★★★★', note: 'Long-haul / business class sweet spots' },
+    { name: '✈️ Airline Miles (typical)', v: .015, stars: '★★★★☆', note: 'Economy short-haul; upgrades, seat selection' },
+    { name: '🏨 Hotel Stays',             v: .020, stars: '★★★☆☆', note: '5,000 pts ≈ up to €100 off; value varies' },
+    { name: '🎭 Experiences',             v: .012, stars: '★★★☆☆', note: 'Tours, dining, activities via Revolut app' },
+    { name: '🎁 Gift Cards',              v: .007, stars: '★★☆☆☆', note: '14,000 pts ≈ £100; worst value option' }
+  ];
+  function revCalc() {
+    const s = sym(), spend = +$('globalSpend').value || 0, pi = +$('revPlan').value, bill = $('revBill').value, ri = +$('revRedeem').value;
+    const ruOn = $('revRU').checked, ruPct = +$('revRUPct').value || 3;
+    $('revRUPctV').textContent = ruPct.toFixed(1);
+
+    const plan = revP[pi] || revP[3], red = revRed[ri] || revRed[0];
+    const revFxFeeC = spend * (+$('revFxFee').value || 0) / 100;
+    const ptsSp = Math.floor(spend / plan.earn);
+    const ruGBP = ruOn ? (spend * ruPct / 100) : 0;
+    const ptsRU = ruOn ? Math.floor(ruGBP * 50) : 0;
+    const totPts = ptsSp + ptsRU;
+    const gross = totPts * red.v;
+    const fee = bill === 'yr' ? (plan.yrFee / 12) : plan.moFee;
+    const net = gross - fee - ruGBP - revFxFeeC;
+    const eff = spend > 0 ? (net / spend * 100) : 0;
+
+    $('revPtsSpV').textContent = ptsSp.toLocaleString();
+    $('revPtsRUV').textContent = ptsRU.toLocaleString();
+    $('revPtsTotV').textContent = totPts.toLocaleString();
+    $('revPtValV').textContent = s + red.v.toFixed(3) + '/pt';
+    $('revGrossV').textContent = fmtV(gross, s);
+    $('revFeeV').textContent = fmtV(fee, s);
+    $('revRUCV').textContent = fmtV(ruGBP, s);
+    $('revNetV').textContent = fmtV(net, s); $('revNetV').className = 'v ' + (net >= 0 ? 'positive' : 'negative');
+    $('revNetYV').textContent = fmtV(net * 12, s);
+    $('revEffV').textContent = eff.toFixed(2) + '%';
+
+    // plan table
+    const tbody = $('revTbl').querySelector('tbody'); tbody.innerHTML = '';
+    let bestN = -1e18, bestI = -1;
+    const pRows = revP.map((p, i) => {
+      const pts = Math.floor(spend / p.earn) + ptsRU, gv = pts * red.v, f = bill === 'yr' ? (p.yrFee / 12) : p.moFee, n = gv - f - ruGBP - revFxFeeC;
+      if (n > bestN) { bestN = n; bestI = i; }
+      return { p, i, pts, gv, f, n };
+    });
+    pRows.forEach(({ p, i, pts, gv, f, n }) => {
+      const nY = n * 12, ef = spend > 0 ? (n / spend * 100) : 0;
+      const tr = document.createElement('tr');
+      if (i === bestI) tr.className = 'best';
+      if (i === pi) tr.classList.add('sel');
+      tr.innerHTML = `<td>${p.name}</td><td>1 pt / ${s}${p.earn}</td><td>${p.moFee === 0 ? 'Free' : s + f.toFixed(2)}</td><td>${pts.toLocaleString()}</td><td>${s}${f2(gv)}</td><td style="font-weight:500;color:${n >= 0 ? 'var(--green)' : 'var(--red)'}">${s}${f2(n)}</td><td>${s}${f2(nY)}</td><td>${ef.toFixed(2)}%</td>`;
+      tbody.appendChild(tr);
+    });
+
+    // redemption table
+    const tbody2 = $('revRedeemTbl').querySelector('tbody'); tbody2.innerHTML = '';
+    const annPts = totPts * 12;
+    revRed.forEach((r, i) => {
+      const aV = annPts * r.v;
+      const tr = document.createElement('tr');
+      if (i === ri) tr.className = 'sel';
+      tr.innerHTML = `<td>${r.name}</td><td>${s}${r.v.toFixed(3)}</td><td>${r.stars}</td><td>${annPts.toLocaleString()} → ${s}${f2(aV)}</td><td style="text-align:left;font-size:.72rem;color:var(--ink-3)">${r.note}</td>`;
+      tbody2.appendChild(tr);
+    });
+
+    window._net = window._net || {}; window._net.REVOLUT = net;
+    window._net_fx = window._net_fx || {}; window._net_fx.REVOLUT = revFxFeeC;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     SECTION SWITCHING + SUMMARY
+     ══════════════════════════════════════════════════════════ */
+  const calcFns = { COCA: cocaCalc, CDC: cdcCalc, READY: readyCalc, GNOSIS: gnoCalc, ETHERFI: efCalc, REVOLUT: revCalc };
+  function refresh() {
+    syncFx();
+    const v = $('cardSel').value;
+    document.querySelectorAll('section.calc').forEach(s => {
+      s.classList.toggle('active', s.id === 'sec_' + v);
+    });
+    Object.values(calcFns).forEach(fn => { try { fn(); } catch (e) { console.error(e); } });
+    updateSummary();
+  }
+  /* ── Event binding ── */
+  $('cardSel').addEventListener('change', refresh);
+  $('cur').addEventListener('change', refresh);
+  $('fx').addEventListener('input', refresh);
+  document.addEventListener('input',  e => { if (e.target.closest('section.calc') || e.target.closest('#controls')) refresh(); });
+  document.addEventListener('change', e => { if (e.target.closest('section.calc') || e.target.closest('#controls')) refresh(); });
+  $('cdcMoFee').addEventListener('input', () => $('cdcMoFee').dataset.u = '1');
+  $('cdcYrFee').addEventListener('input', () => $('cdcYrFee').dataset.u = '1');
+
+  /* ── Live price fetch ── */
+  async function fetchPrices() {
+    const btn = $('fetchPricesBtn');
+    const lbl = $('priceStatusLbl');
+    btn.disabled = true;
+    btn.textContent = '…';
+    lbl.textContent = 'Fetching…';
+    try {
+      const url = 'https://api.coingecko.com/api/v3/simple/price?ids=coca,gnosis,crypto-com-chain&vs_currencies=usd';
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const d = await res.json();
+      if (d.coca?.usd)                { $('cocaPrice').value  = d.coca.usd.toFixed(4); }
+      if (d['crypto-com-chain']?.usd) { $('cdcCROPrice').value = d['crypto-com-chain'].usd.toFixed(4); }
+      if (d.gnosis?.usd)              { $('gnoPrice').value   = d.gnosis.usd.toFixed(2); }
+      const now = new Date().toLocaleTimeString();
+      lbl.textContent = 'Updated ' + now;
+      lbl.style.color = 'var(--green)';
+      refresh();
+    } catch (e) {
+      lbl.textContent = 'Fetch failed';
+      lbl.style.color = 'var(--red)';
+      console.warn('fetchPrices:', e);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '↻ Live prices';
+    }
+  }
+
+  /* ── Init ── */
+  $('cur').dataset.prev = 'GBP';
+  refresh();
+  fetchPrices();
+</script>
+</body>
+</html>
