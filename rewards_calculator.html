@@ -213,7 +213,6 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      overflow: hidden;
     }
 
     /* ══════════════════════════════════════════════
@@ -699,6 +698,12 @@
       gap: 10px;
       flex-wrap: wrap;
       margin-bottom: 10px;
+      align-items: flex-end;
+    }
+
+    .inline .ctrl select,
+    .inline .ctrl input[type="number"] {
+      min-width: 80px;
     }
 
     /* ══════════════════════════════════════════════
@@ -782,10 +787,19 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
       margin-bottom: 8px;
     }
 
-    .sub-item .name { font-size: 0.83rem; font-weight: 600; }
+    .sub-item .name {
+      font-size: 0.83rem;
+      font-weight: 600;
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     .sub-item .pill {
       font-size: 0.58rem;
@@ -797,6 +811,8 @@
       background: var(--bg);
       border: 1px solid var(--border-2);
       color: var(--ink-3);
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .sub-item .pill.ok {
@@ -805,7 +821,11 @@
       color: var(--green);
     }
 
-    .sub-item .fields { display: flex; gap: 6px; }
+    .sub-item .fields {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 6px;
+    }
 
     .sub-item .fields select,
     .sub-item .fields input {
@@ -816,14 +836,20 @@
       border-radius: 6px;
       font-size: 0.78rem;
       font-family: var(--mono);
-      flex: 1;
+      min-width: 0;
+      width: 100%;
       outline: none;
+    }
+
+    .sub-item .fields select:last-child {
+      width: 68px;
+      flex-shrink: 0;
     }
 
     /* ══════════════════════════════════════════════
        CONFIG TABLES
     ══════════════════════════════════════════════ */
-    .tbl-wrap { overflow-x: auto; }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
     table.config-table {
       width: 100%;
@@ -944,10 +970,57 @@
        MOBILE
     ══════════════════════════════════════════════ */
     @media (max-width: 560px) {
+      .app { padding: 16px 14px 60px; }
+
       .lp-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
       .card-tabs { gap: 4px; }
-      .card-tab { font-size: 0.7rem; padding: 6px 9px; min-width: 60px; }
+      .card-tab { font-size: 0.68rem; padding: 6px 8px; min-width: 52px; }
+
       .stat-grid { grid-template-columns: 1fr 1fr; }
+
+      /* Config strip: stack into 2 columns */
+      .config-strip {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .config-strip .ctrl select,
+      .config-strip .ctrl input { width: 100%; min-width: 0; }
+
+      /* Panel body padding tighter */
+      .panel-body { padding: 14px; }
+
+      /* inline controls: 2-column grid on narrow screens */
+      .inline {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .inline .ctrl select,
+      .inline .ctrl input[type="number"] { width: 100%; min-width: 0; }
+
+      /* Sub-item: currency select narrower */
+      .sub-item .fields select:last-child { width: 58px; }
+
+      /* Metrics: force 2 columns */
+      .metrics { grid-template-columns: 1fr 1fr; }
+
+      /* Best card: stack on very small */
+      .best-card { flex-wrap: wrap; gap: 12px; }
+      .best-card-net { text-align: left; }
+
+      /* Section title: don't overflow */
+      .section-title h2 { font-size: 1rem; }
+    }
+
+    @media (max-width: 400px) {
+      .card-tab { font-size: 0.62rem; padding: 5px 6px; min-width: 44px; }
+      .sub-item .fields {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+      }
+      .sub-item .fields select:first-child { grid-column: 1 / -1; }
     }
   </style>
 </head>
