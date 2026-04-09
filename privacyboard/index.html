@@ -32,13 +32,25 @@
       --radius: 14px;
       --radius-sm: 8px;
     }
+
     body.theme-light {
-      --bg: #f4f4f8; --surface: #ffffff; --surface2: #eeeef5;
-      --border: rgba(0,0,0,0.08); --text: #1a1a2e; --text-muted: #6b6b82; --card-bg: #f8f8fc;
+      --bg: #f4f4f8;
+      --surface: #ffffff;
+      --surface2: #eeeef5;
+      --border: rgba(0, 0, 0, 0.08);
+      --text: #1a1a2e;
+      --text-muted: #6b6b82;
+      --card-bg: #f8f8fc;
     }
+
     body.theme-amoled {
-      --bg: #000000; --surface: #0a0a0a; --surface2: #111111;
-      --border: rgba(255,255,255,0.05); --text: #e8e8f0; --text-muted: #505070; --card-bg: #0d0d0d;
+      --bg: #000000;
+      --surface: #0a0a0a;
+      --surface2: #111111;
+      --border: rgba(255, 255, 255, 0.05);
+      --text: #e8e8f0;
+      --text-muted: #505070;
+      --card-bg: #0d0d0d;
     }
 
     body {
@@ -2167,7 +2179,10 @@
       transition: background 0.4s;
     }
 
-    #dashboardView, #board, #calendarView, #timelineView {
+    #dashboardView,
+    #board,
+    #calendarView,
+    #timelineView {
       position: relative;
       z-index: 2;
     }
@@ -2311,86 +2326,296 @@
       border-bottom-color: var(--danger, #f76a8a);
       font-weight: 600;
     }
+
     /* Calendar */
-    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
-    .cal-day-name { text-align:center; font-size:0.7rem; color:var(--text-muted); padding:4px; font-weight:600; text-transform:uppercase; }
-    .cal-cell { min-height:80px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:6px; }
-    .cal-cell.other-month { opacity:0.35; }
-    .cal-cell.today { border-color:var(--accent); }
-    .cal-day-num { font-size:0.72rem; color:var(--text-muted); margin-bottom:4px; font-weight:600; }
-    .cal-card-chip { background:var(--card-bg); border-radius:4px; padding:2px 5px; font-size:0.65rem; color:var(--text); margin-bottom:2px; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-left:3px solid var(--accent); display:block; }
-    .cal-card-chip:hover { background:var(--surface2); }
-    .cal-nav { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
-    .cal-nav h3 { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; flex:1; text-align:center; }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .cal-day-name {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      padding: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .cal-cell {
+      min-height: 80px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px;
+    }
+
+    .cal-cell.other-month {
+      opacity: 0.35;
+    }
+
+    .cal-cell.today {
+      border-color: var(--accent);
+    }
+
+    .cal-day-num {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .cal-card-chip {
+      background: var(--card-bg);
+      border-radius: 4px;
+      padding: 2px 5px;
+      font-size: 0.65rem;
+      color: var(--text);
+      margin-bottom: 2px;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border-left: 3px solid var(--accent);
+      display: block;
+    }
+
+    .cal-card-chip:hover {
+      background: var(--surface2);
+    }
+
+    .cal-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .cal-nav h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      flex: 1;
+      text-align: center;
+    }
+
     /* Timeline */
-    .timeline-wrap { min-width:700px; }
-    .timeline-row { display:flex; align-items:center; margin-bottom:6px; min-height:32px; }
-    .timeline-card-label { width:180px; flex-shrink:0; font-size:0.75rem; color:var(--text); padding-right:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
-    .timeline-card-label:hover { color:var(--accent); }
-    .timeline-bar-area { flex:1; position:relative; height:24px; background:var(--surface2); border-radius:4px; }
-    .timeline-bar { position:absolute; height:20px; border-radius:4px; top:2px; display:flex; align-items:center; padding:0 6px; font-size:0.65rem; color:#fff; white-space:nowrap; overflow:hidden; cursor:pointer; transition:filter 0.15s; min-width:6px; }
-    .timeline-bar:hover { filter:brightness(1.2); }
-    .timeline-today-line { position:absolute; top:0; bottom:0; width:2px; background:var(--accent2); opacity:0.8; border-radius:2px; pointer-events:none; }
+    .timeline-wrap {
+      min-width: 700px;
+    }
+
+    .timeline-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+      min-height: 32px;
+    }
+
+    .timeline-card-label {
+      width: 180px;
+      flex-shrink: 0;
+      font-size: 0.75rem;
+      color: var(--text);
+      padding-right: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+
+    .timeline-card-label:hover {
+      color: var(--accent);
+    }
+
+    .timeline-bar-area {
+      flex: 1;
+      position: relative;
+      height: 24px;
+      background: var(--surface2);
+      border-radius: 4px;
+    }
+
+    .timeline-bar {
+      position: absolute;
+      height: 20px;
+      border-radius: 4px;
+      top: 2px;
+      display: flex;
+      align-items: center;
+      padding: 0 6px;
+      font-size: 0.65rem;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      cursor: pointer;
+      transition: filter 0.15s;
+      min-width: 6px;
+    }
+
+    .timeline-bar:hover {
+      filter: brightness(1.2);
+    }
+
+    .timeline-today-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--accent2);
+      opacity: 0.8;
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
     /* Activity sidebar */
-    .activity-item { display:flex; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); font-size:0.78rem; }
-    .activity-item:last-child { border-bottom:none; }
-    .activity-icon { font-size:1rem; line-height:1.4; flex-shrink:0; width:20px; text-align:center; }
-    .activity-who { font-weight:600; color:var(--text); }
-    .activity-what { color:var(--text-muted); }
-    .activity-when { font-size:0.65rem; color:var(--text-muted); margin-top:2px; }
+    .activity-item {
+      display: flex;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.78rem;
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-icon {
+      font-size: 1rem;
+      line-height: 1.4;
+      flex-shrink: 0;
+      width: 20px;
+      text-align: center;
+    }
+
+    .activity-who {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .activity-what {
+      color: var(--text-muted);
+    }
+
+    .activity-when {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
     /* Comments */
-    .comment-item { background:var(--surface2); border-radius:var(--radius-sm); padding:8px 10px; display:flex; flex-direction:column; gap:3px; }
-    .comment-author { font-size:0.72rem; font-weight:600; color:var(--accent); }
-    .comment-text { font-size:0.82rem; color:var(--text); line-height:1.5; white-space:pre-wrap; word-break:break-word; }
-    .comment-time { font-size:0.65rem; color:var(--text-muted); }
-    .comment-delete-btn { margin-left:auto; background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.72rem; padding:0 4px; line-height:1; }
-    .comment-delete-btn:hover { color:var(--accent2); }
-    @keyframes typingPulse { 0%,100% { box-shadow:0 0 0 2px var(--accent); } 50% { box-shadow:0 0 0 3px var(--accent); } }
+    .comment-item {
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .comment-author {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .comment-text {
+      font-size: 0.82rem;
+      color: var(--text);
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .comment-time {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    .comment-delete-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.72rem;
+      padding: 0 4px;
+      line-height: 1;
+    }
+
+    .comment-delete-btn:hover {
+      color: var(--accent2);
+    }
+
+    @keyframes typingPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 2px var(--accent);
+      }
+
+      50% {
+        box-shadow: 0 0 0 3px var(--accent);
+      }
+    }
 
     /* ===== COMPACT MODE ===== */
     body.compact-mode {
       --col-w: 260px;
     }
+
     body.compact-mode .column {
       border-radius: 10px;
     }
+
     body.compact-mode .col-header {
       padding: 10px 10px 8px;
     }
+
     body.compact-mode .col-title {
       font-size: 0.75rem;
     }
+
     body.compact-mode .cards-wrap {
       padding: 3px 8px 8px;
       gap: 6px;
     }
+
     body.compact-mode .card {
       padding: 8px 10px;
       gap: 6px;
       border-radius: 6px;
     }
+
     body.compact-mode .card-text {
       font-size: 0.82rem;
       line-height: 1.35;
     }
+
     body.compact-mode .card-desc {
       font-size: 0.72rem;
     }
+
     body.compact-mode .card-label {
       gap: 4px;
     }
+
     body.compact-mode .label-tag {
       font-size: 0.6rem;
       padding: 1px 6px;
     }
+
     body.compact-mode #board {
       padding: 16px 20px 40px;
       gap: 12px;
     }
+
     body.compact-mode header {
       height: 48px;
       padding: 0 20px;
     }
+
     body.compact-mode .btn {
       padding: 5px 10px;
       font-size: 0.75rem;
@@ -2403,6 +2628,7 @@
       gap: 8px 24px;
       margin-top: 12px;
     }
+
     .shortcut-row {
       display: flex;
       align-items: center;
@@ -2410,14 +2636,17 @@
       padding: 6px 0;
       border-bottom: 1px solid var(--border);
     }
+
     .shortcut-row:last-child {
       border-bottom: none;
     }
+
     .shortcut-keys {
       display: flex;
       gap: 4px;
       align-items: center;
     }
+
     .kbd {
       background: var(--surface2);
       border: 1px solid var(--border);
@@ -2428,6 +2657,7 @@
       color: var(--text);
       box-shadow: 0 2px 0 var(--border);
     }
+
     .kbd-sm {
       padding: 1px 6px;
       font-size: 0.7rem;
@@ -2450,12 +2680,15 @@
       flex-direction: column;
       gap: 12px;
     }
+
     body.compact-mode .recent-boards-sidebar {
       top: 48px;
     }
+
     .recent-boards-sidebar.open {
       transform: translateX(0);
     }
+
     .recent-boards-header {
       font-family: 'Syne', sans-serif;
       font-weight: 700;
@@ -2467,12 +2700,14 @@
       align-items: center;
       justify-content: space-between;
     }
+
     .recent-boards-list {
       display: flex;
       flex-direction: column;
       gap: 6px;
       overflow-y: auto;
     }
+
     .recent-board-item {
       display: flex;
       align-items: center;
@@ -2483,18 +2718,22 @@
       transition: all 0.15s;
       border: 1px solid transparent;
     }
+
     .recent-board-item:hover {
       background: var(--surface2);
       border-color: var(--border);
     }
+
     .recent-board-icon {
       font-size: 1.2rem;
       flex-shrink: 0;
     }
+
     .recent-board-info {
       flex: 1;
       min-width: 0;
     }
+
     .recent-board-title {
       font-size: 0.82rem;
       font-weight: 500;
@@ -2503,10 +2742,12 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .recent-board-meta {
       font-size: 0.7rem;
       color: var(--text-muted);
     }
+
     .recent-board-type {
       font-size: 0.65rem;
       padding: 2px 6px;
@@ -2514,10 +2755,12 @@
       background: var(--surface2);
       color: var(--text-muted);
     }
+
     .recent-board-type.cloud {
       background: rgba(124, 106, 247, 0.15);
       color: var(--accent);
     }
+
     .recent-board-toggle {
       position: fixed;
       left: 0;
@@ -2532,10 +2775,12 @@
       z-index: 89;
       transition: left 0.25s ease;
     }
-    .recent-boards-sidebar.open ~ .recent-board-toggle {
+
+    .recent-boards-sidebar.open~.recent-board-toggle {
       left: 220px;
     }
-    .recent-boards-sidebar.open ~ #board {
+
+    .recent-boards-sidebar.open~#board {
       margin-left: 220px;
     }
 
@@ -2553,6 +2798,7 @@
       padding: 0;
       margin: 0;
     }
+
     .card-inline-edit:focus {
       background: var(--surface);
       border-radius: 4px;
@@ -2566,6 +2812,7 @@
       max-width: 800px;
       margin: 0 auto;
     }
+
     .privacy-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -2573,6 +2820,7 @@
       padding: 20px;
       margin-bottom: 16px;
     }
+
     .privacy-card h3 {
       font-family: 'Syne', sans-serif;
       font-size: 1rem;
@@ -2581,6 +2829,7 @@
       align-items: center;
       gap: 8px;
     }
+
     .privacy-status {
       display: flex;
       align-items: center;
@@ -2588,43 +2837,52 @@
       font-size: 0.85rem;
       margin-bottom: 8px;
     }
+
     .privacy-status-indicator {
       width: 8px;
       height: 8px;
       border-radius: 50%;
     }
+
     .privacy-status-indicator.secure {
       background: var(--accent3);
     }
+
     .privacy-status-indicator.warning {
       background: var(--accent2);
     }
+
     .privacy-status-indicator.neutral {
       background: var(--text-muted);
     }
+
     .privacy-stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 12px;
       margin-top: 16px;
     }
+
     .privacy-stat {
       background: var(--surface2);
       border-radius: var(--radius-sm);
       padding: 16px;
       text-align: center;
     }
+
     .privacy-stat-value {
       font-family: 'Syne', sans-serif;
       font-size: 1.5rem;
       font-weight: 700;
       color: var(--accent);
     }
+
     .privacy-stat-label {
       font-size: 0.75rem;
       color: var(--text-muted);
       margin-top: 4px;
     }
+
     .danger-zone {
       border-color: rgba(247, 106, 138, 0.3);
       background: rgba(247, 106, 138, 0.05);
@@ -2648,10 +2906,14 @@
       title="Click to rename" />
     <div class="header-actions">
       <!-- View / Filter Buttons -->
-      <button class="btn" id="filterToggleBtn" onclick="toggleFilterBar()" style="font-size:0.75rem;padding:4px 10px" title="Filter &amp; Search">🔍 Filter</button>
-      <button class="btn" id="calendarViewBtn" onclick="toggleCalendarView()" style="font-size:0.75rem;padding:4px 10px" title="Calendar View">📅 Calendar</button>
-      <button class="btn" id="timelineViewBtn" onclick="toggleTimelineView()" style="font-size:0.75rem;padding:4px 10px" title="Timeline View">📊 Timeline</button>
-      <button class="btn" id="activityBtn" onclick="toggleActivitySidebar()" style="font-size:0.75rem;padding:4px 10px;display:none" title="Board Activity">📋 Activity</button>
+      <button class="btn" id="filterToggleBtn" onclick="toggleFilterBar()" style="font-size:0.75rem;padding:4px 10px"
+        title="Filter &amp; Search">🔍 Filter</button>
+      <button class="btn" id="calendarViewBtn" onclick="toggleCalendarView()" style="font-size:0.75rem;padding:4px 10px"
+        title="Calendar View">📅 Calendar</button>
+      <button class="btn" id="timelineViewBtn" onclick="toggleTimelineView()" style="font-size:0.75rem;padding:4px 10px"
+        title="Timeline View">📊 Timeline</button>
+      <button class="btn" id="activityBtn" onclick="toggleActivitySidebar()"
+        style="font-size:0.75rem;padding:4px 10px;display:none" title="Board Activity">📋 Activity</button>
 
       <!-- Database Settings Button -->
       <button class="btn"
@@ -2703,9 +2965,12 @@
             <div style="padding-top:8px;border-top:1px solid rgba(255,255,255,0.06)">
               <label style="font-size:0.72rem;color:var(--text-muted);display:block;margin-bottom:4px">🎨 Theme</label>
               <div style="display:flex;gap:4px">
-                <button class="btn" style="flex:1;font-size:0.66rem;padding:3px 4px" onclick="setTheme('')">🌑 Dark</button>
-                <button class="btn" style="flex:1;font-size:0.66rem;padding:3px 4px" onclick="setTheme('light')">☀️ Light</button>
-                <button class="btn" style="flex:1;font-size:0.66rem;padding:3px 4px" onclick="setTheme('amoled')">⚫ AMOLED</button>
+                <button class="btn" style="flex:1;font-size:0.66rem;padding:3px 4px" onclick="setTheme('')">🌑
+                  Dark</button>
+                <button class="btn" style="flex:1;font-size:0.66rem;padding:3px 4px" onclick="setTheme('light')">☀️
+                  Light</button>
+                <button class="btn" style="flex:1;font-size:0.66rem;padding:3px 4px" onclick="setTheme('amoled')">⚫
+                  AMOLED</button>
               </div>
             </div>
           </div>
@@ -2727,18 +2992,27 @@
   </header>
 
   <!-- FILTER/SEARCH BAR -->
-  <div id="filterBar" style="display:none;padding:8px 28px;background:var(--surface);border-bottom:1px solid var(--border);align-items:center;gap:10px;flex-wrap:wrap">
-    <input type="text" id="filterSearch" placeholder="🔍 Search cards..." style="padding:5px 12px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.8rem;width:190px;outline:none" oninput="applyFilters()" />
-    <select id="filterPriority" style="padding:5px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem" onchange="applyFilters()">
+  <div id="filterBar"
+    style="display:none;padding:8px 28px;background:var(--surface);border-bottom:1px solid var(--border);align-items:center;gap:10px;flex-wrap:wrap">
+    <input type="text" id="filterSearch" placeholder="🔍 Search cards..."
+      style="padding:5px 12px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.8rem;width:190px;outline:none"
+      oninput="applyFilters()" />
+    <select id="filterPriority"
+      style="padding:5px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem"
+      onchange="applyFilters()">
       <option value="">⚡ All Priorities</option>
       <option value="high">🔴 High</option>
       <option value="medium">🟡 Medium</option>
       <option value="low">🟢 Low</option>
     </select>
-    <select id="filterLabel" style="padding:5px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem" onchange="applyFilters()">
+    <select id="filterLabel"
+      style="padding:5px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem"
+      onchange="applyFilters()">
       <option value="">🏷 All Labels</option>
     </select>
-    <select id="filterAssignee" style="padding:5px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem" onchange="applyFilters()">
+    <select id="filterAssignee"
+      style="padding:5px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem"
+      onchange="applyFilters()">
       <option value="">👤 All Assignees</option>
     </select>
     <button class="btn" style="font-size:0.75rem;padding:4px 12px" onclick="clearFilters()">✕ Clear</button>
@@ -2752,24 +3026,32 @@
       <div class="form-group">
         <label>Type</label>
         <div style="display:flex;gap:14px;margin:8px 0 10px">
-          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="pageBgType" value="none" id="pageBgNone" onchange="pageBgTypeChange()" checked /> None</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="pageBgType" value="color" id="pageBgColor" onchange="pageBgTypeChange()" /> Color</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="pageBgType" value="image" id="pageBgImage" onchange="pageBgTypeChange()" /> Image URL</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio"
+              name="pageBgType" value="none" id="pageBgNone" onchange="pageBgTypeChange()" checked /> None</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio"
+              name="pageBgType" value="color" id="pageBgColor" onchange="pageBgTypeChange()" /> Color</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio"
+              name="pageBgType" value="image" id="pageBgImage" onchange="pageBgTypeChange()" /> Image URL</label>
         </div>
         <div id="pageBgColorRow" style="display:none;margin-bottom:8px">
-          <input type="color" id="pageBgColorPicker" value="#0f0f13" style="width:60px;height:34px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0" />
+          <input type="color" id="pageBgColorPicker" value="#0f0f13"
+            style="width:60px;height:34px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0" />
         </div>
         <div id="pageBgImageRow" style="display:none;margin-bottom:8px">
-          <input type="text" id="pageBgImageUrl" placeholder="https://... (image URL)" style="width:100%;box-sizing:border-box;font-size:0.82rem" />
+          <input type="text" id="pageBgImageUrl" placeholder="https://... (image URL)"
+            style="width:100%;box-sizing:border-box;font-size:0.82rem" />
         </div>
       </div>
       <div class="form-group">
         <label>Dark Overlay</label>
         <div style="display:flex;align-items:center;gap:8px">
-          <input type="range" id="pageBgOpacity" min="0" max="90" value="0" style="flex:1" oninput="document.getElementById('pageBgOpacityVal').textContent=this.value+'%'" />
-          <span id="pageBgOpacityVal" style="font-size:0.73rem;color:var(--text-muted);width:35px;text-align:right">0%</span>
+          <input type="range" id="pageBgOpacity" min="0" max="90" value="0" style="flex:1"
+            oninput="document.getElementById('pageBgOpacityVal').textContent=this.value+'%'" />
+          <span id="pageBgOpacityVal"
+            style="font-size:0.73rem;color:var(--text-muted);width:35px;text-align:right">0%</span>
         </div>
-        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">Semi-transparent black layer on top of the background for readability.</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">Semi-transparent black layer on top of the
+          background for readability.</div>
       </div>
       <div style="display:flex;gap:8px;margin-top:18px">
         <button class="btn btn-primary" onclick="savePageBg()">💾 Save</button>
@@ -2790,28 +3072,37 @@
       <div class="form-group">
         <label>🖼 Section Background</label>
         <div style="display:flex;gap:14px;margin:8px 0 10px">
-          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="wssBgType" value="none" id="wssBgNone" onchange="wssBgTypeChange()" checked /> None</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="wssBgType" value="color" id="wssBgColor" onchange="wssBgTypeChange()" /> Color</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="wssBgType" value="image" id="wssBgImage" onchange="wssBgTypeChange()" /> Image URL</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio"
+              name="wssBgType" value="none" id="wssBgNone" onchange="wssBgTypeChange()" checked /> None</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio"
+              name="wssBgType" value="color" id="wssBgColor" onchange="wssBgTypeChange()" /> Color</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio"
+              name="wssBgType" value="image" id="wssBgImage" onchange="wssBgTypeChange()" /> Image URL</label>
         </div>
         <div id="wssBgColorRow" style="display:none;margin-bottom:8px">
-          <input type="color" id="wssBgColorPicker" value="#1a1a2e" style="width:60px;height:34px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0" />
+          <input type="color" id="wssBgColorPicker" value="#1a1a2e"
+            style="width:60px;height:34px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0" />
         </div>
         <div id="wssBgImageRow" style="display:none;margin-bottom:8px">
-          <input type="text" id="wssBgImageUrl" placeholder="https://... (image URL)" style="width:100%;box-sizing:border-box;font-size:0.82rem" />
+          <input type="text" id="wssBgImageUrl" placeholder="https://... (image URL)"
+            style="width:100%;box-sizing:border-box;font-size:0.82rem" />
         </div>
       </div>
       <div class="form-group">
         <label>🎨 Section Accent Color</label>
         <div style="display:flex;align-items:center;gap:10px">
-          <input type="color" id="wssAccentColor" value="#7c6af7" style="width:60px;height:34px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0" />
-          <button class="btn" style="font-size:0.73rem;padding:4px 10px" onclick="document.getElementById('wssAccentColor').value='#7c6af7'">Reset</button>
+          <input type="color" id="wssAccentColor" value="#7c6af7"
+            style="width:60px;height:34px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0" />
+          <button class="btn" style="font-size:0.73rem;padding:4px 10px"
+            onclick="document.getElementById('wssAccentColor').value='#7c6af7'">Reset</button>
         </div>
-        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">Colors the workspace header border and section title.</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">Colors the workspace header border and
+          section title.</div>
       </div>
       <div style="display:flex;gap:8px;margin-top:18px">
         <button class="btn btn-primary" onclick="saveWsSettings()">💾 Save</button>
-        <button class="btn" onclick="document.getElementById('wsSettingsOverlay').classList.remove('open')">Cancel</button>
+        <button class="btn"
+          onclick="document.getElementById('wsSettingsOverlay').classList.remove('open')">Cancel</button>
       </div>
     </div>
   </div>
@@ -2822,7 +3113,8 @@
       <h2 data-i18n="yourWorkspaces">Your Workspaces</h2>
       <div style="display:flex;gap:8px;align-items:center">
         <button class="btn" style="font-size:0.78rem" onclick="openPageBgSettings()">🖼 Page Background</button>
-        <button class="btn btn-primary" onclick="createWorkspacePrompt()" data-i18n="newWorkspace">+ New Workspace</button>
+        <button class="btn btn-primary" onclick="createWorkspacePrompt()" data-i18n="newWorkspace">+ New
+          Workspace</button>
       </div>
     </div>
     <div id="workspacesContainer"></div>
@@ -2834,10 +3126,13 @@
   <div id="toast"></div>
 
   <!-- ACTIVITY SIDEBAR -->
-  <div id="activitySidebar" style="position:fixed;right:0;top:58px;width:300px;height:calc(100vh - 58px);background:var(--surface);border-left:1px solid var(--border);z-index:90;display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.25s ease">
-    <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+  <div id="activitySidebar"
+    style="position:fixed;right:0;top:58px;width:300px;height:calc(100vh - 58px);background:var(--surface);border-left:1px solid var(--border);z-index:90;display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.25s ease">
+    <div
+      style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
       <strong style="font-size:0.9rem">📋 Activity</strong>
-      <button style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;line-height:1" onclick="toggleActivitySidebar()">✕</button>
+      <button style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;line-height:1"
+        onclick="toggleActivitySidebar()">✕</button>
     </div>
     <div id="activityList" style="flex:1;overflow-y:auto;padding:12px"></div>
   </div>
@@ -2888,13 +3183,19 @@
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
               <label data-i18n="description" style="margin-bottom:0">Description</label>
               <div style="display:flex;gap:4px">
-                <button id="mdTabEdit" class="btn" style="font-size:0.68rem;padding:3px 10px;border-radius:100px;background:var(--accent);color:#fff;border-color:var(--accent)" onclick="switchMdTab('edit')">✏️ Edit</button>
-                <button id="mdTabPreview" class="btn" style="font-size:0.68rem;padding:3px 10px;border-radius:100px;opacity:0.5" onclick="switchMdTab('preview')">👁 Preview</button>
+                <button id="mdTabEdit" class="btn"
+                  style="font-size:0.68rem;padding:3px 10px;border-radius:100px;background:var(--accent);color:#fff;border-color:var(--accent)"
+                  onclick="switchMdTab('edit')">✏️ Edit</button>
+                <button id="mdTabPreview" class="btn"
+                  style="font-size:0.68rem;padding:3px 10px;border-radius:100px;opacity:0.5"
+                  onclick="switchMdTab('preview')">👁 Preview</button>
               </div>
             </div>
             <textarea id="cardDescInput" class="auto-grow" data-i18n-placeholder="descPlaceholder"
               placeholder="Add notes, links, or context... (Markdown supported)"></textarea>
-            <div id="mdPreviewPane" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;min-height:80px;font-size:0.85rem;line-height:1.6;color:var(--text)"></div>
+            <div id="mdPreviewPane"
+              style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;min-height:80px;font-size:0.85rem;line-height:1.6;color:var(--text)">
+            </div>
           </div>
           <div class="form-group">
             <label data-i18n="checklist">☑ Checklist</label>
@@ -2913,10 +3214,15 @@
           <!-- Comments -->
           <div class="form-group" id="commentsSection" style="display:none">
             <label>💬 Comments</label>
-            <div id="commentsList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;max-height:200px;overflow-y:auto"></div>
+            <div id="commentsList"
+              style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;max-height:200px;overflow-y:auto">
+            </div>
             <div style="display:flex;gap:8px;align-items:flex-end">
-              <textarea id="commentInput" placeholder="Add a comment..." style="flex:1;padding:8px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.82rem;resize:none;min-height:40px;font-family:inherit" rows="2"></textarea>
-              <button class="btn btn-primary" style="font-size:0.78rem;padding:6px 12px;white-space:nowrap" onclick="addComment()">Post</button>
+              <textarea id="commentInput" placeholder="Add a comment..."
+                style="flex:1;padding:8px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.82rem;resize:none;min-height:40px;font-family:inherit"
+                rows="2"></textarea>
+              <button class="btn btn-primary" style="font-size:0.78rem;padding:6px 12px;white-space:nowrap"
+                onclick="addComment()">Post</button>
             </div>
           </div>
         </div>
@@ -2958,7 +3264,8 @@
           <!-- Story Points -->
           <div class="sidebar-section">
             <div class="sidebar-label">🎯 Story Points</div>
-            <input type="number" id="cardPointsInput" min="0" max="999" placeholder="0" style="width:80px;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.85rem" />
+            <input type="number" id="cardPointsInput" min="0" max="999" placeholder="0"
+              style="width:80px;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.85rem" />
           </div>
 
           <!-- Start Date -->
@@ -2973,7 +3280,8 @@
           <!-- Card Cover Image -->
           <div class="sidebar-section">
             <div class="sidebar-label">🖼 Cover Image</div>
-            <input type="text" id="cardCoverInput" placeholder="https://..." style="width:100%;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem" />
+            <input type="text" id="cardCoverInput" placeholder="https://..."
+              style="width:100%;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem" />
             <div id="cardCoverPreview" style="margin-top:6px;border-radius:6px;overflow:hidden;display:none">
               <img id="cardCoverPreviewImg" style="width:100%;height:80px;object-fit:cover;border-radius:6px" />
             </div>
@@ -3146,7 +3454,8 @@
     <div class="room-box" style="text-align:center">
       <h2 id="boardRemovedTitle">🗑 Board Removed</h2>
       <p id="boardRemovedDesc" style="color:var(--text-muted);font-size:0.88rem;line-height:1.6"></p>
-      <div class="modal-actions" style="justify-content:center;margin-top:12px;flex-wrap:wrap;gap:8px" id="boardRemovedActions"></div>
+      <div class="modal-actions" style="justify-content:center;margin-top:12px;flex-wrap:wrap;gap:8px"
+        id="boardRemovedActions"></div>
     </div>
   </div>
 
@@ -3259,30 +3568,40 @@
       <div class="form-group" id="settingsAutoDeleteSection">
         <label style="color:var(--text-muted);font-size:0.78rem">⏱ Auto-Delete After Inactivity</label>
         <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
-          <input type="number" id="selfDestructDays" min="0" max="365" placeholder="0" style="width:80px;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.85rem" />
+          <input type="number" id="selfDestructDays" min="0" max="365" placeholder="0"
+            style="width:80px;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.85rem" />
           <span style="font-size:0.75rem;color:var(--text-muted)">days (0 = never)</span>
           <button class="btn" style="font-size:0.75rem;padding:4px 10px" onclick="saveSelfDestruct()">Save</button>
         </div>
-        <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px">Room auto-deletes after this many days with no card edits.</div>
+        <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px">Room auto-deletes after this many days
+          with no card edits.</div>
       </div>
 
-      <div class="form-group" style="padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);margin-top:10px" id="settingsBoardBgSection">
+      <div class="form-group" style="padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);margin-top:10px"
+        id="settingsBoardBgSection">
         <label>🖼 Board Background</label>
         <div style="display:flex;gap:14px;margin:8px 0 10px">
-          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="boardBgType" value="none" id="boardBgNone" onchange="boardBgTypeChange()" /> None</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="boardBgType" value="color" id="boardBgColor" onchange="boardBgTypeChange()" /> Color</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio" name="boardBgType" value="image" id="boardBgImage" onchange="boardBgTypeChange()" /> Image URL</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio"
+              name="boardBgType" value="none" id="boardBgNone" onchange="boardBgTypeChange()" /> None</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio"
+              name="boardBgType" value="color" id="boardBgColor" onchange="boardBgTypeChange()" /> Color</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;cursor:pointer"><input type="radio"
+              name="boardBgType" value="image" id="boardBgImage" onchange="boardBgTypeChange()" /> Image URL</label>
         </div>
         <div id="boardBgColorRow" style="display:none;margin-bottom:8px">
-          <input type="color" id="boardBgColorPicker" value="#0f0f13" style="width:60px;height:34px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0" />
+          <input type="color" id="boardBgColorPicker" value="#0f0f13"
+            style="width:60px;height:34px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0" />
         </div>
         <div id="boardBgImageRow" style="display:none;margin-bottom:8px">
-          <input type="text" id="boardBgImageUrl" placeholder="https://... (image URL)" style="font-size:0.8rem;width:100%;box-sizing:border-box" />
+          <input type="text" id="boardBgImageUrl" placeholder="https://... (image URL)"
+            style="font-size:0.8rem;width:100%;box-sizing:border-box" />
         </div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
           <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap">Dark overlay:</span>
-          <input type="range" id="boardBgOverlay" min="0" max="90" value="0" style="flex:1" oninput="document.getElementById('boardBgOverlayVal').textContent=this.value+'%'" />
-          <span id="boardBgOverlayVal" style="font-size:0.73rem;color:var(--text-muted);width:35px;text-align:right">0%</span>
+          <input type="range" id="boardBgOverlay" min="0" max="90" value="0" style="flex:1"
+            oninput="document.getElementById('boardBgOverlayVal').textContent=this.value+'%'" />
+          <span id="boardBgOverlayVal"
+            style="font-size:0.73rem;color:var(--text-muted);width:35px;text-align:right">0%</span>
         </div>
         <button class="btn" style="font-size:0.75rem" onclick="saveBoardBg()">Apply Background</button>
       </div>
@@ -3461,17 +3780,21 @@
             <div style="display:flex;gap:8px;margin-bottom:8px">
               <input type="text" id="devBanUidInput" placeholder="Firebase Auth UID to ban…"
                 style="flex:1;font-family:monospace;font-size:0.82rem" />
-              <button class="btn" style="color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.35);white-space:nowrap;font-size:0.78rem" onclick="devBanUid()">🚫 Ban</button>
+              <button class="btn"
+                style="color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.35);white-space:nowrap;font-size:0.78rem"
+                onclick="devBanUid()">🚫 Ban</button>
             </div>
             <input type="text" id="devBanReasonInput" placeholder="Reason for ban (shown to user, optional)…"
               style="width:100%;font-size:0.8rem;box-sizing:border-box" />
             <div style="font-size:0.7rem;color:var(--text-muted);margin-top:6px">
-              Banning forces the user off immediately and generates a new anonymous auth on their next visit. Cloud boards are removed. Offline boards are unaffected.
+              Banning forces the user off immediately and generates a new anonymous auth on their next visit. Cloud
+              boards are removed. Offline boards are unaffected.
             </div>
             <div id="devBanError" style="font-size:0.75rem;color:var(--accent2);min-height:16px;margin-top:4px"></div>
           </div>
           <div>
-            <div style="font-size:0.68rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+            <div
+              style="font-size:0.68rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
               <span>Banned Users</span>
               <button class="btn" style="font-size:0.65rem;padding:2px 8px" onclick="devLoadBans()">↻ Refresh</button>
             </div>
@@ -3486,21 +3809,30 @@
           <div style="display:flex;gap:8px;margin-bottom:8px">
             <input type="text" id="devRoomsSearch" placeholder="Filter by room ID or owner name…"
               style="flex:1;font-size:0.8rem" oninput="devFilterRooms(this.value)" />
-            <button class="btn" style="font-size:0.75rem;white-space:nowrap" onclick="devLoadRooms()">↻ Load Rooms</button>
+            <button class="btn" style="font-size:0.75rem;white-space:nowrap" onclick="devLoadRooms()">↻ Load
+              Rooms</button>
           </div>
           <div style="display:flex;gap:6px;margin-bottom:10px">
-            <button class="btn" id="devRoomsFilterAll" style="font-size:0.7rem;padding:3px 10px;background:var(--accent);color:#fff;border-color:var(--accent)" onclick="devSetRoomsFilter('all')">All</button>
-            <button class="btn" id="devRoomsFilterActive" style="font-size:0.7rem;padding:3px 10px" onclick="devSetRoomsFilter('active')">Active</button>
-            <button class="btn" id="devRoomsFilterRemoved" style="font-size:0.7rem;padding:3px 10px;color:#f7c26a;border-color:rgba(247,194,106,0.35)" onclick="devSetRoomsFilter('removed')">🗑 Removed</button>
+            <button class="btn" id="devRoomsFilterAll"
+              style="font-size:0.7rem;padding:3px 10px;background:var(--accent);color:#fff;border-color:var(--accent)"
+              onclick="devSetRoomsFilter('all')">All</button>
+            <button class="btn" id="devRoomsFilterActive" style="font-size:0.7rem;padding:3px 10px"
+              onclick="devSetRoomsFilter('active')">Active</button>
+            <button class="btn" id="devRoomsFilterRemoved"
+              style="font-size:0.7rem;padding:3px 10px;color:#f7c26a;border-color:rgba(247,194,106,0.35)"
+              onclick="devSetRoomsFilter('removed')">🗑 Removed</button>
           </div>
           <div id="devRoomsList" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto">
             <p style="font-size:0.78rem;color:var(--text-muted)">Click "Load Rooms" to fetch all boards.</p>
           </div>
           <!-- Stale Room Cleanup -->
           <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
-            <div style="font-size:0.8rem;font-weight:600;margin-bottom:4px;color:var(--text-muted)">🗑 Stale Room Cleanup</div>
-            <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:8px">Rooms with no edits in 30+ days</div>
-            <button class="btn" style="font-size:0.75rem;padding:4px 12px" onclick="devLoadStaleRooms()">🔍 Scan</button>
+            <div style="font-size:0.8rem;font-weight:600;margin-bottom:4px;color:var(--text-muted)">🗑 Stale Room
+              Cleanup</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:8px">Rooms with no edits in 30+ days
+            </div>
+            <button class="btn" style="font-size:0.75rem;padding:4px 12px" onclick="devLoadStaleRooms()">🔍
+              Scan</button>
             <div id="devStaleList" style="margin-top:8px;max-height:180px;overflow-y:auto"></div>
           </div>
 
@@ -3576,30 +3908,41 @@
         <div id="devPanel-config" style="display:none">
           <!-- Identity Resolver -->
           <div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)">
-            <div style="font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text-muted)">🔍 Identity Resolver</div>
-            <div style="display:flex;gap:6px;margin-bottom:8px">
-              <input type="text" id="devResolveUidInput" placeholder="Firebase Auth UID..." style="flex:1;padding:5px 8px;font-size:0.75rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text)" />
-              <button class="btn" style="font-size:0.75rem;padding:4px 10px;white-space:nowrap" onclick="devResolveIdentity()">Resolve</button>
+            <div style="font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text-muted)">🔍 Identity Resolver
             </div>
-            <div id="devResolveResult" style="font-size:0.73rem;max-height:140px;overflow-y:auto;color:var(--text-muted)"></div>
+            <div style="display:flex;gap:6px;margin-bottom:8px">
+              <input type="text" id="devResolveUidInput" placeholder="Firebase Auth UID..."
+                style="flex:1;padding:5px 8px;font-size:0.75rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text)" />
+              <button class="btn" style="font-size:0.75rem;padding:4px 10px;white-space:nowrap"
+                onclick="devResolveIdentity()">Resolve</button>
+            </div>
+            <div id="devResolveResult"
+              style="font-size:0.73rem;max-height:140px;overflow-y:auto;color:var(--text-muted)"></div>
           </div>
           <!-- Broadcast -->
           <div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)">
-            <div style="font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text-muted)">📢 Global Broadcast</div>
-            <textarea id="broadcastInput" placeholder="Message to all online users..." style="width:100%;padding:7px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem;resize:vertical;min-height:56px;font-family:inherit;box-sizing:border-box"></textarea>
+            <div style="font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text-muted)">📢 Global Broadcast
+            </div>
+            <textarea id="broadcastInput" placeholder="Message to all online users..."
+              style="width:100%;padding:7px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem;resize:vertical;min-height:56px;font-family:inherit;box-sizing:border-box"></textarea>
             <div style="display:flex;gap:6px;margin-top:6px">
-              <select id="broadcastType" style="flex:1;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.75rem">
+              <select id="broadcastType"
+                style="flex:1;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.75rem">
                 <option value="toast">🍞 Toast (brief)</option>
                 <option value="modal">📋 Modal (dismissable)</option>
               </select>
-              <button class="btn btn-primary" style="font-size:0.75rem;padding:4px 12px;white-space:nowrap" onclick="devBroadcast()">📢 Send</button>
+              <button class="btn btn-primary" style="font-size:0.75rem;padding:4px 12px;white-space:nowrap"
+                onclick="devBroadcast()">📢 Send</button>
             </div>
           </div>
           <!-- Master CSS -->
           <div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)">
-            <div style="font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text-muted)">🎨 Instance Theme CSS</div>
-            <textarea id="devMasterCssInput" placeholder=":root { --accent: #ff6b6b; }" style="width:100%;padding:7px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.73rem;font-family:monospace;resize:vertical;min-height:70px;box-sizing:border-box"></textarea>
-            <button class="btn btn-primary" style="font-size:0.73rem;padding:4px 12px;margin-top:6px" onclick="devSaveMasterCss()">💾 Save CSS</button>
+            <div style="font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text-muted)">🎨 Instance Theme
+              CSS</div>
+            <textarea id="devMasterCssInput" placeholder=":root { --accent: #ff6b6b; }"
+              style="width:100%;padding:7px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.73rem;font-family:monospace;resize:vertical;min-height:70px;box-sizing:border-box"></textarea>
+            <button class="btn btn-primary" style="font-size:0.73rem;padding:4px 12px;margin-top:6px"
+              onclick="devSaveMasterCss()">💾 Save CSS</button>
           </div>
           <!-- DB Health -->
           <div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)">
@@ -3611,21 +3954,27 @@
           </div>
           <!-- Default Backgrounds -->
           <div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)">
-            <div style="font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text-muted)">🖼 Default Backgrounds</div>
-            <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:10px">Apply to all users who haven't set their own background.</div>
+            <div style="font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--text-muted)">🖼 Default
+              Backgrounds</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:10px">Apply to all users who haven't set
+              their own background.</div>
             <div style="margin-bottom:8px">
               <div style="font-size:0.72rem;font-weight:600;margin-bottom:4px">Dashboard Background URL</div>
-              <input type="text" id="devDefaultDashBg" placeholder="https://... or leave blank" style="width:100%;padding:6px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem;box-sizing:border-box" />
+              <input type="text" id="devDefaultDashBg" placeholder="https://... or leave blank"
+                style="width:100%;padding:6px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem;box-sizing:border-box" />
             </div>
             <div style="margin-bottom:8px">
               <div style="font-size:0.72rem;font-weight:600;margin-bottom:4px">Board Background URL</div>
-              <input type="text" id="devDefaultBoardBg" placeholder="https://... or leave blank" style="width:100%;padding:6px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem;box-sizing:border-box" />
+              <input type="text" id="devDefaultBoardBg" placeholder="https://... or leave blank"
+                style="width:100%;padding:6px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem;box-sizing:border-box" />
             </div>
             <div style="margin-bottom:10px">
               <div style="font-size:0.72rem;font-weight:600;margin-bottom:4px">Default Overlay Opacity (%)</div>
-              <input type="number" id="devDefaultOverlay" min="0" max="90" value="0" placeholder="0" style="width:80px;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem" />
+              <input type="number" id="devDefaultOverlay" min="0" max="90" value="0" placeholder="0"
+                style="width:80px;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:0.78rem" />
             </div>
-            <button class="btn btn-primary" style="font-size:0.73rem;padding:4px 12px" onclick="devSaveDefaults()">💾 Save Defaults</button>
+            <button class="btn btn-primary" style="font-size:0.73rem;padding:4px 12px" onclick="devSaveDefaults()">💾
+              Save Defaults</button>
           </div>
 
           <!-- Board Creation Lock -->
@@ -4945,7 +5294,7 @@
         const img = document.createElement('img');
         img.src = card.coverUrl;
         img.style.cssText = 'width:100%;height:100%;object-fit:cover';
-        img.onerror = function() { cover.style.display = 'none'; };
+        img.onerror = function () { cover.style.display = 'none'; };
         cover.appendChild(img);
         el.appendChild(cover);
       }
@@ -5660,13 +6009,13 @@
       const daysInMonth = new Date(_calYear, _calMonth + 1, 0).getDate();
       const prevDays = new Date(_calYear, _calMonth, 0).getDate();
       let html = '<div class="cal-nav"><button class="btn" style="font-size:0.8rem;padding:4px 10px" onclick="_calMonth--;if(_calMonth<0){_calMonth=11;_calYear--;}renderCalendar()">‹ Prev</button><h3>' + escHtml(monthName) + '</h3><button class="btn" style="font-size:0.8rem;padding:4px 10px" onclick="_calMonth++;if(_calMonth>11){_calMonth=0;_calYear++;}renderCalendar()">Next ›</button></div><div class="cal-grid">';
-      ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => { html += '<div class="cal-day-name">' + d + '</div>'; });
+      ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(d => { html += '<div class="cal-day-name">' + d + '</div>'; });
       for (let i = firstDay - 1; i >= 0; i--) html += '<div class="cal-cell other-month"><div class="cal-day-num">' + (prevDays - i) + '</div></div>';
       for (let d = 1; d <= daysInMonth; d++) {
-        const dateStr = _calYear + '-' + String(_calMonth + 1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+        const dateStr = _calYear + '-' + String(_calMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
         const isToday = today.getFullYear() === _calYear && today.getMonth() === _calMonth && today.getDate() === d;
         const cards = cardsByDate[dateStr] || [];
-        let chips = cards.slice(0,3).map(({card,colId,colColor}) => '<div class="cal-card-chip" style="border-left-color:' + (colColor||'var(--accent)') + '" onclick="openEditCardModal(\'' + escHtml(colId) + '\',\'' + escHtml(card.id) + '\')" title="' + escHtml(card.title) + '">' + escHtml(card.title) + '</div>').join('');
+        let chips = cards.slice(0, 3).map(({ card, colId, colColor }) => '<div class="cal-card-chip" style="border-left-color:' + (colColor || 'var(--accent)') + '" onclick="openEditCardModal(\'' + escHtml(colId) + '\',\'' + escHtml(card.id) + '\')" title="' + escHtml(card.title) + '">' + escHtml(card.title) + '</div>').join('');
         if (cards.length > 3) chips += '<div style="font-size:0.65rem;color:var(--text-muted);padding-left:3px">+' + (cards.length - 3) + ' more</div>';
         html += '<div class="cal-cell' + (isToday ? ' today' : '') + '"><div class="cal-day-num">' + d + (isToday ? ' •' : '') + '</div>' + chips + '</div>';
       }
@@ -5699,16 +6048,16 @@
     function renderTimeline() {
       const tlv = document.getElementById('timelineView');
       let allCards = [];
-      (state.columns || []).forEach(col => (col.cards || []).forEach(card => { if (card.startDate || card.due) allCards.push({card, col}); }));
+      (state.columns || []).forEach(col => (col.cards || []).forEach(card => { if (card.startDate || card.due) allCards.push({ card, col }); }));
       if (allCards.length === 0) { tlv.innerHTML = '<div style="text-align:center;padding:60px;color:var(--text-muted)"><div style="font-size:2rem;margin-bottom:12px">📊</div><p>No cards with dates yet.<br>Add a Start Date or Due Date to cards to see them here.</p></div>'; return; }
       let minDate = null, maxDate = null;
-      allCards.forEach(({card}) => { [card.startDate, card.due].filter(Boolean).forEach(d => { const dt = new Date(d + 'T00:00:00'); if (!minDate || dt < minDate) minDate = new Date(d + 'T00:00:00'); if (!maxDate || dt > maxDate) maxDate = new Date(d + 'T00:00:00'); }); });
+      allCards.forEach(({ card }) => { [card.startDate, card.due].filter(Boolean).forEach(d => { const dt = new Date(d + 'T00:00:00'); if (!minDate || dt < minDate) minDate = new Date(d + 'T00:00:00'); if (!maxDate || dt > maxDate) maxDate = new Date(d + 'T00:00:00'); }); });
       minDate.setDate(minDate.getDate() - 2); maxDate.setDate(maxDate.getDate() + 2);
       const totalDays = Math.round((maxDate - minDate) / 86400000) + 1;
       const todayOff = Math.round((new Date() - minDate) / 86400000);
       let dayLabels = '';
-      for (let i = 0; i < totalDays; i++) { const d = new Date(minDate); d.setDate(d.getDate() + i); dayLabels += '<div style="flex:1;text-align:center;font-size:0.62rem;color:var(--text-muted)">' + (i % 7 === 0 ? d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '') + '</div>'; }
-      const rows = allCards.map(({card, col}) => {
+      for (let i = 0; i < totalDays; i++) { const d = new Date(minDate); d.setDate(d.getDate() + i); dayLabels += '<div style="flex:1;text-align:center;font-size:0.62rem;color:var(--text-muted)">' + (i % 7 === 0 ? d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '') + '</div>'; }
+      const rows = allCards.map(({ card, col }) => {
         const start = card.startDate ? new Date(card.startDate + 'T00:00:00') : new Date(card.due + 'T00:00:00');
         const end = card.due ? new Date(card.due + 'T00:00:00') : start;
         const sOff = Math.max(0, Math.round((start - minDate) / 86400000));
@@ -5749,7 +6098,7 @@
       if (!_roomId) return;
       const entry = { icon, who: _username || 'Anonymous', what, ts: Date.now() };
       if (cardTitle) entry.card = cardTitle;
-      try { db.ref('rooms/' + _roomId + '/activity').push(entry); } catch(e) {}
+      try { db.ref('rooms/' + _roomId + '/activity').push(entry); } catch (e) { }
     }
 
     // ── TYPING INDICATORS ──
@@ -5757,7 +6106,7 @@
 
     function setTypingIndicator(isTyping) {
       if (!_presenceRef) return;
-      try { _presenceRef.update({ typing: isTyping }); } catch(e) {}
+      try { _presenceRef.update({ typing: isTyping }); } catch (e) { }
     }
 
     // ── THEME ENGINE ──
@@ -5768,10 +6117,10 @@
     }
 
     // ── COVER IMAGE PREVIEW ──
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       const coverInput = document.getElementById('cardCoverInput');
       if (coverInput) {
-        coverInput.addEventListener('input', function() {
+        coverInput.addEventListener('input', function () {
           const url = this.value.trim();
           const preview = document.getElementById('cardCoverPreview');
           const img = document.getElementById('cardCoverPreviewImg');
@@ -5781,7 +6130,7 @@
       // Apply typing indicator on description input
       const descInput = document.getElementById('cardDescInput');
       if (descInput) {
-        descInput.addEventListener('input', function() {
+        descInput.addEventListener('input', function () {
           if (!_roomId) return;
           setTypingIndicator(true);
           clearTimeout(_typingTimer);
@@ -5805,8 +6154,8 @@
           if (now - lastUpdate > threshold) stale.push({ id, lastUpdate, ownerName: room.config && room.config.ownerName });
         });
         if (stale.length === 0) { listEl.innerHTML = '<div style="color:var(--accent3);font-size:0.75rem">✅ No stale rooms found</div>'; return; }
-        listEl.innerHTML = stale.map(r => '<div style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.73rem"><span style="flex:1;font-family:monospace;color:var(--text-muted)">' + escHtml(r.id.slice(0,14)) + '…</span><span style="color:var(--text-muted)">' + (r.lastUpdate ? new Date(r.lastUpdate).toLocaleDateString() : 'Never') + '</span><button class="btn" style="font-size:0.65rem;padding:2px 6px;color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.3)" onclick="devPurgeRoom(\'' + escHtml(r.id) + '\',this)">Purge</button></div>').join('');
-      } catch(e) { listEl.innerHTML = '<div style="color:var(--danger);font-size:0.75rem">Failed: ' + escHtml(e.message) + '</div>'; }
+        listEl.innerHTML = stale.map(r => '<div style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.73rem"><span style="flex:1;font-family:monospace;color:var(--text-muted)">' + escHtml(r.id.slice(0, 14)) + '…</span><span style="color:var(--text-muted)">' + (r.lastUpdate ? new Date(r.lastUpdate).toLocaleDateString() : 'Never') + '</span><button class="btn" style="font-size:0.65rem;padding:2px 6px;color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.3)" onclick="devPurgeRoom(\'' + escHtml(r.id) + '\',this)">Purge</button></div>').join('');
+      } catch (e) { listEl.innerHTML = '<div style="color:var(--danger);font-size:0.75rem">Failed: ' + escHtml(e.message) + '</div>'; }
     }
 
     async function devPurgeRoom(roomId, btn) {
@@ -5818,7 +6167,7 @@
         });
         btn.closest('div[style]').remove();
         toast('Room force-removed: ' + roomId.slice(0, 14));
-      } catch(e) { btn.disabled = false; btn.textContent = 'Purge'; toast('Failed: ' + e.message); }
+      } catch (e) { btn.disabled = false; btn.textContent = 'Purge'; toast('Failed: ' + e.message); }
     }
 
     async function devUndeleteRoom(roomId, btn) {
@@ -5829,7 +6178,7 @@
         });
         toast('✅ Room recovered: ' + roomId.slice(0, 14));
         devLoadRooms();
-      } catch(e) { btn.disabled = false; btn.textContent = 'Recover'; toast('Failed: ' + e.message); }
+      } catch (e) { btn.disabled = false; btn.textContent = 'Recover'; toast('Failed: ' + e.message); }
     }
 
     // ── DEV PANEL: IDENTITY RESOLVER ──
@@ -5844,9 +6193,9 @@
         const owned = [];
         Object.entries(rooms).forEach(([id, room]) => { if (room.config && room.config.ownerAuthUid === uidVal) owned.push({ id, title: room.state && room.state.boardTitle }); });
         let profile = null;
-        try { const ps = await db.ref('user_profiles/' + uidVal).once('value'); profile = ps.val(); } catch(e2) {}
+        try { const ps = await db.ref('user_profiles/' + uidVal).once('value'); profile = ps.val(); } catch (e2) { }
         result.innerHTML = '<div style="margin-bottom:6px"><strong>Profile:</strong> ' + (profile ? escHtml(profile.username || 'No username') : 'Not found') + '</div><div style="margin-bottom:4px"><strong>Owns ' + owned.length + ' room(s):</strong></div>' + (owned.length ? owned.map(r => '<div style="padding:2px 0;font-family:monospace;font-size:0.7rem;color:var(--text-muted)">' + escHtml(r.id) + (r.title ? ' — "' + escHtml(r.title) + '"' : '') + '</div>').join('') : '<div style="color:var(--text-muted)">No owned rooms</div>');
-      } catch(e) { result.innerHTML = '<div style="color:var(--danger)">Failed: ' + escHtml(e.message) + '</div>'; }
+      } catch (e) { result.innerHTML = '<div style="color:var(--danger)">Failed: ' + escHtml(e.message) + '</div>'; }
     }
 
     // ── DEV PANEL: BROADCAST ──
@@ -5893,7 +6242,7 @@
         const broadcasts = broadSnap.val() ? Object.keys(broadSnap.val()).length : 0;
         const admins = adminsSnap.val() ? Object.keys(adminsSnap.val()).length : 0;
         el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px"><div style="background:var(--surface2);border-radius:6px;padding:8px;text-align:center"><div style="font-size:1.2rem;font-weight:700;color:var(--accent)">' + roomCount + '</div><div style="color:var(--text-muted);font-size:0.68rem">Rooms</div></div><div style="background:var(--surface2);border-radius:6px;padding:8px;text-align:center"><div style="font-size:1.2rem;font-weight:700;color:var(--accent3)">' + cardCount + '</div><div style="color:var(--text-muted);font-size:0.68rem">Total Cards</div></div><div style="background:var(--surface2);border-radius:6px;padding:8px;text-align:center"><div style="font-size:1.2rem;font-weight:700;color:var(--accent2)">' + broadcasts + '</div><div style="color:var(--text-muted);font-size:0.68rem">Broadcasts</div></div><div style="background:var(--surface2);border-radius:6px;padding:8px;text-align:center"><div style="font-size:1.2rem;font-weight:700;color:var(--text)">' + admins + '</div><div style="color:var(--text-muted);font-size:0.68rem">Admins</div></div></div>';
-      } catch(e) { el.innerHTML = '<span style="color:var(--danger)">Failed: ' + escHtml(e.message) + '</span>'; }
+      } catch (e) { el.innerHTML = '<span style="color:var(--danger)">Failed: ' + escHtml(e.message) + '</span>'; }
     }
 
     // ── DEV PANEL: MASTER CSS ──
@@ -5918,7 +6267,7 @@
         if (ddb) ddb.value = defs.dashBg || '';
         if (dbb) dbb.value = defs.boardBg || '';
         if (dov) dov.value = defs.overlay || 0;
-      } catch(e) {}
+      } catch (e) { }
     }
 
     // ── SELF-DESTRUCT ──
@@ -6082,7 +6431,7 @@
       document.getElementById('cardPriorityInput').value = card.priority || '';
       document.getElementById('newLabelName').value = '';
       document.getElementById('clNewItemInput').value = '';
-      _editingComments = (card.comments || []).map(c => ({...c}));
+      _editingComments = (card.comments || []).map(c => ({ ...c }));
       document.getElementById('commentsSection').style.display = '';
       document.getElementById('commentInput').value = '';
       buildCommentsUI();
@@ -6137,7 +6486,7 @@
         points: parseInt(document.getElementById('cardPointsInput').value) || 0,
         startDate: document.getElementById('cardStartInput').value,
         coverUrl: document.getElementById('cardCoverInput').value.trim(),
-        comments: _editingComments.map(c => ({...c})),
+        comments: _editingComments.map(c => ({ ...c })),
       };
       if (editingCardId) {
         if (!col.cards) col.cards = [];
@@ -6201,7 +6550,7 @@
         points: parseInt(document.getElementById('cardPointsInput').value) || 0,
         startDate: document.getElementById('cardStartInput').value,
         coverUrl: document.getElementById('cardCoverInput').value.trim(),
-        comments: _editingComments.map(c => ({...c})),
+        comments: _editingComments.map(c => ({ ...c })),
       });
       save();
       if (renderBoard) render();
@@ -6822,7 +7171,7 @@
     // ── BACKGROUNDS ──
     let _devDefaults = {};
     let _pageBgUser = {};
-    try { _pageBgUser = JSON.parse(localStorage.getItem('pb_pageBg') || '{}'); } catch(e) {}
+    try { _pageBgUser = JSON.parse(localStorage.getItem('pb_pageBg') || '{}'); } catch (e) { }
 
     function applyBgToLayer(bg, bgType, overlay) {
       document.body.style.backgroundImage = '';
@@ -7035,7 +7384,7 @@
           const ownerUid = snap.val();
           const currentUid = _authUid || (auth.currentUser && auth.currentUser.uid);
           isOwner = !!(ownerUid && currentUid && ownerUid === currentUid);
-        } catch(e) { /* if check fails, treat as non-owner */ }
+        } catch (e) { /* if check fails, treat as non-owner */ }
       }
 
       if (!isOwner) {
@@ -7104,7 +7453,7 @@
         saveWorkspaces();
         renderDashboard();
         toast('✅ Board recovered.');
-      } catch(e) {
+      } catch (e) {
         btn.disabled = false; btn.textContent = t('boardRemovedRecover');
         toast('❌ Recovery failed: ' + e.message);
       }
@@ -8498,7 +8847,7 @@
       _devDefaults = snap.val() || {};
       if (_isDashboard) applyPageBg();
       else applyBoardBg();
-    }).catch(() => {});
+    }).catch(() => { });
     // Apply user page bg immediately (before Firebase loads)
     if (_isDashboard) applyPageBg();
 
@@ -9033,12 +9382,12 @@
         const removedBadge = r.forceDeleted
           ? '<span style="font-size:0.65rem;padding:1px 6px;border-radius:100px;background:rgba(247,106,138,0.15);color:var(--danger,#f76a8a);margin-left:6px">Force Removed' + (r.forceDeletedBy ? ' by ' + escHtml(r.forceDeletedBy) : '') + '</span>'
           : isRemoved ? '<span style="font-size:0.65rem;padding:1px 6px;border-radius:100px;background:rgba(255,180,0,0.15);color:#f7c26a;margin-left:6px">Removed by Owner</span>'
-          : '';
+            : '';
         const actionBtns = isRemoved
           ? '<button class="btn" style="font-size:0.7rem;padding:4px 10px;color:var(--accent3,#6af7c2);border-color:rgba(106,247,194,0.35);white-space:nowrap;flex-shrink:0" onclick="devUndeleteRoom(\'' + escHtml(r.id) + '\',this)">↩ Recover</button>'
-            + '<button class="btn" style="font-size:0.7rem;padding:4px 10px;white-space:nowrap;flex-shrink:0" onclick="window.open(\'?r=' + escHtml(r.id) + '\',\'_blank\')">👁 View</button>'
+          + '<button class="btn" style="font-size:0.7rem;padding:4px 10px;white-space:nowrap;flex-shrink:0" onclick="window.open(\'?r=' + escHtml(r.id) + '\',\'_blank\')">👁 View</button>'
           : '<button class="btn" style="font-size:0.7rem;padding:4px 10px;color:#6ab4f7;border-color:rgba(106,180,247,0.35);white-space:nowrap;flex-shrink:0" onclick="devShowTransferForm(\'' + escHtml(r.id) + '\',\'' + escHtml(r.ownerName) + '\')">⇄ Transfer</button>'
-            + '<button class="btn" style="font-size:0.7rem;padding:4px 10px;color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.3);white-space:nowrap;flex-shrink:0" onclick="devPurgeRoom(\'' + escHtml(r.id) + '\',this)">🚫 Force Remove</button>';
+          + '<button class="btn" style="font-size:0.7rem;padding:4px 10px;color:var(--danger,#f76a8a);border-color:rgba(247,106,138,0.3);white-space:nowrap;flex-shrink:0" onclick="devPurgeRoom(\'' + escHtml(r.id) + '\',this)">🚫 Force Remove</button>';
         row.innerHTML =
           '<div style="flex:1;min-width:0">' +
           '<div style="font-family:monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:2px">' + escHtml(r.id) + removedBadge + '</div>' +
@@ -9149,7 +9498,7 @@
     }
 
     // ── APPLY SAVED THEME ──
-    (function() { const _t = localStorage.getItem('pb_theme'); if (_t) document.body.classList.add('theme-' + _t); })();
+    (function () { const _t = localStorage.getItem('pb_theme'); if (_t) document.body.classList.add('theme-' + _t); })();
 
     // ── MASTER CSS FROM FIREBASE ──
     db.ref('app_config/master_css').on('value', snap => {
@@ -9254,7 +9603,7 @@
     };
 
     // Main keyboard handler
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
       if (!KEYBOARD_SHORTCUTS.enabled) return;
 
       // Don't trigger shortcuts when typing in inputs/textareas
@@ -9276,7 +9625,7 @@
       }
 
       // Toggle shortcuts
-      switch(e.key) {
+      switch (e.key) {
         case '?':
         case 'Help':
           e.preventDefault();
@@ -9377,7 +9726,7 @@
       try {
         const boards = JSON.parse(raw);
         return Array.isArray(boards) ? boards : [];
-      } catch(e) {
+      } catch (e) {
         return [];
       }
     }
@@ -9457,7 +9806,7 @@
 
     // Track current board
     const originalSave = save;
-    save = function() {
+    save = function () {
       originalSave();
       saveRecentBoard(_currentBoardId, _currentBoardType, state.boardTitle);
     };
@@ -9508,7 +9857,7 @@
         render();
       }
 
-      textarea.addEventListener('keydown', function(e) {
+      textarea.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
           saveInline();
@@ -9523,13 +9872,13 @@
 
     // Modify renderCard to support double-click
     const originalRenderCard = renderCard;
-    renderCard = function(card, colId) {
+    renderCard = function (card, colId) {
       const el = originalRenderCard(card, colId);
 
       // Add double-click handler for title
       const textEl = el.querySelector('.card-text');
       if (textEl) {
-        textEl.addEventListener('dblclick', function(e) {
+        textEl.addEventListener('dblclick', function (e) {
           e.stopPropagation();
           enableInlineEdit(card.id, colId);
         });
@@ -9611,7 +9960,7 @@
         subMessage: 'Your current data will be lost unless you export it first.',
         yesLabel: 'Apply Template',
         noLabel: 'Cancel',
-        onConfirm: function() {
+        onConfirm: function () {
           state.boardTitle = template.title;
           state.columns = template.columns.map(col => ({
             id: uid(),
@@ -9665,7 +10014,7 @@
               });
             }
             storageUsed += localStorage.getItem(key).length / 1024;
-          } catch(e) {}
+          } catch (e) { }
         }
         if (key?.startsWith('pb_cloud_')) {
           cloudBoards++;
@@ -9725,11 +10074,11 @@
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = '.json,application/json';
-      input.onchange = function(e) {
+      input.onchange = function (e) {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
           try {
             const data = JSON.parse(event.target.result);
             if (data.state) {
@@ -9740,7 +10089,7 @@
                 subMessage: 'File: ' + file.name,
                 yesLabel: 'Import',
                 noLabel: 'Cancel',
-                onConfirm: function() {
+                onConfirm: function () {
                   state = data.state;
                   save();
                   render();
@@ -9751,7 +10100,7 @@
             } else {
               toast('Invalid backup file');
             }
-          } catch(err) {
+          } catch (err) {
             toast('Failed to parse backup file');
           }
         };
@@ -9861,7 +10210,9 @@
       </div>
       <div class="shortcuts-grid">
         <div class="shortcut-section">
-          <h4 style="color:var(--text-muted);font-size:0.8rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">Navigation</h4>
+          <h4
+            style="color:var(--text-muted);font-size:0.8rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">
+            Navigation</h4>
           <div class="shortcut-row">
             <span>Toggle Recent Boards</span>
             <div class="shortcut-keys"><span class="kbd">R</span></div>
@@ -9880,7 +10231,9 @@
           </div>
         </div>
         <div class="shortcut-section">
-          <h4 style="color:var(--text-muted);font-size:0.8rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">Board Actions</h4>
+          <h4
+            style="color:var(--text-muted);font-size:0.8rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">
+            Board Actions</h4>
           <div class="shortcut-row">
             <span>New Column/List</span>
             <div class="shortcut-keys"><span class="kbd">N</span></div>
@@ -9899,7 +10252,9 @@
           </div>
         </div>
         <div class="shortcut-section">
-          <h4 style="color:var(--text-muted);font-size:0.8rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">Card Editing</h4>
+          <h4
+            style="color:var(--text-muted);font-size:0.8rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">
+            Card Editing</h4>
           <div class="shortcut-row">
             <span>Save Card</span>
             <div class="shortcut-keys"><span class="kbd">Ctrl</span>+<span class="kbd">Enter</span></div>
@@ -9914,10 +10269,13 @@
           </div>
         </div>
         <div class="shortcut-section">
-          <h4 style="color:var(--text-muted);font-size:0.8rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">Danger Zone</h4>
+          <h4
+            style="color:var(--text-muted);font-size:0.8rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">
+            Danger Zone</h4>
           <div class="shortcut-row">
             <span>Clear All Data</span>
-            <div class="shortcut-keys"><span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">D</span></div>
+            <div class="shortcut-keys"><span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span
+                class="kbd">D</span></div>
           </div>
         </div>
       </div>
@@ -10012,34 +10370,42 @@
         <button class="modal-close" onclick="closeTemplatesModal()">&times;</button>
       </div>
       <div style="padding:20px">
-        <p style="color:var(--text-muted);margin-bottom:16px;font-size:0.9rem">Choose a template to quickly set up your board:</p>
-        <div class="templates-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
-          <div class="template-card" onclick="applyTemplate('kanban')" style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
+        <p style="color:var(--text-muted);margin-bottom:16px;font-size:0.9rem">Choose a template to quickly set up your
+          board:</p>
+        <div class="templates-grid"
+          style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+          <div class="template-card" onclick="applyTemplate('kanban')"
+            style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
             <div style="font-size:1.5rem;margin-bottom:8px">📊</div>
             <div style="font-weight:600;margin-bottom:4px">Kanban Board</div>
             <div style="font-size:0.8rem;color:var(--text-muted)">To Do, In Progress, Done</div>
           </div>
-          <div class="template-card" onclick="applyTemplate('personal')" style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
+          <div class="template-card" onclick="applyTemplate('personal')"
+            style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
             <div style="font-size:1.5rem;margin-bottom:8px">✅</div>
             <div style="font-weight:600;margin-bottom:4px">Personal Tasks</div>
             <div style="font-size:0.8rem;color:var(--text-muted)">Today, This Week, Later</div>
           </div>
-          <div class="template-card" onclick="applyTemplate('content')" style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
+          <div class="template-card" onclick="applyTemplate('content')"
+            style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
             <div style="font-size:1.5rem;margin-bottom:8px">✍️</div>
             <div style="font-weight:600;margin-bottom:4px">Content Calendar</div>
             <div style="font-size:0.8rem;color:var(--text-muted)">Ideas, Writing, Published</div>
           </div>
-          <div class="template-card" onclick="applyTemplate('bug')" style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
+          <div class="template-card" onclick="applyTemplate('bug')"
+            style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
             <div style="font-size:1.5rem;margin-bottom:8px">🐛</div>
             <div style="font-weight:600;margin-bottom:4px">Bug Tracking</div>
             <div style="font-size:0.8rem;color:var(--text-muted)">Reported, Triaged, Fixed</div>
           </div>
-          <div class="template-card" onclick="applyTemplate('sprint')" style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
+          <div class="template-card" onclick="applyTemplate('sprint')"
+            style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
             <div style="font-size:1.5rem;margin-bottom:8px">🏃</div>
             <div style="font-weight:600;margin-bottom:4px">Sprint Planning</div>
             <div style="font-size:0.8rem;color:var(--text-muted)">Backlog, Sprint, Review</div>
           </div>
-          <div class="template-card" onclick="applyTemplate('blank')" style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
+          <div class="template-card" onclick="applyTemplate('blank')"
+            style="cursor:pointer;padding:16px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.15s">
             <div style="font-size:1.5rem;margin-bottom:8px">⬜</div>
             <div style="font-weight:600;margin-bottom:4px">Blank Board</div>
             <div style="font-size:0.8rem;color:var(--text-muted)">Start from scratch</div>
