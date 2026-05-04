@@ -489,53 +489,17 @@ function renderStatsRow() {
 
 const PARTNERS_API = 'https://davidbp99.vercel.app/api/partners';
 
+// API now returns pre-fetched Discord/BattleMetrics data — no client-side calls needed
+function buildPartnerCard(partner) {
+  const imgSrc = partner.resolved_logo_url || partner.logo_url || null;
+  const inviteCode = partner.discord_invite
+    ? partner.discord_invite.replace(/https?:\/\/(www\.)?(discord\.gg|discord\.com\/invite)\//i, '').trim()
+    : null;
 
-// Extract invite code from full URL or bare code
-function extractInviteCode(invite) {
-  if (!invite) return null;
-  return invite.replace(/https?:\/\/(www\.)?(discord\.gg|discord\.com\/invite)\//i, '').trim();
-}
-
-// Build one partner card, fetching external data as needed
-async function buildPartnerCard(partner) {
-  let imgSrc = partner.logo_url || null;
-  let memberCount = null;
-  let serverInfo = null;
-
-  const inviteCode = extractInviteCode(partner.discord_invite);
-
-  // Fetch Discord invite for guild icon + member count
-  if (inviteCode) {
-    try {
-      const discordData = await fetch(
-        `https://discord.com/api/v10/invites/${inviteCode}?with_counts=true&with_expiration=true`
-      ).then(r => r.json());
-
-      if (!imgSrc && discordData.guild && discordData.guild.icon) {
-        imgSrc = `https://cdn.discordapp.com/icons/${discordData.guild.id}/${discordData.guild.icon}.png`;
-      }
-      if (discordData.approximate_member_count) {
-        memberCount = discordData.approximate_member_count;
-      }
-    } catch(e) {}
-  }
-
-  // Fetch BattleMetrics for game servers
-  if (partner.battlemetrics_id) {
-    try {
-      const bmData = await fetch(
-        `https://api.battlemetrics.com/servers/${partner.battlemetrics_id}`
-      ).then(r => r.json());
-      serverInfo = bmData.data && bmData.data.attributes;
-    } catch(e) {}
-  }
-
-  // Image element
   const $image = imgSrc
     ? $('<img>').addClass('server-image').attr('src', imgSrc).attr('alt', partner.name)
     : $('<div>').addClass('server-image').css({ background: '#1a1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' });
 
-  // Type badge
   const tagColors = {
     'game server': 'badge-gmodserver', 'gameserver': 'badge-gmodserver',
     'freelancer': 'badge-freelancer',
@@ -551,22 +515,21 @@ async function buildPartnerCard(partner) {
   const $name = $('<p>').addClass('partner-name card-text').text(partner.name);
   const $inner = $('<div>').addClass('server-info').append($image, $tags, $name);
 
-  if (memberCount) {
-    $inner.append($('<p>').addClass('card-text').text('Members: ' + memberCount.toLocaleString()));
+  if (partner.discord_member_count) {
+    $inner.append($('<p>').addClass('card-text').text('Members: ' + partner.discord_member_count.toLocaleString()));
   }
-  if (serverInfo) {
-    $inner.append($('<p>').addClass('card-text').text('Players: ' + serverInfo.players + '/' + serverInfo.maxPlayers));
+  if (partner.bm_players != null) {
+    $inner.append($('<p>').addClass('card-text').text('Players: ' + partner.bm_players + '/' + partner.bm_max_players));
   }
   if (partner.description) {
     $inner.append($('<p>').addClass('card-text').text(partner.description));
   }
 
   const $buttons = $('<div>').addClass('button-container');
-
-  if (serverInfo) {
+  if (partner.bm_ip && partner.bm_port) {
     $buttons.append(
       $('<a>').text('Join Game Server').addClass('btn btn-primary')
-        .attr('href', 'steam://connect/' + serverInfo.ip + ':' + serverInfo.port)
+        .attr('href', 'steam://connect/' + partner.bm_ip + ':' + partner.bm_port)
         .attr('target', '_blank')
     );
   }
@@ -595,12 +558,9 @@ async function renderPartners() {
   try {
     const partners = await fetch(PARTNERS_API).then(r => r.json());
     if (!partners.length) return;
-
-    // Shuffle, take up to 6
-    const selected = partners.sort(() => 0.5 - Math.random()).slice(0, 6);
-
-    const cards = await Promise.all(selected.map(buildPartnerCard));
-    cards.forEach(function(card) { $('#serverList').append(card); });
+    partners.sort(() => 0.5 - Math.random()).slice(0, 6).forEach(function(p) {
+      $('#serverList').append(buildPartnerCard(p));
+    });
   } catch(e) {
     console.error('Error loading partners:', e);
   }
