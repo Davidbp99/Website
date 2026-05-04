@@ -482,79 +482,106 @@ function renderStatsRow() {
 <section id="partnerlist" class="partners">
   <h1 class="text-center">Partners List</h1>
   <div class="container">
-  <div id="serverList" class="row"></div> 
+  <div id="serverList" class="row"></div>
   </div>
-      
 
   <script>
 
-// Use discord for freelancer discords or discord community.
-// Use gameserver for game servers. Can be any game that battlemetrics supports
-const servers = [
- // { battlemetricid: "21812512", discordid: "DUuZNXeANx", grupname: "", description: ``, partnertype: "gameserver", isgif: "yes", imagelink: "https://i.imgur.com/8ffUCnZ.gif", },
- // hyplex-roleplay
- //{ battlemetricid: "24391260", discordid: "QRqskJnpuf", grupname: "", description: ``, partnertype: "gameserver", isgif: "no", imagelink: "", },
-
- // RebornUK
- // { battlemetricid: "26228386", discordid: "7G92mkJS3E", grupname: "", description: ``, partnertype: "gameserver", isgif: "no", imagelink: "", tags: ["gmod server"] },
-
- // Gmod Italia
- { battlemetricid: "", discordid: "wBGnQm4", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: "", tags: ["gmod server"] },
-
-// Meeks
-  { battlemetricid: "", discordid: "8v6Mbv2SZk", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: "", tags: ["freelancer"] },
-// Trace place
- // { battlemetricid: "", discordid: "2JnJRGskPu", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: ""},
-// Onyx place
- // { battlemetricid: "", discordid: "YNCyRtTAkG", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: ""},
-// riteunn
-{ battlemetricid: "", discordid: "H7ansZHDN8", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: "", tags: ["freelancer"] },
-
-// Thomas
-{ battlemetricid: "", discordid: "T39TfdPVpk", grupname: "", description: ``, partnertype: "discord" ,isgif: "no", imagelink: "", tags: ["hosting company"] },
+const PARTNERS_API = 'https://davidbp99.vercel.app/api/partners';
 
 
-// Crispy -- someone took his custom url
-// { battlemetricid: "27885230", discordid: "cwrp", grupname: "", description: ``, partnertype: "gameserver" ,isgif: "no", imagelink: ""},
+// Extract invite code from full URL or bare code
+function extractInviteCode(invite) {
+  if (!invite) return null;
+  return invite.replace(/https?:\/\/(www\.)?(discord\.gg|discord\.com\/invite)\//i, '').trim();
+}
 
-];
+// Build one partner card, fetching external data as needed
+async function buildPartnerCard(partner) {
+  let imgSrc = partner.logo_url || null;
+  let memberCount = null;
+  let serverInfo = null;
 
+  const inviteCode = extractInviteCode(partner.discord_invite);
 
-// Function to create a partner card
-function createServerRow(server) {
-  const image = server.isgif === 'yes'
-    ? $('<img>').addClass('server-gif').attr('src', server.imagelink)
-    : $('<img>').addClass('server-image').attr('src', server.discordIcon);
+  // Fetch Discord invite for guild icon + member count
+  if (inviteCode) {
+    try {
+      const discordData = await fetch(
+        `https://discord.com/api/v10/invites/${inviteCode}?with_counts=true&with_expiration=true`
+      ).then(r => r.json());
 
-  // Tag badges
-  const tagColors = { 'gmod server': 'badge-gmodserver', 'freelancer': 'badge-freelancer', 'hosting company': 'badge-hosting' };
+      if (!imgSrc && discordData.guild && discordData.guild.icon) {
+        imgSrc = `https://cdn.discordapp.com/icons/${discordData.guild.id}/${discordData.guild.icon}.png`;
+      }
+      if (discordData.approximate_member_count) {
+        memberCount = discordData.approximate_member_count;
+      }
+    } catch(e) {}
+  }
+
+  // Fetch BattleMetrics for game servers
+  if (partner.battlemetrics_id) {
+    try {
+      const bmData = await fetch(
+        `https://api.battlemetrics.com/servers/${partner.battlemetrics_id}`
+      ).then(r => r.json());
+      serverInfo = bmData.data && bmData.data.attributes;
+    } catch(e) {}
+  }
+
+  // Image element
+  const $image = imgSrc
+    ? $('<img>').addClass('server-image').attr('src', imgSrc).attr('alt', partner.name)
+    : $('<div>').addClass('server-image').css({ background: '#1a1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' });
+
+  // Type badge
+  const tagColors = {
+    'game server': 'badge-gmodserver', 'gameserver': 'badge-gmodserver',
+    'freelancer': 'badge-freelancer',
+    'hosting company': 'badge-hosting', 'hosting': 'badge-hosting',
+    'discord': 'badge-freelancer',
+  };
   const $tags = $('<div>').addClass('partner-tags');
-  (server.tags || []).forEach(function(tag) {
-    $tags.append($('<span>').text(tag).addClass('type-badge ' + (tagColors[tag] || '')));
-  });
+  if (partner.partner_type) {
+    const key = partner.partner_type.toLowerCase();
+    $tags.append($('<span>').text(partner.partner_type).addClass('type-badge ' + (tagColors[key] || '')));
+  }
 
-  const $name = $('<p>').addClass('partner-name card-text').text(server.discordName || server.name || '');
-  const $members = $('<p>').addClass('card-text').text('Members: ' + server.discordMemberCount);
-  const $inner = $('<div>').addClass('server-info').append(image, $tags, $name, $members);
-  if (server.description) {
-    $inner.append($('<p>').addClass('card-text').text(server.description));
+  const $name = $('<p>').addClass('partner-name card-text').text(partner.name);
+  const $inner = $('<div>').addClass('server-info').append($image, $tags, $name);
+
+  if (memberCount) {
+    $inner.append($('<p>').addClass('card-text').text('Members: ' + memberCount.toLocaleString()));
+  }
+  if (serverInfo) {
+    $inner.append($('<p>').addClass('card-text').text('Players: ' + serverInfo.players + '/' + serverInfo.maxPlayers));
+  }
+  if (partner.description) {
+    $inner.append($('<p>').addClass('card-text').text(partner.description));
   }
 
   const $buttons = $('<div>').addClass('button-container');
-  if (server.type === 'gameserver') {
+
+  if (serverInfo) {
     $buttons.append(
       $('<a>').text('Join Game Server').addClass('btn btn-primary')
-        .attr('href', 'steam://connect/' + server.ip + ':' + server.port).attr('target', '_blank')
+        .attr('href', 'steam://connect/' + serverInfo.ip + ':' + serverInfo.port)
+        .attr('target', '_blank')
     );
   }
-  $buttons.append(
-    $('<a>').text('Join Discord').addClass('join-discord-button btn btn-secondary')
-      .attr('href', 'https://discord.gg/' + server.discordinvite).attr('target', '_blank')
-  );
-  if (server.grupname) {
+  if (inviteCode) {
     $buttons.append(
-      $('<a>').text('Steam Group').addClass('btn btn-success')
-        .attr('href', 'https://steamcommunity.com/groups/' + server.grupname).attr('target', '_blank')
+      $('<a>').text('Join Discord').addClass('join-discord-button btn btn-secondary')
+        .attr('href', 'https://discord.gg/' + inviteCode)
+        .attr('target', '_blank')
+    );
+  }
+  if (partner.website_url) {
+    $buttons.append(
+      $('<a>').text('Visit Website').addClass('btn btn-success')
+        .attr('href', partner.website_url)
+        .attr('target', '_blank')
     );
   }
 
@@ -563,76 +590,24 @@ function createServerRow(server) {
   );
 }
 
-
-// Function to render the server rows
-function renderServerRows() {
+async function renderPartners() {
   $('#serverList').empty();
-  // Here we make it fair and make it shuffle
-  const shuffledServers = servers.sort(() => 0.5 - Math.random());
+  try {
+    const partners = await fetch(PARTNERS_API).then(r => r.json());
+    if (!partners.length) return;
 
-  // select 6 of the table values above
-  const selectedServers = shuffledServers.slice(0, 8);
-  selectedServers.forEach(function(server,index) {
-    if ((index + 1) > 6) {
+    // Shuffle, take up to 6
+    const selected = partners.sort(() => 0.5 - Math.random()).slice(0, 6);
 
-          
-}else {
-    if (server.partnertype == "gameserver") {
-    const discordUrl = `https://discord.com/api/v10/invites/${server.discordid}?with_counts=true&with_expiration=true`;
-    const battleMetricsAPI = 'https://api.battlemetrics.com/servers/' + server.battlemetricid;
-
-
-    const battleMetricsPromiseAPI = fetch(battleMetricsAPI).then(response => response.json());
-    const discordPromiseAPI = fetch(discordUrl).then(response => response.json());
-    
-    return Promise.all([battleMetricsPromiseAPI, discordPromiseAPI]).then(([battleMetricsData, discordData]) => {
-        const serverData = battleMetricsData.data.attributes;
-        server.ip = serverData.ip;
-        server.port = serverData.port;
-        server.players = serverData.players;
-        server.maxPlayers = serverData.maxPlayers;
-        server.name = serverData.name;
-        server.type = server.partnertype;
-        server.discordinvite = server.discordid;
-        server.discordMemberCount = discordData.approximate_member_count;
-        server.discordIcon = `https://cdn.discordapp.com/icons/${discordData.guild.id}/${discordData.guild.icon}.png`;
-
-
-        const serverRow = createServerRow(server);
-        // bit tricky way of forcing it to display 6 without stopping at 5 or less
-  
-        $('#serverList').append(serverRow);
-        
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-    }else if (server.partnertype == "discord") {
-    const discordUrl = `https://discord.com/api/v10/invites/${server.discordid}?with_counts=true&with_expiration=true`;
-    
-
-    const discordPromiseAPI = fetch(discordUrl).then(response => response.json());
-    
-    return Promise.all([discordPromiseAPI]).then(([discordData]) => {
-        server.type = server.partnertype;
-        server.discordinvite = server.discordid;
-        server.discordMemberCount = discordData.approximate_member_count;
-        server.discordIcon = `https://cdn.discordapp.com/icons/${discordData.guild.id}/${discordData.guild.icon}.png`;
-        server.discordName = discordData.guild.name;
-        const serverRow = createServerRow(server);
-        // bit tricky way of forcing it to display 6 without stopping at 5 or less
-
-        $('#serverList').append(serverRow);
-        
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-    }
-}});
+    const cards = await Promise.all(selected.map(buildPartnerCard));
+    cards.forEach(function(card) { $('#serverList').append(card); });
+  } catch(e) {
+    console.error('Error loading partners:', e);
+  }
 }
 
-setInterval(renderServerRows, 300000);
+renderPartners();
+setInterval(renderPartners, 300000);
 
   </script>
 </section>
@@ -750,7 +725,6 @@ setInterval(renderServerRows, 300000);
     <script>
 
       // we call it here as calling it above would kill it self
-      renderServerRows();
       renderPortfolioRows();
       createserviceListingRows();
       renderStatsRow();
