@@ -140,44 +140,6 @@ I like working with people and help them reach their goals. This can be from sch
 <script>
 
 
-const MyStats = [
-  // Clients
-{ statstype: "discordclientcount", discordid: "NtKsawDRup", forcedvalue: "", link: "test", description: `Total clients on my discord server`, imageid: "" , imagehost: "" , imageformat: ""},
-
-// Server Owners
-{ statstype: "discordclientcount", discordid: "SAqtwVsbYb", forcedvalue: "", link: "test", description: `We got lot of server owners from many games and always looking for more`, imageid: "" , imagehost: "" , imageformat: ""},
-
-// World Designers
-{ statstype: "discordclientcount", discordid: "ajmwbSCxBW", forcedvalue: "", link: "test", description: `We always look for people that understand world design assets for games. Like Source, Unreal Engine etc`, imageid: "" , imagehost: "" , imageformat: ""},
-
-// Model worker
-{ statstype: "discordclientcount", discordid: "n8qepZeVa5", forcedvalue: "", link: "test", description: `We like to see what amazing characters models people can make for games. Skins for minecraft to playermodels in some games.`, imageid: "" , imagehost: "" , imageformat: ""},
-
-// Developers
-{ statstype: "discordclientcount", discordid: "JHNqj9gnBS", forcedvalue: "", link: "test", description: `We always like when people can create amazing creations with just lines of code.`, imageid: "" , imagehost: "" , imageformat: ""},
-
-// Other
-{ statstype: "discordclientcount", discordid: "rhpUchg9NE", forcedvalue: "", link: "test", description: `Graphic designer, Visual Effects Maker, Sound mixer, or something else that we did not list before? We still look for. Creating content is something not many can do`, imageid: "" , imagehost: "" , imageformat: ""},
-
-
-// Partners
-{ statstype: "discordclientcount", discordid: "xg3dJgEm", forcedvalue: "", link: "test", description: `We partner with some discords, gameservers and others to get people out there on the discord platform. As well to get people to find us`, imageid: "" , imagehost: "" , imageformat: ""},
-
-
-// My Discord server
-  { statstype: "discord", category: "presence", discordid: "ezaJDmbxPf", forcedvalue: "", link: "test", description: `A community around gaming and content creation. People with skills or without join to chat, share work and learn from each other.`, imageid: "" , imagehost: "" , imageformat: ""},
- 
-  { statstype: "gmodstore", category: "reputation", discordid: "", forcedvalue: "GmodStore Reputation: 2", link: "https://www.gmodstore.com/users/76561198072640553/reputation", description: "Reviews left by clients I worked with on GmodStore. Some wrote on Trustpilot instead.", imageid: "https://avatars.githubusercontent.com/u/8810709?s=200&v=4" , imagehost: "site" , imageformat: "", buttontext: "Check out my reputation yourself"},
-  { statstype: "gmodstore", category: "reputation", discordid: "", forcedvalue: "GmodStore Jobs: 5+", link: "#", description: "Jobs completed via GmodStore applications, plus additional work closed outside the platform.", imageid: "https://avatars.githubusercontent.com/u/8810709?s=200&v=4" , imagehost: "site" , imageformat: "", buttontext: ""},
-  { statstype: "gmodstore", category: "reputation", discordid: "", forcedvalue: "Trustpilot Reviews: 7", link: "https://www.trustpilot.com/review/safewaycommunity.hxane.com", description: "Client reviews collected on Trustpilot for work done outside of GmodStore.", imageid: "https://upload.wikimedia.org/wikipedia/commons/7/78/Trustpilot_Logo_%282022%29.svg" , imagehost: "site" , imageformat:"" , buttontext: "Check out my reviews yourself"},
-  { statstype: "gmodstore", category: "reputation", discordid: "", forcedvalue: "Maps: 5 from scratch · 10+ edits · 10+ fixes", link: "#", description: "Includes full ground-up builds, client edits, and community fix jobs. Many done for free outside of paid work.", imageid: "https://avatars.githubusercontent.com/u/40523727?v=4" , imagehost: "site" , imageformat:"" , buttontext: ""},
-  { statstype: "gmodstore", category: "reputation", discordid: "", forcedvalue: "Clients Worked With: 20+", link: "#", description: "Paid and free client work across GmodStore, direct Discord commissions and community assistance.", imageid: "https://avatars.githubusercontent.com/u/40523727?v=4" , imagehost: "site" , imageformat:"" , buttontext: ""},
-  { statstype: "portfoliocount", category: "reputation", discordid: "", forcedvalue: "", link: "#", description: "Total projects listed on this site across maps, gLUA and other work. More projects exist that are not yet added.", imageid: "https://avatars.githubusercontent.com/u/40523727?v=4" , imagehost: "site" , imageformat:"" , buttontext: ""},
-  { statstype: "gmodstore", category: "presence", discordid: "", forcedvalue: "Public Code: 16 repos · 9 public VMFs", link: "https://github.com/Davidbp99?tab=repositories", description: "Free work people can use and learn from. Includes the david_extras_free addon project.", imageid: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" , imagehost: "site" , imageformat:"" , buttontext: "Check out my GitHub"},
-  { statstype: "gmodstore", category: "presence", discordid: "", forcedvalue: "Steam Workshop: 8 Maps", link: "https://steamcommunity.com/id/davidswn/myworkshopfiles/?p=1", description: "Public maps and script uploads on the Steam Workshop. Some entries may be privated.", imageid: "https://testmatick.com/wp-content/uploads/2020/04/Logotip-Steam.jpg" , imagehost: "site" , imageformat:"" , buttontext: "Check out my workshop"},
-  { statstype: "gmodstore", category: "presence", discordid: "", forcedvalue: "Itch.io Store: 1 item", link: "https://daveswn.itch.io", description: "Original store for map sales. May move to Tebex going forward.", imageid: "https://static.itch.io/images/app-icon.svg" , imagehost: "site" , imageformat:"" , buttontext: "Check out the store"},
-  { statstype: "tebex", category: "presence", discordid: "wYHQyaKVjj", forcedvalue: "Tebex Store: ", link: "https://david-addons-maps-discord.tebex.io", description: "Main store for addons and maps. Replacing Itch.io going forward.", imageid: "https://avatars.githubusercontent.com/u/59729610?s=280&v=4" , imagehost: "site" , imageformat:"" , buttontext: "Check out my addons store"},
-];
 // Function to create a stat card
 function createStatsRow(stats) {
   // Resolve image source
@@ -191,7 +153,7 @@ function createStatsRow(stats) {
   if      (stats.statstype === 'discordclientcount') titleText = stats.discordRoleCount;
   else if (stats.statstype === 'discord')            titleText = 'Discord Members: ' + stats.discordMemberCount;
   else if (stats.statstype === 'tebex')              titleText = stats.forcedvalue + (stats.discordRoleCount || '');
-  else if (stats.statstype === 'portfoliocount')     titleText = 'Portfolio Projects: ' + (typeof portfolios !== 'undefined' ? portfolios.length + '+' : '...');
+  else if (stats.statstype === 'portfoliocount')     titleText = 'Portfolio Projects: ' + (typeof _portfolioCount !== 'undefined' && _portfolioCount !== null ? _portfolioCount + '+' : '...');
   else                                               titleText = stats.forcedvalue;
 
   // Resolve button
@@ -226,8 +188,8 @@ function createStatsRow(stats) {
 
 
 // Function to render stat rows
-function renderStatsRow() {
-  MyStats.forEach(function(stats) {
+function renderStatsRow(statsData) {
+  statsData.forEach(function(stats) {
     if (stats.discordid !== '') {
       const discordUrlStats = 'https://discord.com/api/v10/invites/' + stats.discordid + '?with_counts=true&with_expiration=true';
       fetch(discordUrlStats).then(function(r) { return r.json(); }).then(function(discordDataStats) {
@@ -261,20 +223,6 @@ function renderStatsRow() {
 
 
 
-  const MyTeam = [
-  //{ roletype: "Me(David)", discordtag: "", portfoliotext: "2", portfolio: "", description: `Don't think I need to write more about my self. I hope`, imageid: "https://cdn.discordapp.com/avatars/98846769315577856/b26cfa9507ead5ec7139c5527766c47d.png?size=1024" , imagehost: "" , imageformat: ""},
-    { roletype: "Chief Financial Officer", discordtag: "", portfoliotext: "2", portfolio: "", description: `This guy have been in the gmod sector as server owner, staff and advisor for some people. He somehow most of the times always end up with a special rank in a community. This time he landed a role to help me set fair priceses on work and addons/maps I sell.`, imageid: "https://cdn.discordapp.com/avatars/112205209354186752/587c246537bb00b98aead3a29616dc34.png?size=1024" , imagehost: "site" , imageformat: ""},
-    { roletype: "Chief Strategy Officer", discordtag: "", portfoliotext: "2", portfolio: "", description: `At each server that I been manager, staff, server owner and even my own. He have followed me and done amazing work as advisor and plan making at each place I seen him at. He now helps me out when I call for some wise words from him on my discord.`, imageid: "https://i.imgur.com/efOjaYO.png" , imagehost: "site" , imageformat: ""},
-    { roletype: "Support Manager", discordtag: "", portfoliotext: "His Steam", portfolio: "https://steamcommunity.com/id/GodDrinksTheGoodTea/", description: `I meet this guy on a gmod server as a manager years ago. He showed he was more than capable to be a manager as well. He later on learned some programming example discord bots and other sectors. He is now on my server as support manager  trying to make sure the discord rules/tos is followed and enforced.`, imageid: "https://cdn.discordapp.com/avatars/292672632296570880/a_e54a7635c0af7bf88e6c5b4693b7afad.gif?size=1024" , imagehost: "site" , imageformat: ""},
-  
-
-
-
-
-
-
-
-  ];
   // Function to create a team member card
   function createTeamRow(team) {
     let imgSrc = team.imageid;
@@ -302,15 +250,9 @@ function renderStatsRow() {
   
   
   // Function to render the server rows
-  function renderTeamRow() {
-  
-    MyTeam.forEach( function(team) {
-
-      
-          const TeamRow = createTeamRow(team);
-  
-          $('#teamrowdiv').append(TeamRow);
-          
+  function renderTeamRow(teamData) {
+    teamData.forEach(function(team) {
+      $('#teamrowdiv').append(createTeamRow(team));
     });
   }
   
@@ -344,65 +286,6 @@ function renderStatsRow() {
            
   <script>
 
-    const portfolios = [
-
-
-    // Map
-      { title: "Tera_lobby_v1" , randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "nGn8Yhlcj6I", imageformat: "jpg", type: "map",buttontext: 'Join My Discord', buttonlink: "https://discord.gg/ezaJDmbxPf", description: `From clients doc "In short terms the game mode basically a bunch of minigames that players queue for". I created minigames of my own and ideas from what the client wanted on the map. `, extradbutton: "", extrabuttontext: "" },
-      { title: "Hogwarts RP Map (wizzardrp)" , randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "JqEMQRb", imageformat: "jpg", type: "map",buttontext: 'View More Images', buttonlink: "https://imgur.com/a/5QrBvWu", description: "Hogwartsrp (or now after copyright fights WizzardRP) map that I edited, optimized and made fully new areas for for a client", extradbutton: "https://discord.gg/ezaJDmbxPf", extrabuttontext: "Is sold on my discord at near 50% off" },
-      { title: "Custom Building" ,randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "SAKBSJq",imageformat: "jpg", type: "map",buttontext: 'View More Images', buttonlink: "https://imgur.com/a/s8HVzzD", description: "Very small work for a client of some small custom buildings (until they just wanted copy and pasted ones that I disliked but still did)", extradbutton: "", extrabuttontext: "" },
-      { title: "DaveTown" ,randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "NaFZlkW", imageformat: "jpg", type: "map",buttontext: 'View More Images', buttonlink: "https://imgur.com/a/xRutpB0", description: "Started this as a side project to create a new darkrp map. Then its been put on and off. First map I started to use glua into as well for custom map entities", extradbutton: "", extrabuttontext: "" },
-      { title: "Evilmelon_v1 Edit" ,randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "dDO7cdV", imageformat: "jpg", type: "map", buttontext: 'View More Images', buttonlink: "https://imgur.com/a/8X9Mp88", description: "I made this map for a client that later on ghosted me (user is banned on gmodstore now for ghosting people)", extradbutton: "https://www.gmodstore.com/users/76561198092852011", extrabuttontext: "View client in question (dont throw hate)" },
-      { title: "rp_downtown_nemesis_v2" ,randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "yGAKXsB",imageformat: "jpg", type: "map", buttontext: 'View More Images', buttonlink: "https://imgur.com/a/pqLO7Nf", description: "I did two kind of versions of this. One snow and one normal for this client. I returned to this client lot of times editing and improving his map.", extradbutton: "", extrabuttontext: "" },
-      { title: "rp_downtown_tits_v2_vn (used to be called LucidRP/Vigilante Networks/Crown Networks/BlobRP/Now Eclipse Network)" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://steamuserimages-a.akamaihd.net/ugc/1753568711089583120/B304DF41C38FA08B088AD11F109A725E159E23FD/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",imageformat: "jpg", type: "map", buttontext: 'View More Images', buttonlink: "https://steamcommunity.com/sharedfiles/filedetails/?id=1950836554", description: "I did this map for a server owner that ran a darkrp community. Where the owner later on self learned mapping and done lot of edits to it. This was the first time I worked with another mapper called Down (Maker of gRust) (click the button to find his steam)", extradbutton: "", extrabuttontext: "" },
-      { title: "rp_downtown_tits_shadyz" ,randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "a3mRWBT",imageformat: "jpg", type: "map",buttontext: 'View More Images', buttonlink: "https://imgur.com/a/nd5FJIo", description: "This was the first time I had a hosting company part of our talk of map creation (can find the company logo on one of the images). But they wanted something that was very big at that time. Teleport spawns around the map (the map way and not glua)", extradbutton: "", extrabuttontext: "" },
-      { title: "rp_downtown_tits_v2_crownnetworks (VMF is public)" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://steamuserimages-a.akamaihd.net/ugc/1758062560779626333/19224AFAD1C9EF0EB96F09BE2023E8FEB4455ED5/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",imageformat: "jpg", type: "map", buttontext: 'View Steam Workshop Upload', buttonlink: "https://steamcommunity.com/sharedfiles/filedetails/?id=2388080113", description: "I made this for a community as the map I made back in the old days (LucidRP, VN) I felt was not up to any standers. In my view now 2 years later I would done this map in fully other way (optimized way and setup wise)", extradbutton: "", extrabuttontext: "" },
-      { title: "TLS School Shooter Project" , randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "F0LybOd", imageformat: "jpg", type: "map",buttontext: 'View More Images', buttonlink: "https://imgur.com/a/F4TkFwS", description: "This was the first time I worked on something that was not darkrp, SCP (did not start SCP yet) or SWRP. But it was amazing to create new areas for the client for the kind of gamemode he was running", extradbutton: "", extrabuttontext: "" },  
-      { title: "rp_scp_site8_unknown" , randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://steamuserimages-a.akamaihd.net/ugc/1755817018798432449/DF00FD73906FBD20978A68CD19ABDC8EDDAB4E19/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true", imageformat: "jpg", type: "map",buttontext: 'View Steam Workshop Upload', buttonlink: "https://steamcommunity.com/sharedfiles/filedetails/?id=2457474479", description: "I felt there was missing something in the SCP community and tbh there still are missing these kind of maps. What was missing was including the gamemasters ability to have areas to build (just build in the sky: I could not accept that). As well as sim rooms to train with the security, Nine-Tailed Fox etc. As well big outside area. This was as well my first big full map from the ground up. Where I faced other problems that I did not face as I did by just editing maps", extradbutton: "", extrabuttontext: "" },  
-      { title: "SCP-1074 (The Painting)" , randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://steamuserimages-a.akamaihd.net/ugc/1754688224315770073/3100D7CF256511E8E9DB8E5915E3DA1B0828D480/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true", imageformat: "jpg", type: "map",buttontext: 'View Steam Workshop Upload', buttonlink: "https://steamcommunity.com/sharedfiles/filedetails/?id=2426795164", description: "While I was making my big SCP map I felt one SCP was missing. There was a version like SCP-1074 on the workshop but it did nothing. I wanted to change that and I did.", extradbutton: "", extrabuttontext: "" },  
-      { title: "SCP-914 (The Clockworks)" , randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://steamuserimages-a.akamaihd.net/ugc/1622974778778538618/1FCD16B013A225DDC920039BB9C2D82C17CCFD91/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true", imageformat: "jpg", type: "map",buttontext: 'View Steam Workshop Upload', buttonlink: "https://steamcommunity.com/sharedfiles/filedetails/?id=2606134651", description: "This SCP-914 was on the most map. But felt it did not come near to what the *lore* explained it as. Still do this day even my creation did not come close to this.", extradbutton: "", extrabuttontext: "" },  
-      { title: "Squid Game | Green Light / Red Light" , randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "y0WnfrH", imageformat: "jpg", type: "map",buttontext: 'View Steam Workshop Upload', buttonlink: "https://steamcommunity.com/sharedfiles/filedetails/?id=2636133590", description: "I was looking at gmodstore one day and saw requests for squidgame maps. Lot of money as well (can be wrong). But at that time I felt I wanted to make an attempt at just make a map free for everyone while some paid lot of money for it", extradbutton: "", extrabuttontext: "" },  
-      { title: "rp_thelastreich_berlin" , randomid: "" , chatid: "" , imagehost: "imgur" , imageid: "CfXkPXZ", imageformat: "jpg", type: "map",buttontext: 'View More Images', buttonlink: "https://imgur.com/a/cEVaxpI", description: "It started off with just a retexture work of the berlin map. But it ended up with me teaching someone mapping and replying to questions nearly daily on some things. Now this guy is making bigger maps", extradbutton: "", extrabuttontext: "" },
-      { title: "Star Wars Venator Map" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "br73oRuCZio",imageformat: "jpg", type: "map", buttontext: "Extra Video 1" , buttonlink: "https://www.youtube.com/watch?v=x-OWUxqHc-o", description: "First ever map I did when I knew nothing about mapping really.", extradbutton: "https://www.youtube.com/watch?v=jRXKoF1OxN0", extrabuttontext: "Extra Video 2" },
-      
-
-// glua
-      { title: "gWosPlugin" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/gWosPlugin.png", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "Made a system that rewards people based on NPC and userrank. But not just that permission system for the biggest lightsaber addon on gmodstore. Just want X rank to give items in this system. You can make that happen.", extradbutton: "", extrabuttontext: "" },
-      { title: "gWosPlugin (DLC)" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/gWosPlugin (DLC).png", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "DLC as well gives you some perks directed to unboxing and big fair parry system for Jedi vs Sith Servers. As I heard some people dislike the parry system but then some likes it (50/50). How can we resolve this in the most fair way. I wanted to resolve this.", extradbutton: "", extrabuttontext: "" },
-      { title: "gStatus" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/gStatus.png", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "One of my clients wanted something special made with the lightsaber system with special effect when people duel and fight. Here is where gstatus was born", extradbutton: "", extrabuttontext: "" },
-      { title: "SecondaryUser Group System(+ThirdUserGroup)" ,randomid: "" , chatid: "1124690128523239434" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/SecondaryUsergroupimage.png", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "I notice there was a problem in the swrp section where we could not have people be staff, gamemasters and vip rank at the same time. At the same time also get the permission from admin systems like sam or others to work with them. So I resolved this in two ways.", extradbutton: "", extrabuttontext: "" },
-      { title: "Custom UserRank Checks" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/customuserrankcheckimage.png", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "I noticed how much we use GetUserGroup() table.hasvalue in code I read. So I wanted to make it clearner and like how the bigger servers does it with IsStaff(), IsGM(), IsManagement() and I made some more custom ones.", extradbutton: "", extrabuttontext: "" },
-      { title: "Rank System [Plugin]" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/Rank System [Plugin].png", imageformat: "jpg", type: "glua", buttontext: 'Join Nicolas Discord To Find This Code', buttonlink: "https://discord.gg/RDv4r7XpYm", description: "I felt this plugin was missing in Nicolas list of plugins. First I made it for just my community but later on released it on his discord for everyone to use", extradbutton: "https://discord.gg/ezaJDmbxPf", extrabuttontext: "Can also join mine and I can give it" },
-      { title: "gTrainer" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/gtrainerimage.png", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "I know there is automated trainings systems. But I felt losing the player to player first interaction was a bad thing. So I made gTrainer. Atm I'm reworking it but staff and selected players could train people and it would auto whitelist the user.", extradbutton: "", extrabuttontext: "" },
-      { title: "gAdmin" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "https://cdn.discordapp.com/attachments/1126466586266578975/1127195762439245894/image.png", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "I made a system that worked with SAM and saved location for the staff member. So they could return back to the location they where in rp", extradbutton: "https://www.youtube.com/watch?v=MSW4D1rmPW8", extrabuttontext: "Extra Video" },
-      { title: "gBattalionManagement" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "w3gGXxlEgUk", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "This system is a plugin i made of Nicolas RP rank system. Where officers could use some commands, spawn props and npcs. The NPCs would not give people any money or wOS xp for case of abuse", extradbutton: "", extrabuttontext: "" },
-      { title: "Star Wars Lego Hud (first UI with many UI in it)" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/hudwork.png", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View Configs And More Images', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "As the title says. The first *UI* I made fully. It got extra styles via the config so if style 1 is not liked then you got style 2. Same as a target hud. I added animations to make it feel more alive as well (its why you see read heart are smaller in the image while blue hearts are bigger)", extradbutton: "", extrabuttontext: "" },
-
-      { title: "gCashback" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "P7qEr1u81cg", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "A cashback reward system for Garry's Mod servers. Players earn a set percentage back on in-game purchases, giving them a reason to keep spending and return to the shop.", extradbutton: "", extrabuttontext: "" },
-
-      { title: "dlogs" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "y63Svv8uA3E", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "A developer logging system for Garry's Mod. Structured and filterable logs make it easy to trace issues, monitor player actions and debug across your server.", extradbutton: "https://www.youtube.com/watch?v=V8As2jTMROg", extrabuttontext: "Extra Video" },
-
-      { title: "Borderlands Chest + Dying Light Entity (WIP)" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "SZ5IQzLOJAo", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "Custom prop entities. The Borderlands 2 style lootable storage chest spawns with randomized loot on open. The Dying Light entity shown alongside was a work in progress recreation/port.", extradbutton: "", extrabuttontext: "" },
-
-      { title: "NPC Optimized Spawner Tool (JvS)" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "XNAFFo_j95o", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "A staff-side NPC spawner tool built for Jedi vs Sith servers. Optimized to manage NPC counts intelligently so mass spawning during events does not tank server performance.", extradbutton: "", extrabuttontext: "" },
-
-      { title: "Learning Book (Early Version)" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "1YCkF3vQzL4", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "An early version of an interactive in-game learning book. Players and new recruits can read through server lore, rules or regiment guides directly in-game without needing an external site or document.", extradbutton: "", extrabuttontext: "" },
-
-      { title: "Polymarket in GMod" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/polymarket.png", imageformat: "png", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "A Polymarket-style prediction market built fully inside Garry's Mod. Players deposit in-game currency, browse real-world market questions, place YES/NO bets with live odds, and claim their winnings.", extradbutton: "", extrabuttontext: "" },
-
-      { title: "AI Event Generator (WIP)" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://davidbp99.github.io/Website/img/aievents.png", imageformat: "png", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "A work-in-progress AI event generator panel for Star Wars RP server staff. Staff can auto-generate fully detailed events (description, objectives, twist, regiment roles, staff notes) using an API key, or use copy/paste mode for free with Claude or ChatGPT.", extradbutton: "", extrabuttontext: "" },
-
-      { title: "Armor + Inventory System (+NPC Spawner Support)" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "yj67-s4rnCI", imageformat: "jpg", type: "glua", buttontext: 'Join My Discord To View More Details', buttonlink: "https://discord.gg/ezaJDmbxPf", description: "A full armor and inventory system with item rarities (Common, Rare, Epic, Legendary), per-item stat bonuses (HP, Speed, Armor), loot box drops, armory UI with loadout management and deploy/discard functionality. Also includes NPC Spawner support.", extradbutton: "", extrabuttontext: "" },
-
-
-
-// Other
-      { title: "Freelancer site v1" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "9aL9D8pmqDA", imageformat: "jpg", type: "other", buttontext: 'See my old website', buttonlink: "https://davidbp99.github.io/Website/old/", description: "I reworked my freelancer site from the ground up and started to use API and more optimized on other devices", extradbutton: "", extrabuttontext: "" },
-      { title: "Google form to Discord (webhook)" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://camo.githubusercontent.com/535348b373636ddfeb3dd2ee6a1b67512ef50f6d1dae03733a019a5e90de170b/68747470733a2f2f692e6779617a6f2e636f6d2f39623036616336313734343735393933313266396437343538646366656535332e706e67", imageformat: "jpg", type: "other", buttontext: 'View code on my github', buttonlink: "https://github.com/Davidbp99?tab=repositories", description: "Sometime in 2020-2021 I got into appscript (javascript) and learned how to do some *cool* (what I thought was cool back then) stuff with google forms, spreadsheets etc and connect it to discord. Then from then I have made different kind of styles of this. Some simple and some more advance then whats on github.", extradbutton: "", extrabuttontext: "" },
-      { title: "VFX" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "oTVaD77ytYs", imageformat: "jpg", type: "other", buttontext: 'Channel Link', buttonlink: "https://www.youtube.com/@TheMusicSV", description: "Back when I was younger (before 18) I used to deal and run social media/copyright managements. That as well included my own stuff where I learned VFX, SEO and video editing. I have for some years now stopped this", extradbutton: "", extrabuttontext: "" },
-      { title: "Sound/Music Mixing" ,randomid: "" , chatid: "" , imagehost: "iframe" , imageid: "jdCH5ELGbNI", imageformat: "jpg", type: "other", buttontext: 'Channel Link', buttonlink: "https://www.youtube.com/@DJMixer", description: "Under TheMusicSV times and bit after I got into mixing music. Bit live (you do your *effects* live = your mistakes gets noticed easier) and offline (fl studio) mixing", extradbutton: "", extrabuttontext: "" },
-    
-    ];
 
     function createPortfiloRows(portfolio) {
       let image;
@@ -444,7 +327,7 @@ function renderStatsRow() {
 
 
     // Function to render all portfolio cards into the single grid
-    function renderPortfolioRows() {
+    function renderPortfolioRows(portfolios) {
       portfolios.forEach(function (portfolio) {
         const col = createPortfiloRows(portfolio);
         $('#portfolioAllRows').append(col);
@@ -578,31 +461,6 @@ setInterval(renderPartners, 300000);
   <div class="container">
     <script>
 
-      const services = [
-      
-    //  { title: "Low Map Protection" ,randomid: "" , chatid: "" , imagehost: "site" , imageid: "https://cdn.discordapp.com/attachments/1117053994666295306/1127568688128725012/image.png--url won't work", imageformat: "jpg", type: "map", buttonlink: "", description: "You are getting the very basic protection of no_decomp, locked texture, protector brush flag.", price: "Price: 30 eur" },
-      { title: "Medium Map Protection",randomid: "" , chatid: "" , imagehost: "site" ,imageid: "https://davidbp99.github.io/Website/img/medprotection.png",imageformat: "jpg", type: "map", buttonlink: "https://gyazo.com/2c3a006886c1ba5a5abaeed148299f1b", description: "You are getting the IID Version (texture) protection. Making it a pain for map decompilers users", price: "Price: 60 eur (I redo this protection at 45eur for returning clients with the same map)" },
-      { title: "High Map Protection",randomid: "" , chatid: "" ,imagehost: "site" ,imageid: "https://davidbp99.github.io/Website/img/highprotection.png", imageformat: "jpg", type: "map", buttonlink: "", description: `You are getting the map protection medium + You get the map entities in its own file. So you can give the bsp file to your players and keep the map entities server sided. This is normally used by big servers as superior and icefuse`,price: "Price: 70 eur (I redo this protection at 55eur for returning clients with the same map)" },
-      { title: "Extreme Map Protection",randomid: "" , chatid: "" ,imagehost: "site" ,imageid: "https://davidbp99.github.io/Website/img/extreme map protection.png", imageformat: "jpg", type: "map", buttonlink: "https://www.youtube.com/watch?v=_QXkno_9yac", description: `Everything from before. For this one we are making it unplayable and even harder to decompile by including brush flags (that removes brushes when decompiled).  You can as well request where the map won't load at all on singleplayer and other places.`,price: "Price: 100 eur (I redo this protection at 80eur for returning clients with the same map)" },
-
-     
-      { title: "BSP Content Reduction",randomid: "",chatid: "" , imagehost: "site" ,imageid: "https://davidbp99.github.io/Website/img/bspcontentreduction.jpg", imageformat: "jpg", type: "map", buttonlink: "https://i.gyazo.com/65154ce8adcb4e3d82c28297a67e45d0.png", description: "Sometimes when you take materials from maps you might see textures that start normal then looks like this (random example): maps/texturemap/realworldtextures/floor‎ /floor_5_-128_-1976_-384. This can create a bigger BSP than it would need. You might ask how. As sometimes that is not noticed by the mapper (unless the hammer editor complains about a too long name). That would mean you got the same texture 2 times. This can happen to 1,2,3, or 40+ textures in your map. It would mean instead of a file of 200MB it ends up with 220MB or even more.",price: "Price: 50+ eur (depends fully on how much the map might have this issue)"  },      
-
-      { title: "Custom Work",randomid: "",chatid: "" , imagehost: "site" ,imageid: "https://davidbp99.github.io/Website/img/customworkimage.png", imageformat: "jpg", type: "map", buttonlink: "", description: "I will make a custom edit to a map you already got made (workshop or edit your custommap) or make a custom one",price: "Price: 50+ eur"  },      
-
-
-
-
-
-      { title: "Server Setup",randomid: "",chatid: "" , imagehost: "site" ,imageid: "https://davidbp99.github.io/Website/img/serversetup.png", imageformat: "jpg", type: "glua", buttonlink: "", description: "I will help you setup your server, addon (config work or custom work). Price will depend on the work and if its just config or just custom work",price: "Price: 5+ eur"  },
-      { title: "Custom Work",randomid: "",chatid: "" , imagehost: "site" ,imageid: "https://davidbp99.github.io/Website/img/customworkimage.png", imageformat: "jpg", type: "glua", buttonlink: "", description: "I will make a custom edit to a addon you already got made or make a custom one",price: "Price: 10+ eur"  }, 
-    
-
-
-      { title: "Custom Work",randomid: "",chatid: "" , imagehost: "site" ,imageid: "https://davidbp99.github.io/Website/img/customworkimage.png", imageformat: "jpg", type: "other", buttonlink: "", description: "Do you need something that is not glua or map work done? Then reach out me on discord",price: "Price: 1+ eur"  }, 
-    
-    
-    ];
       
       function createserviceListing(serviceslist) {
         let imgSrc = serviceslist.imageid;
@@ -637,7 +495,7 @@ setInterval(renderPartners, 300000);
       
       
 
-      function createserviceListingRows() {
+      function createserviceListingRows(services) {
       
 
       services.forEach(function (service) {
@@ -684,18 +542,104 @@ setInterval(renderPartners, 300000);
 
     <script>
 
-      // we call it here as calling it above would kill it self
-      renderPortfolioRows();
-      createserviceListingRows();
-      renderStatsRow();
-      renderTeamRow();
+      // Fallback data used when API is unavailable
+      var _FB_STATS = [
+        { statstype: "discordclientcount", discordid: "NtKsawDRup", forcedvalue: "", link: "test", description: "Total clients on my discord server", imageid: "", imagehost: "", imageformat: "" },
+        { statstype: "discordclientcount", discordid: "SAqtwVsbYb", forcedvalue: "", link: "test", description: "We got lot of server owners from many games and always looking for more", imageid: "", imagehost: "", imageformat: "" },
+        { statstype: "discordclientcount", discordid: "ajmwbSCxBW", forcedvalue: "", link: "test", description: "We always look for people that understand world design assets for games. Like Source, Unreal Engine etc", imageid: "", imagehost: "", imageformat: "" },
+        { statstype: "discordclientcount", discordid: "n8qepZeVa5", forcedvalue: "", link: "test", description: "We like to see what amazing characters models people can make for games. Skins for minecraft to playermodels in some games.", imageid: "", imagehost: "", imageformat: "" },
+        { statstype: "discordclientcount", discordid: "JHNqj9gnBS", forcedvalue: "", link: "test", description: "We always like when people can create amazing creations with just lines of code.", imageid: "", imagehost: "", imageformat: "" },
+        { statstype: "discordclientcount", discordid: "rhpUchg9NE", forcedvalue: "", link: "test", description: "Graphic designer, Visual Effects Maker, Sound mixer, or something else that we did not list before? We still look for. Creating content is something not many can do", imageid: "", imagehost: "", imageformat: "" },
+        { statstype: "discordclientcount", discordid: "xg3dJgEm", forcedvalue: "", link: "test", description: "We partner with some discords, gameservers and others to get people out there on the discord platform. As well to get people to find us", imageid: "", imagehost: "", imageformat: "" },
+        { statstype: "discord", category: "presence", discordid: "ezaJDmbxPf", forcedvalue: "", link: "test", description: "I created a discord community around gaming and as well as content making. Where lot of people with skills or not joins in and speaks,chats and learns stuff.", imageid: "", imagehost: "", imageformat: "" },
+        { statstype: "gmodstore", category: "reputation", discordid: "", forcedvalue: "GmodStore Reputation: 2", link: "https://www.gmodstore.com/users/76561198072640553/reputation", description: "The people I did finish work for on gmodstore wrote reviews on it about how they felt about me.", imageid: "https://avatars.githubusercontent.com/u/8810709?s=200&v=4", imagehost: "site", imageformat: "", buttontext: "Check out my reputation yourself" },
+        { statstype: "gmodstore", category: "reputation", discordid: "", forcedvalue: "GmodStore Jobs: 5+", link: "#", description: "From my application list I have done over 5 jobs just on gmodstore + some that we finished outside of gmodstore", imageid: "https://avatars.githubusercontent.com/u/8810709?s=200&v=4", imagehost: "site", imageformat: "", buttontext: "" },
+        { statstype: "gmodstore", category: "reputation", discordid: "", forcedvalue: "Trustpilot Reviews: 7", link: "https://www.trustpilot.com/review/safewaycommunity.hxane.com", description: "As I do work outside of gmodstore as well I have used trust pilot for people to write reviews on", imageid: "https://upload.wikimedia.org/wikipedia/commons/7/78/Trustpilot_Logo_%282022%29.svg", imagehost: "site", imageformat: "", buttontext: "Check out my reviews yourself" },
+        { statstype: "gmodstore", category: "reputation", discordid: "", forcedvalue: "Map Edits 10+ / Maps Fixing 10+ / From The Ground Up 5 / Clients Worked With: 10+", link: "#", description: "Even I done some jobs on gmodstore and outside. I have assisted lot of server owners, mappers, devs etc when I randomly joined their community out of the blue.", imageid: "https://avatars.githubusercontent.com/u/40523727?v=4", imagehost: "site", imageformat: "", buttontext: "" },
+        { statstype: "gmodstore", category: "presence", discordid: "", forcedvalue: "Public VMFs And Code: 16 (code) and 9 public vmfs", link: "https://github.com/Davidbp99?tab=repositories", description: "Even tho I done lot of work for communities that cost money. I still like doing free work that people can improve and learn from.", imageid: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png", imagehost: "site", imageformat: "", buttontext: "Check out my github yourself" },
+        { statstype: "gmodstore", category: "presence", discordid: "", forcedvalue: "Itch.io Store Items: 1", link: "https://daveswn.itch.io", description: "Made this store long time ago for maps. But might soon change it over to Tebex", imageid: "https://static.itch.io/images/app-icon.svg", imagehost: "site", imageformat: "", buttontext: "Check out the store yourself" },
+        { statstype: "tebex", category: "presence", discordid: "wYHQyaKVjj", forcedvalue: "Tebex Store: ", link: "https://david-addons-maps-discord.tebex.io", description: "Tebex is my store for my addons I sell.", imageid: "https://avatars.githubusercontent.com/u/59729610?s=280&v=4", imagehost: "site", imageformat: "", buttontext: "Check out my addons store" },
+        { statstype: "gmodstore", category: "presence", discordid: "", forcedvalue: "Steam Workshop Uploads: 8 Maps", link: "https://steamcommunity.com/id/davidswn/myworkshopfiles/?p=1", description: "View some of my public work that you can use (maps and code)", imageid: "https://testmatick.com/wp-content/uploads/2020/04/Logotip-Steam.jpg", imagehost: "site", imageformat: "", buttontext: "Check out my workshop uploads" }
+      ];
+      var _FB_TEAM = [
+        { roletype: "Chief Financial Officer", discordtag: "", portfoliotext: "", portfolio: "", description: "This guy have been in the gmod sector as server owner, staff and advisor for some people. He somehow most of the times always end up with a special rank in a community. This time he landed a role to help me set fair priceses on work and addons/maps I sell.", imageid: "https://cdn.discordapp.com/avatars/112205209354186752/587c246537bb00b98aead3a29616dc34.png?size=1024", imagehost: "site", imageformat: "" },
+        { roletype: "Chief Strategy Officer", discordtag: "", portfoliotext: "", portfolio: "", description: "At each server that I been manager, staff, server owner and even my own. He have followed me and done amazing work as advisor and plan making at each place I seen him at. He now helps me out when I call for some wise words from him on my discord.", imageid: "https://i.imgur.com/efOjaYO.png", imagehost: "site", imageformat: "" },
+        { roletype: "Support Manager", discordtag: "", portfoliotext: "His Steam", portfolio: "https://steamcommunity.com/id/GodDrinksTheGoodTea/", description: "I meet this guy on a gmod server as a manager years ago. He showed he was more than capable to be a manager as well. He later on learned some programming example discord bots and other sectors. He is now on my server as support manager trying to make sure the discord rules/tos is followed and enforced.", imageid: "https://cdn.discordapp.com/avatars/292672632296570880/a_e54a7635c0af7bf88e6c5b4693b7afad.gif?size=1024", imagehost: "site", imageformat: "" }
+      ];
+      var _FB_PORTFOLIO = [
+        { title: "Tera_lobby_v1", randomid: "", chatid: "", imagehost: "iframe", imageid: "nGn8Yhlcj6I", imageformat: "jpg", type: "map", buttontext: "Join My Discord", buttonlink: "https://discord.gg/ezaJDmbxPf", description: "From clients doc \"In short terms the game mode basically a bunch of minigames that players queue for\". I created minigames of my own and ideas from what the client wanted on the map.", extradbutton: "", extrabuttontext: "" },
+        { title: "Hogwarts RP Map (wizzardrp)", randomid: "", chatid: "", imagehost: "imgur", imageid: "JqEMQRb", imageformat: "jpg", type: "map", buttontext: "View More Images", buttonlink: "https://imgur.com/a/5QrBvWu", description: "Hogwartsrp (or now after copyright fights WizzardRP) map that I edited, optimized and made fully new areas for for a client", extradbutton: "https://discord.gg/ezaJDmbxPf", extrabuttontext: "Is sold on my discord at near 50% off" },
+        { title: "Custom Building", randomid: "", chatid: "", imagehost: "imgur", imageid: "SAKBSJq", imageformat: "jpg", type: "map", buttontext: "View More Images", buttonlink: "https://imgur.com/a/s8HVzzD", description: "Very small work for a client of some small custom buildings (until they just wanted copy and pasted ones that I disliked but still did)", extradbutton: "", extrabuttontext: "" },
+        { title: "DaveTown", randomid: "", chatid: "", imagehost: "imgur", imageid: "NaFZlkW", imageformat: "jpg", type: "map", buttontext: "View More Images", buttonlink: "https://imgur.com/a/xRutpB0", description: "Started this as a side project to create a new darkrp map. Then its been put on and off. First map I started to use glua into as well for custom map entities", extradbutton: "", extrabuttontext: "" },
+        { title: "Evilmelon_v1 Edit", randomid: "", chatid: "", imagehost: "imgur", imageid: "dDO7cdV", imageformat: "jpg", type: "map", buttontext: "View More Images", buttonlink: "https://imgur.com/a/8X9Mp88", description: "I made this map for a client that later on ghosted me (user is banned on gmodstore now for ghosting people)", extradbutton: "https://www.gmodstore.com/users/76561198092852011", extrabuttontext: "View client in question (dont throw hate)" },
+        { title: "rp_downtown_nemesis_v2", randomid: "", chatid: "", imagehost: "imgur", imageid: "yGAKXsB", imageformat: "jpg", type: "map", buttontext: "View More Images", buttonlink: "https://imgur.com/a/pqLO7Nf", description: "I did two kind of versions of this. One snow and one normal for this client. I returned to this client lot of times editing and improving his map.", extradbutton: "", extrabuttontext: "" },
+        { title: "rp_downtown_tits_v2_vn (used to be called LucidRP/Vigilante Networks/Crown Networks/BlobRP/Now Eclipse Network)", randomid: "", chatid: "", imagehost: "site", imageid: "https://steamuserimages-a.akamaihd.net/ugc/1753568711089583120/B304DF41C38FA08B088AD11F109A725E159E23FD/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true", imageformat: "jpg", type: "map", buttontext: "View More Images", buttonlink: "https://steamcommunity.com/sharedfiles/filedetails/?id=1950836554", description: "I did this map for a server owner that ran a darkrp community. Where the owner later on self learned mapping and done lot of edits to it. This was the first time I worked with another mapper called Down (Maker of gRust) (click the button to find his steam)", extradbutton: "", extrabuttontext: "" },
+        { title: "rp_downtown_tits_shadyz", randomid: "", chatid: "", imagehost: "imgur", imageid: "a3mRWBT", imageformat: "jpg", type: "map", buttontext: "View More Images", buttonlink: "https://imgur.com/a/nd5FJIo", description: "This was the first time I had a hosting company part of our talk of map creation (can find the company logo on one of the images). But they wanted something that was very big at that time. Teleport spawns around the map (the map way and not glua)", extradbutton: "", extrabuttontext: "" },
+        { title: "rp_downtown_tits_v2_crownnetworks (VMF is public)", randomid: "", chatid: "", imagehost: "site", imageid: "https://steamuserimages-a.akamaihd.net/ugc/1758062560779626333/19224AFAD1C9EF0EB96F09BE2023E8FEB4455ED5/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true", imageformat: "jpg", type: "map", buttontext: "View Steam Workshop Upload", buttonlink: "https://steamcommunity.com/sharedfiles/filedetails/?id=2388080113", description: "I made this for a community as the map I made back in the old days (LucidRP, VN) I felt was not up to any standers. In my view now 2 years later I would done this map in fully other way (optimized way and setup wise)", extradbutton: "", extrabuttontext: "" },
+        { title: "TLS School Shooter Project", randomid: "", chatid: "", imagehost: "imgur", imageid: "F0LybOd", imageformat: "jpg", type: "map", buttontext: "View More Images", buttonlink: "https://imgur.com/a/F4TkFwS", description: "This was the first time I worked on something that was not darkrp, SCP (did not start SCP yet) or SWRP. But it was amazing to create new areas for the client for the kind of gamemode he was running", extradbutton: "", extrabuttontext: "" },
+        { title: "rp_scp_site8_unknown", randomid: "", chatid: "", imagehost: "site", imageid: "https://steamuserimages-a.akamaihd.net/ugc/1755817018798432449/DF00FD73906FBD20978A68CD19ABDC8EDDAB4E19/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true", imageformat: "jpg", type: "map", buttontext: "View Steam Workshop Upload", buttonlink: "https://steamcommunity.com/sharedfiles/filedetails/?id=2457474479", description: "I felt there was missing something in the SCP community and tbh there still are missing these kind of maps. What was missing was including the gamemasters ability to have areas to build (just build in the sky: I could not accept that). As well as sim rooms to train with the security, Nine-Tailed Fox etc. As well big outside area. This was as well my first big full map from the ground up. Where I faced other problems that I did not face as I did by just editing maps", extradbutton: "", extrabuttontext: "" },
+        { title: "SCP-1074 (The Painting)", randomid: "", chatid: "", imagehost: "site", imageid: "https://steamuserimages-a.akamaihd.net/ugc/1754688224315770073/3100D7CF256511E8E9DB8E5915E3DA1B0828D480/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true", imageformat: "jpg", type: "map", buttontext: "View Steam Workshop Upload", buttonlink: "https://steamcommunity.com/sharedfiles/filedetails/?id=2426795164", description: "While I was making my big SCP map I felt one SCP was missing. There was a version like SCP-1074 on the workshop but it did nothing. I wanted to change that and I did.", extradbutton: "", extrabuttontext: "" },
+        { title: "SCP-914 (The Clockworks)", randomid: "", chatid: "", imagehost: "site", imageid: "https://steamuserimages-a.akamaihd.net/ugc/1622974778778538618/1FCD16B013A225DDC920039BB9C2D82C17CCFD91/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true", imageformat: "jpg", type: "map", buttontext: "View Steam Workshop Upload", buttonlink: "https://steamcommunity.com/sharedfiles/filedetails/?id=2606134651", description: "This SCP-914 was on the most map. But felt it did not come near to what the *lore* explained it as. Still do this day even my creation did not come close to this.", extradbutton: "", extrabuttontext: "" },
+        { title: "Squid Game | Green Light / Red Light", randomid: "", chatid: "", imagehost: "imgur", imageid: "y0WnfrH", imageformat: "jpg", type: "map", buttontext: "View Steam Workshop Upload", buttonlink: "https://steamcommunity.com/sharedfiles/filedetails/?id=2636133590", description: "I was looking at gmodstore one day and saw requests for squidgame maps. Lot of money as well (can be wrong). But at that time I felt I wanted to make an attempt at just make a map free for everyone while some paid lot of money for it", extradbutton: "", extrabuttontext: "" },
+        { title: "rp_thelastreich_berlin", randomid: "", chatid: "", imagehost: "imgur", imageid: "CfXkPXZ", imageformat: "jpg", type: "map", buttontext: "View More Images", buttonlink: "https://imgur.com/a/cEVaxpI", description: "It started off with just a retexture work of the berlin map. But it ended up with me teaching someone mapping and replying to questions nearly daily on some things. Now this guy is making bigger maps", extradbutton: "", extrabuttontext: "" },
+        { title: "Star Wars Venator Map", randomid: "", chatid: "", imagehost: "iframe", imageid: "br73oRuCZio", imageformat: "jpg", type: "map", buttontext: "Extra Video 1", buttonlink: "https://www.youtube.com/watch?v=x-OWUxqHc-o", description: "First ever map I did when I knew nothing about mapping really.", extradbutton: "https://www.youtube.com/watch?v=jRXKoF1OxN0", extrabuttontext: "Extra Video 2" },
+        { title: "gWosPlugin", randomid: "", chatid: "", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/gWosPlugin.png", imageformat: "jpg", type: "glua", buttontext: "Join My Discord To View More Details", buttonlink: "https://discord.gg/ezaJDmbxPf", description: "Made a system that rewards people based on NPC and userrank. But not just that permission system for the biggest lightsaber addon on gmodstore. Just want X rank to give items in this system. You can make that happen.", extradbutton: "", extrabuttontext: "" },
+        { title: "gWosPlugin (DLC)", randomid: "", chatid: "", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/gWosPlugin (DLC).png", imageformat: "jpg", type: "glua", buttontext: "Join My Discord To View More Details", buttonlink: "https://discord.gg/ezaJDmbxPf", description: "DLC as well gives you some perks directed to unboxing and big fair parry system for Jedi vs Sith Servers. As I heard some people dislike the parry system but then some likes it (50/50). How can we resolve this in the most fair way. I wanted to resolve this.", extradbutton: "", extrabuttontext: "" },
+        { title: "gStatus", randomid: "", chatid: "", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/gStatus.png", imageformat: "jpg", type: "glua", buttontext: "Join My Discord To View More Details", buttonlink: "https://discord.gg/ezaJDmbxPf", description: "One of my clients wanted something special made with the lightsaber system with special effect when people duel and fight. Here is where gstatus was born", extradbutton: "", extrabuttontext: "" },
+        { title: "SecondaryUser Group System(+ThirdUserGroup)", randomid: "", chatid: "1124690128523239434", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/SecondaryUsergroupimage.png", imageformat: "jpg", type: "glua", buttontext: "Join My Discord To View More Details", buttonlink: "https://discord.gg/ezaJDmbxPf", description: "I notice there was a problem in the swrp section where we could not have people be staff, gamemasters and vip rank at the same time. At the same time also get the permission from admin systems like sam or others to work with them. So I resolved this in two ways.", extradbutton: "", extrabuttontext: "" },
+        { title: "Custom UserRank Checks", randomid: "", chatid: "", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/customuserrankcheckimage.png", imageformat: "jpg", type: "glua", buttontext: "Join My Discord To View More Details", buttonlink: "https://discord.gg/ezaJDmbxPf", description: "I noticed how much we use GetUserGroup() table.hasvalue in code I read. So I wanted to make it clearner and like how the bigger servers does it with IsStaff(), IsGM(), IsManagement() and I made some more custom ones.", extradbutton: "", extrabuttontext: "" },
+        { title: "Rank System [Plugin]", randomid: "", chatid: "", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/Rank System [Plugin].png", imageformat: "jpg", type: "glua", buttontext: "Join Nicolas Discord To Find This Code", buttonlink: "https://discord.gg/RDv4r7XpYm", description: "I felt this plugin was missing in Nicolas list of plugins. First I made it for just my community but later on released it on his discord for everyone to use", extradbutton: "https://discord.gg/ezaJDmbxPf", extrabuttontext: "Can also join mine and I can give it" },
+        { title: "gTrainer", randomid: "", chatid: "", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/gtrainerimage.png", imageformat: "jpg", type: "glua", buttontext: "Join My Discord To View More Details", buttonlink: "https://discord.gg/ezaJDmbxPf", description: "I know there is automated trainings systems. But I felt losing the player to player first interaction was a bad thing. So I made gTrainer. Atm I'm reworking it but staff and selected players could train people and it would auto whitelist the user.", extradbutton: "", extrabuttontext: "" },
+        { title: "gAdmin", randomid: "", chatid: "", imagehost: "iframe", imageid: "https://cdn.discordapp.com/attachments/1126466586266578975/1127195762439245894/image.png", imageformat: "jpg", type: "glua", buttontext: "Join My Discord To View More Details", buttonlink: "https://discord.gg/ezaJDmbxPf", description: "I made a system that worked with SAM and saved location for the staff member. So they could return back to the location they where in rp", extradbutton: "https://www.youtube.com/watch?v=MSW4D1rmPW8", extrabuttontext: "Extra Video" },
+        { title: "gBattalionManagement", randomid: "", chatid: "", imagehost: "iframe", imageid: "w3gGXxlEgUk", imageformat: "jpg", type: "glua", buttontext: "Join My Discord To View More Details", buttonlink: "https://discord.gg/ezaJDmbxPf", description: "This system is a plugin i made of Nicolas RP rank system. Where officers could use some commands, spawn props and npcs. The NPCs would not give people any money or wOS xp for case of abuse", extradbutton: "", extrabuttontext: "" },
+        { title: "Star Wars Lego Hud (first UI with many UI in it)", randomid: "", chatid: "", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/hudwork.png", imageformat: "jpg", type: "glua", buttontext: "Join My Discord To View Configs And More Images", buttonlink: "https://discord.gg/ezaJDmbxPf", description: "As the title says. The first *UI* I made fully. It got extra styles via the config so if style 1 is not liked then you got style 2. Same as a target hud. I added animations to make it feel more alive as well (its why you see read heart are smaller in the image while blue hearts are bigger)", extradbutton: "", extrabuttontext: "" },
+        { title: "Freelancer site v1", randomid: "", chatid: "", imagehost: "iframe", imageid: "9aL9D8pmqDA", imageformat: "jpg", type: "other", buttontext: "See my old website", buttonlink: "https://davidbp99.github.io/Website/old/", description: "I reworked my freelancer site from the ground up and started to use API and more optimized on other devices", extradbutton: "", extrabuttontext: "" },
+        { title: "Google form to Discord (webhook)", randomid: "", chatid: "", imagehost: "site", imageid: "https://camo.githubusercontent.com/535348b373636ddfeb3dd2ee6a1b67512ef50f6d1dae03733a019a5e90de170b/68747470733a2f2f692e6779617a6f2e636f6d2f39623036616336313734343735393933313266396437343538646366656535332e706e67", imageformat: "jpg", type: "other", buttontext: "View code on my github", buttonlink: "https://github.com/Davidbp99?tab=repositories", description: "Sometime in 2020-2021 I got into appscript (javascript) and learned how to do some *cool* (what I thought was cool back then) stuff with google forms, spreadsheets etc and connect it to discord. Then from then I have made different kind of styles of this. Some simple and some more advance then whats on github.", extradbutton: "", extrabuttontext: "" },
+        { title: "VFX", randomid: "", chatid: "", imagehost: "iframe", imageid: "oTVaD77ytYs", imageformat: "jpg", type: "other", buttontext: "Channel Link", buttonlink: "https://www.youtube.com/@TheMusicSV", description: "Back when I was younger (before 18) I used to deal and run social media/copyright managements. That as well included my own stuff where I learned VFX, SEO and video editing. I have for some years now stopped this", extradbutton: "", extrabuttontext: "" },
+        { title: "Sound/Music Mixing", randomid: "", chatid: "", imagehost: "iframe", imageid: "jdCH5ELGbNI", imageformat: "jpg", type: "other", buttontext: "Channel Link", buttonlink: "https://www.youtube.com/@DJMixer", description: "Under TheMusicSV times and bit after I got into mixing music. Bit live (you do your *effects* live = your mistakes gets noticed easier) and offline (fl studio) mixing", extradbutton: "", extrabuttontext: "" }
+      ];
+      var _FB_SERVICES = [
+        { title: "Medium Map Protection", randomid: "", chatid: "", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/medprotection.png", imageformat: "jpg", type: "map", buttonlink: "https://gyazo.com/2c3a006886c1ba5a5abaeed148299f1b", description: "You are getting the IID Version (texture) protection. Making it a pain for map decompilers users", price: "Price: 60 eur (I redo this protection at 45eur for returning clients with the same map)" },
+        { title: "High Map Protection", randomid: "", chatid: "", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/highprotection.png", imageformat: "jpg", type: "map", buttonlink: "", description: "You are getting the map protection medium + You get the map entities in its own file. So you can give the bsp file to your players and keep the map entities server sided. This is normally used by big servers as superior and icefuse", price: "Price: 70 eur (I redo this protection at 55eur for returning clients with the same map)" },
+        { title: "Extreme Map Protection", randomid: "", chatid: "", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/extreme map protection.png", imageformat: "jpg", type: "map", buttonlink: "https://www.youtube.com/watch?v=_QXkno_9yac", description: "Everything from before. For this one we are making it unplayable and even harder to decompile by including brush flags (that removes brushes when decompiled). You can as well request where the map won't load at all on singleplayer and other places.", price: "Price: 100 eur (I redo this protection at 80eur for returning clients with the same map)" },
+        { title: "BSP Content Reduction", randomid: "", chatid: "", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/bspcontentreduction.jpg", imageformat: "jpg", type: "map", buttonlink: "https://i.gyazo.com/65154ce8adcb4e3d82c28297a67e45d0.png", description: "Sometimes when you take materials from maps you might see textures that start normal then looks like this (random example): maps/texturemap/realworldtextures/floor /floor_5_-128_-1976_-384. This can create a bigger BSP than it would need.", price: "Price: 50+ eur (depends fully on how much the map might have this issue)" },
+        { title: "Custom Work", randomid: "", chatid: "", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/customworkimage.png", imageformat: "jpg", type: "map", buttonlink: "", description: "I will make a custom edit to a map you already got made (workshop or edit your custommap) or make a custom one", price: "Price: 50+ eur" },
+        { title: "Server Setup", randomid: "", chatid: "", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/serversetup.png", imageformat: "jpg", type: "glua", buttonlink: "", description: "I will help you setup your server, addon (config work or custom work). Price will depend on the work and if its just config or just custom work", price: "Price: 5+ eur" },
+        { title: "Custom Work", randomid: "", chatid: "", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/customworkimage.png", imageformat: "jpg", type: "glua", buttonlink: "", description: "I will make a custom edit to a addon you already got made or make a custom one", price: "Price: 10+ eur" },
+        { title: "Custom Work", randomid: "", chatid: "", imagehost: "site", imageid: "https://davidbp99.github.io/Website/img/customworkimage.png", imageformat: "jpg", type: "other", buttonlink: "", description: "Do you need something that is not glua or map work done? Then reach out me on discord", price: "Price: 1+ eur" }
+      ];
+
+      // Fetch all section data from API, fall back to inline data if unavailable
+      var _BASE = 'https://davidbp99.vercel.app/api';
+      var _portfolioCount = null;
+      (async function() {
+        try {
+          var results = await Promise.allSettled([
+            fetch(_BASE + '/portfolio').then(function(r) { return r.json(); }),
+            fetch(_BASE + '/services').then(function(r) { return r.json(); }),
+            fetch(_BASE + '/stats').then(function(r) { return r.json(); }),
+            fetch(_BASE + '/team').then(function(r) { return r.json(); })
+          ]);
+          var portfolios = (results[0].status === 'fulfilled' && results[0].value.length) ? results[0].value : _FB_PORTFOLIO;
+          var services   = (results[1].status === 'fulfilled' && results[1].value.length) ? results[1].value : _FB_SERVICES;
+          var stats      = (results[2].status === 'fulfilled' && results[2].value.length) ? results[2].value : _FB_STATS;
+          var team       = (results[3].status === 'fulfilled' && results[3].value.length) ? results[3].value : _FB_TEAM;
+          _portfolioCount = portfolios.length;
+          document.getElementById('heroProjectCount').textContent = portfolios.length + '+ Projects';
+          renderPortfolioRows(portfolios);
+          createserviceListingRows(services);
+          renderStatsRow(stats);
+          renderTeamRow(team);
+        } catch(e) {
+          console.error('Error loading site data, using fallback:', e);
+          renderPortfolioRows(_FB_PORTFOLIO);
+          createserviceListingRows(_FB_SERVICES);
+          renderStatsRow(_FB_STATS);
+          renderTeamRow(_FB_TEAM);
+        }
+      })();
       // Footer year
       document.getElementById('footerYear').textContent = new Date().getFullYear();
-
-      // Hero project count — auto from portfolios array
-      if (typeof portfolios !== 'undefined') {
-        document.getElementById('heroProjectCount').textContent = portfolios.length + '+ Projects';
-      }
 
       // Auto-calculate age from birthday
       (function() {
