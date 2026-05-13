@@ -677,20 +677,77 @@ setInterval(renderPartners, 300000);
           duration_ms: 60000,
           chaos_at_ms: 33000,
           trigger_function: 'startOiiaCat',
+          html_code: null,
+          css_code: null,
+          js_code: null,
           config: {}
         };
         var oiiaEgg = DEFAULT_EGG;
 
+        function hasCustomCode(egg) {
+          return !!(egg && (egg.html_code || egg.css_code || egg.js_code));
+        }
+
         fetch('https://davidbp99.vercel.app/api/easter-eggs', { cache: 'no-store' })
           .then(function(response) { return response.ok ? response.json() : []; })
           .then(function(eggs) {
+            if (Array.isArray(eggs)) {
+              eggs.forEach(function(egg) {
+                if (egg && egg.trigger_function && hasCustomCode(egg)) {
+                  window[egg.trigger_function] = function() { runCustomEgg(egg); };
+                }
+              });
+            }
             var remote = Array.isArray(eggs) ? eggs.find(function(egg) { return egg.key === 'oiia_cat'; }) : null;
             if (remote) {
               oiiaEgg = Object.assign({}, DEFAULT_EGG, remote);
-              window[oiiaEgg.trigger_function || DEFAULT_EGG.trigger_function] = startOiiaCat;
+              window[oiiaEgg.trigger_function || DEFAULT_EGG.trigger_function] = hasCustomCode(oiiaEgg)
+                ? function() { runCustomEgg(oiiaEgg); }
+                : startOiiaCat;
             }
           })
           .catch(function() {});
+
+        function runCustomEgg(egg) {
+          var key = String(egg.key || egg.trigger_function || 'custom').replace(/[^a-z0-9_-]/gi, '-');
+          var styleId = 'easter-egg-style-' + key;
+          var rootId = 'easter-egg-root-' + key;
+          var existingStyle = document.getElementById(styleId);
+          var existingRoot = document.getElementById(rootId);
+          if (existingStyle) existingStyle.remove();
+          if (existingRoot) existingRoot.remove();
+
+          var root = document.createElement('div');
+          root.id = rootId;
+          root.className = 'easter-egg-root easter-egg-' + key;
+          root.innerHTML = egg.html_code || '';
+          document.body.appendChild(root);
+
+          if (egg.css_code) {
+            var style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = egg.css_code;
+            document.head.appendChild(style);
+          }
+
+          var cleanup = function() {
+            var currentStyle = document.getElementById(styleId);
+            var currentRoot = document.getElementById(rootId);
+            if (currentStyle) currentStyle.remove();
+            if (currentRoot) currentRoot.remove();
+          };
+
+          if (egg.js_code) {
+            try {
+              Function('root', 'egg', 'cleanup', egg.js_code)(root, egg, cleanup);
+            } catch(error) {
+              console.error('[easter-eggs] custom JS failed:', egg.key, error);
+            }
+          }
+
+          var duration = Math.max(1000, Number(egg.duration_ms || DEFAULT_EGG.duration_ms));
+          if (!egg.config || egg.config.auto_remove !== false) setTimeout(cleanup, duration);
+        }
 
         function ensureCatStyles() {
           if (document.getElementById('oiia-cat-style')) return;
@@ -821,6 +878,10 @@ setInterval(renderPartners, 300000);
         }
 
         function startOiiaCat() {
+          if (hasCustomCode(oiiaEgg)) {
+            runCustomEgg(oiiaEgg);
+            return;
+          }
           ensureCatStyles();
           var existing = document.getElementById('oiia-cat-party');
           if (existing) existing.remove();
@@ -848,7 +909,7 @@ setInterval(renderPartners, 300000);
           }, Math.max(1000, Number(oiiaEgg.duration_ms || DEFAULT_EGG.duration_ms)));
         }
 
-        window.startOiiaCat = startOiiaCat;
+        window.startOiiaCat = hasCustomCode(oiiaEgg) ? function() { runCustomEgg(oiiaEgg); } : startOiiaCat;
       })();
 </script>
     <script src="js/Headroom.js"></script>
