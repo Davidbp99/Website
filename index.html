@@ -378,6 +378,7 @@ function buildPartnerCard(partner) {
   const inviteCode = partner.discord_invite
     ? partner.discord_invite.replace(/https?:\/\/(www\.)?(discord\.gg|discord\.com\/invite)\//i, '').trim()
     : null;
+  const discordHref = partner.discord_tracking_url || (inviteCode ? 'https://discord.gg/' + inviteCode : null);
 
   const $image = imgSrc
     ? $('<img>').addClass('server-image').attr('src', imgSrc).attr('alt', partner.name)
@@ -416,10 +417,10 @@ function buildPartnerCard(partner) {
         .attr('target', '_blank')
     );
   }
-  if (inviteCode) {
+  if (discordHref) {
     $buttons.append(
       $('<a>').text('Join Discord').addClass('join-discord-button btn btn-secondary')
-        .attr('href', 'https://discord.gg/' + inviteCode)
+        .attr('href', discordHref)
         .attr('target', '_blank')
     );
   }
