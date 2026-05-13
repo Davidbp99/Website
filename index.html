@@ -688,6 +688,15 @@ setInterval(renderPartners, 300000);
           return !!(egg && (egg.html_code || egg.css_code || egg.js_code));
         }
 
+        function normalizeEggAssetUrl(url) {
+          if (!url) return url;
+          if (/^(https?:|data:|blob:)/i.test(url)) return url;
+          if (location.hostname.endsWith('github.io') && url.charAt(0) === '/') {
+            return '/Website' + url;
+          }
+          return url;
+        }
+
         fetch('https://davidbp99.vercel.app/api/easter-eggs', { cache: 'no-store' })
           .then(function(response) { return response.ok ? response.json() : []; })
           .then(function(eggs) {
@@ -709,6 +718,9 @@ setInterval(renderPartners, 300000);
           .catch(function() {});
 
         function runCustomEgg(egg) {
+          var runtimeEgg = Object.assign({}, egg, {
+            audio_url: normalizeEggAssetUrl(egg.audio_url)
+          });
           var key = String(egg.key || egg.trigger_function || 'custom').replace(/[^a-z0-9_-]/gi, '-');
           var styleId = 'easter-egg-style-' + key;
           var rootId = 'easter-egg-root-' + key;
@@ -739,7 +751,7 @@ setInterval(renderPartners, 300000);
 
           if (egg.js_code) {
             try {
-              Function('root', 'egg', 'cleanup', egg.js_code)(root, egg, cleanup);
+              Function('root', 'egg', 'cleanup', egg.js_code)(root, runtimeEgg, cleanup);
             } catch(error) {
               console.error('[easter-eggs] custom JS failed:', egg.key, error);
             }
