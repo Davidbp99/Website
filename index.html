@@ -664,6 +664,192 @@ setInterval(renderPartners, 300000);
         el.classList.add('fade-in-section');
         fadeObserver.observe(el);
       });
+
+      // Console easter egg: run `startOiiaCat()` in DevTools.
+      (function() {
+        var catTimer = null;
+        var catChaosTimer = null;
+        var DEFAULT_EGG = {
+          title: 'OIIA OIIA',
+          subtitle: 'console cat has entered the site',
+          chaos_subtitle: '00:33 - the cat has exceeded reasonable limits',
+          audio_url: 'audio/oiia-cat.mp3',
+          duration_ms: 60000,
+          chaos_at_ms: 33000,
+          trigger_function: 'startOiiaCat',
+          config: {}
+        };
+        var oiiaEgg = DEFAULT_EGG;
+
+        fetch('https://davidbp99.vercel.app/api/easter-eggs', { cache: 'no-store' })
+          .then(function(response) { return response.ok ? response.json() : []; })
+          .then(function(eggs) {
+            var remote = Array.isArray(eggs) ? eggs.find(function(egg) { return egg.key === 'oiia_cat'; }) : null;
+            if (remote) {
+              oiiaEgg = Object.assign({}, DEFAULT_EGG, remote);
+              window[oiiaEgg.trigger_function || DEFAULT_EGG.trigger_function] = startOiiaCat;
+            }
+          })
+          .catch(function() {});
+
+        function ensureCatStyles() {
+          if (document.getElementById('oiia-cat-style')) return;
+          var style = document.createElement('style');
+          style.id = 'oiia-cat-style';
+          style.textContent = [
+            '@keyframes oiiaBackdropPulse{0%,100%{background:rgba(2,6,23,.72)}50%{background:rgba(88,28,135,.58)}}',
+            '@keyframes oiiaSpin{from{transform:rotate(0deg) scale(1)}50%{transform:rotate(540deg) scale(1.14)}to{transform:rotate(1080deg) scale(1)}}',
+            '@keyframes oiiaChaosSpin{from{transform:rotate(0deg) scale(1.08)}50%{transform:rotate(900deg) scale(1.36)}to{transform:rotate(1800deg) scale(1.08)}}',
+            '@keyframes oiiaBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}',
+            '@keyframes oiiaChaosBounce{0%,100%{transform:translate(-8px,0) skewX(-4deg)}25%{transform:translate(16px,-34px) skewX(6deg)}50%{transform:translate(-18px,18px) skewX(-8deg)}75%{transform:translate(12px,-22px) skewX(7deg)}}',
+            '@keyframes oiiaRainbow{0%{filter:hue-rotate(0deg) saturate(1.2)}100%{filter:hue-rotate(360deg) saturate(2.8)}}',
+            '@keyframes oiiaMiniOrbit{from{transform:rotate(0deg) translateX(190px) rotate(0deg)}to{transform:rotate(360deg) translateX(190px) rotate(-360deg)}}',
+            '#oiia-cat-party{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;pointer-events:none;animation:oiiaBackdropPulse .45s linear infinite;font-family:Arial,sans-serif}',
+            '.oiia-cat-wrap{display:grid;gap:18px;justify-items:center;animation:oiiaBounce .34s ease-in-out infinite}',
+            '.oiia-cat{width:170px;height:170px;border-radius:50%;background:#f8fafc;border:8px solid #111827;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.45);animation:oiiaSpin .82s linear infinite}',
+            '.oiia-cat:before,.oiia-cat:after{content:"";position:absolute;top:-38px;width:72px;height:72px;background:#f8fafc;border:8px solid #111827;transform:rotate(45deg);border-radius:12px}',
+            '.oiia-cat:before{left:10px}.oiia-cat:after{right:10px}',
+            '.oiia-eye{position:absolute;top:58px;width:22px;height:30px;background:#111827;border-radius:50%;z-index:2}.oiia-eye.left{left:45px}.oiia-eye.right{right:45px}',
+            '.oiia-mouth{position:absolute;left:50%;top:98px;width:42px;height:24px;border-bottom:8px solid #111827;border-radius:50%;transform:translateX(-50%);z-index:2}',
+            '.oiia-text{font-size:54px;font-weight:900;color:#fff;text-shadow:0 3px 0 #111827,0 0 18px #22d3ee;letter-spacing:3px;text-align:center}',
+            '.oiia-subtext{font-size:16px;color:#c4b5fd;text-shadow:0 2px 8px #000;text-align:center}',
+            '#oiia-cat-party.chaos{animation:oiiaBackdropPulse .12s linear infinite,oiiaRainbow .55s linear infinite}',
+            '#oiia-cat-party.chaos .oiia-cat-wrap{animation:oiiaChaosBounce .16s linear infinite}',
+            '#oiia-cat-party.chaos .oiia-cat{animation:oiiaChaosSpin .28s linear infinite;box-shadow:0 0 35px #22d3ee,0 0 75px #f472b6,0 24px 80px rgba(0,0,0,.65)}',
+            '#oiia-cat-party.chaos .oiia-text{font-size:72px;text-shadow:0 4px 0 #111827,0 0 18px #22d3ee,0 0 34px #f472b6}',
+            '.oiia-mini-cat{position:absolute;width:42px;height:42px;border-radius:50%;background:#f8fafc;border:4px solid #111827;box-shadow:0 0 18px #fff;opacity:0;top:50%;left:50%}',
+            '#oiia-cat-party.chaos .oiia-mini-cat{opacity:1;animation:oiiaMiniOrbit .7s linear infinite}',
+            '#oiia-cat-party.chaos .oiia-mini-cat:nth-child(2){animation-delay:-.12s}',
+            '#oiia-cat-party.chaos .oiia-mini-cat:nth-child(3){animation-delay:-.24s}',
+            '#oiia-cat-party.chaos .oiia-mini-cat:nth-child(4){animation-delay:-.36s}',
+            '#oiia-cat-party.chaos .oiia-mini-cat:nth-child(5){animation-delay:-.48s}'
+          ].join('');
+          document.head.appendChild(style);
+        }
+
+        function playSynthOiiaSound() {
+          var AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+          try {
+            var ctx = new AudioContext();
+            var notes = [660, 880, 990, 880, 660, 880, 990, 880, 740, 990, 1180, 990, 740, 990, 1180, 990];
+            notes.forEach(function(freq, index) {
+              var start = ctx.currentTime + index * 0.12;
+              var osc = ctx.createOscillator();
+              var gain = ctx.createGain();
+              osc.type = index % 2 ? 'square' : 'sine';
+              osc.frequency.setValueAtTime(freq, start);
+              gain.gain.setValueAtTime(0.0001, start);
+              gain.gain.exponentialRampToValueAtTime(0.08, start + 0.015);
+              gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.105);
+              osc.connect(gain).connect(ctx.destination);
+              osc.start(start);
+              osc.stop(start + 0.12);
+            });
+            setTimeout(function() { ctx.close(); }, 2600);
+          } catch(e) {}
+        }
+
+        function playAudioElement(url) {
+          return new Promise(function(resolve) {
+            var audio = new Audio(url);
+            var done = false;
+
+            function finish(value) {
+              if (done) return;
+              done = true;
+              audio.oncanplaythrough = null;
+              audio.onerror = null;
+              resolve(value);
+            }
+
+            audio.volume = 0.7;
+            audio.oncanplaythrough = function() {
+              audio.play().then(function() {
+                setTimeout(function() { audio.pause(); }, Math.max(1000, Number(oiiaEgg.duration_ms || DEFAULT_EGG.duration_ms)));
+                finish(true);
+              }).catch(function() {
+                finish(false);
+              });
+            };
+            audio.onerror = function() { finish(false); };
+            audio.load();
+          });
+        }
+
+        async function playFetchedOiiaMusic() {
+          var extraAudio = oiiaEgg.config && Array.isArray(oiiaEgg.config.audio_urls) ? oiiaEgg.config.audio_urls : [];
+          var candidates = [
+            window.oiiaCatAudioUrl,
+            oiiaEgg.audio_url,
+            ...extraAudio,
+            'audio/oiia-cat.mp3',
+            'oiia-cat.mp3',
+            'audio/oiia-cat.ogg',
+            'oiia-cat.ogg'
+          ].filter(Boolean);
+
+          for (var i = 0; i < candidates.length; i++) {
+            if (await playAudioElement(candidates[i])) return true;
+            try {
+              var response = await fetch(candidates[i], { cache: 'force-cache' });
+              if (!response.ok) continue;
+              var blob = await response.blob();
+              if (!blob.type || blob.type.indexOf('audio') !== 0) continue;
+
+              var objectUrl = URL.createObjectURL(blob);
+              var audio = new Audio(objectUrl);
+              audio.volume = 0.7;
+              audio.onended = function() { URL.revokeObjectURL(objectUrl); };
+              audio.onerror = function() { URL.revokeObjectURL(objectUrl); };
+              await audio.play();
+              setTimeout(function() {
+                audio.pause();
+                URL.revokeObjectURL(objectUrl);
+              }, Math.max(1000, Number(oiiaEgg.duration_ms || DEFAULT_EGG.duration_ms)));
+              return true;
+            } catch(e) {}
+          }
+
+          return false;
+        }
+
+        function playOiiaSound() {
+          playFetchedOiiaMusic().then(function(played) {
+            if (!played) playSynthOiiaSound();
+          });
+        }
+
+        function startOiiaCat() {
+          ensureCatStyles();
+          var existing = document.getElementById('oiia-cat-party');
+          if (existing) existing.remove();
+          if (catTimer) clearTimeout(catTimer);
+          if (catChaosTimer) clearTimeout(catChaosTimer);
+
+          var party = document.createElement('div');
+          party.id = 'oiia-cat-party';
+          party.innerHTML = '<span class="oiia-mini-cat"></span><span class="oiia-mini-cat"></span><span class="oiia-mini-cat"></span><span class="oiia-mini-cat"></span><span class="oiia-mini-cat"></span><div class="oiia-cat-wrap"><div class="oiia-text"></div><div class="oiia-cat"><span class="oiia-eye left"></span><span class="oiia-eye right"></span><span class="oiia-mouth"></span></div><div class="oiia-subtext"></div></div>';
+          party.querySelector('.oiia-text').textContent = oiiaEgg.title || DEFAULT_EGG.title;
+          party.querySelector('.oiia-subtext').textContent = oiiaEgg.subtitle || DEFAULT_EGG.subtitle;
+          document.body.appendChild(party);
+          playOiiaSound();
+          catChaosTimer = setTimeout(function() {
+            var current = document.getElementById('oiia-cat-party');
+            if (current) {
+              current.classList.add('chaos');
+              var text = current.querySelector('.oiia-subtext');
+              if (text) text.textContent = oiiaEgg.chaos_subtitle || DEFAULT_EGG.chaos_subtitle;
+            }
+          }, Math.max(0, Number(oiiaEgg.chaos_at_ms || DEFAULT_EGG.chaos_at_ms)));
+          catTimer = setTimeout(function() {
+            var current = document.getElementById('oiia-cat-party');
+            if (current) current.remove();
+          }, Math.max(1000, Number(oiiaEgg.duration_ms || DEFAULT_EGG.duration_ms)));
+        }
+
+        window.startOiiaCat = startOiiaCat;
+      })();
 </script>
     <script src="js/Headroom.js"></script>
     <script src="js/jQuery.headroom.js"></script>
